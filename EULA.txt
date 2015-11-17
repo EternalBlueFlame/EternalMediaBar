@@ -2,91 +2,79 @@ Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respe
 You may contact us through GitHub via message or Issue report, or by placing an ask on one of our blogs.
 Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/
 Lunar Tales: http://lunar-tales.tumblr.com/
-
-PLEASE READ CAREFULLY BEFORE DOWNLOADING THE SOFTWARE: 
+PLEASE READ CAREFULLY BEFORE DOWNLOADING THE SOFTWARE:
 This licence agreement (Licence) is a legal agreement between:
--	you (Licensee or you)
--	Eternal Blue Flame of http://eternal-blue-flame.tumblr.com/
--	Lunar Tales of http://lunar-tales.tumblr.com/
+- you (Licensee or you)
+- Eternal Blue Flame of http://eternal-blue-flame.tumblr.com/
+- Lunar Tales of http://lunar-tales.tumblr.com/
 for computer software, the data supplied with the software, and the associated media (Software) and online documents (Documents) that are necessary for the operation of the following program/s:
--	Eternal Media Bar
-
-We licence use of the Software and Documents to you on the basis of this Licence. We do not sell the Software or Documents to you. We remain the owners of the Software and Documents at all times. 
-
-IMPORTANT NOTICE TO ALL USERS: 
-	BY DOWNLOADING OR ACCESSING THE SOFTWARE BY ANY OTHER MEANS, YOU AGREE TO THE TERMS OF THIS LICENCE WHICH WILL BIND YOU. THE TERMS OF THIS LICENCE INCLUDE, IN PARTICULAR, LIMITATIONS ON LIABILITY IN CONDITION 4.
-	IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENCE, WE WILL NOT LICENSE THE SOFTWARE AND DOCUMENTS TO YOU AND YOU MUST DISCONTINUE THE DOWNLOADING PROCESS NOW.
-
-1.	GRANT AND SCOPE OF LICENCE
-1.1.	We hereby grant to you a non-exclusive, non-transferable licence to use the Software and the Documents for your personal, non-commercial use (except where commercial use has been expressly permitted by us) on the terms of this Licence.
-1.2.	You may:
-1.2.1.	Download, install and use the Software for your personal purposes only and only for the purpose of the operation of the Program/s;
-1.2.2.	Provided you comply with the provisions in condition 2, copy the Software for back-up purposes only;
-1.2.3.	Receive and use any free supplementary software code or update of the Software as may be provided by us at our discretion
-1.2.4.	Use any Documents in support of the use permitted under condition.
-1.4.	The Software is made available to you on an "open source" basis and therefore you may use the Source Code to modify the Software and you may use, reproduce, publish, perform, display and distribute any modified Software you create in source but solely on a non-commercial basis (except where commercial use has been expressly permitted by us) and solely in relation to the Program/s. 
-1.5.	You must not misrepresent modified Software as the original Software and you agree to use all reasonable endeavours to credit us as the owners of the Software and modified Software as part of any modified Software created and distributed by you. Without prejudice to the generality of the foregoing, you must ensure all modified Software carries a prominent notice stating that you have modified the Software.   
-1.6.	YOU UNCONDITIONALLY UNDERTAKE NOT TO SELL, LOAN, LEASE OR SUB-LICENCE MODIFIED SOFTWARE TO ANY THIRD PARTY USER AND YOU UNDERTAKE NOT TO TRANSFER TO, SHARE WITH OR IN ANY WAY DISTRIBUTE MODIFIED SOFTWARE TO ANY THIRD PARTY USER WHO HAS NOT ALREADY LICENSED THE SOFTWARE FROM US AND WHO IS NOT ALREADY AGREED TO THE TERMS OF THIS LICENCE.  
-1.7.	Without prejudice to clause 3.2 of this Licence, you grant to us a non-exclusive, irrevocable right to use, reproduce, modify, create derivative works from, distribute, transmit, broadcast or otherwise communicate your modified Software in connection with the promotion and operation of a Program. 
-
-2.	RESTRICTIONS
-2.1.	Except as otherwise permitted in this agreement, you may not use the Software, Documents or any modified Software for any purpose other than in relation to the operation of a Program. 
-2.2.	Except as expressly set out in this Licence or as permitted by any local law, you agree:
-2.2.1.	not to copy the Software or Documents except where such copying is incidental to normal use of the Software, or where it is necessary for the purpose of back-up or operational security.
-2.2.2.	not to rent, lease, sub-license, loan, translate, merge, adapt, vary or modify the Software or Documents unless otherwise permitted by us.
-2.2.3.	not to create any software which is substantially similar to the Software.
-2.2.4.	to keep all copies of the Software secure and to maintain accurate and up-to-date records of the number and locations of all copies of the Software.
-2.2.5.	to include our copyright notice on all entire and partial copies and modifications you make of the Software on any medium.
-2.2.6.	not to provide or otherwise make available the Software in whole or in part (including but not limited to program listings, object and source program listings, object code and source code), in any form to any person without prior written consent from us.
-
-3.	INTELLECTUAL PROPERTY RIGHTS
-3.1.	You acknowledge that all intellectual property rights in the Software and the Documents anywhere in the world belong to us, that rights in the Software are licensed (not sold) to you, and that you have no rights in, or to, the Software or the Documents other than the right to use them in accordance with the terms of this Licence.
-3.2.	You acknowledge that all intellectual property rights in any modified Software created by you belong to us and we shall have the exclusive right to deal with and restrict the dealing with of any modified Software at our sole discretion.  
-3.3.	You must retain, in the source form of any modified Software that you distribute, all copyright, patent, and trade mark notices from the source form of the original Software.
-3.4.	This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the original software.
-3.5.	You acknowledge that in agreeing to the terms of this Licence, you relinquish your legal rights, including your right to bring legal proceedings, in respect of any part of the Software in which you claim to own intellectual property rights. 
-
-4.	LIMITATION OF LIABILITY
-4.1.	You acknowledge that the Software has not been developed to meet your individual requirements, and that it is therefore your responsibility to ensure that the facilities and functions of the Software meet your requirements.
-4.2.	 If you are a consumer, we only supply the Software and Documents for domestic and private use. You agree not to use the Software and Documents for any commercial, business or re-sale purposes, and we have no liability to you for any loss of profit, loss of business, business interruption, or loss of business opportunity.
-4.2.1.	If you are a business customer (such as an educational establishment), we only supply the Software and the Documents for internal use by your business, and you agree not to use the Software or Documents for any re-sale purposes. 
-4.3.	You acknowledge that the Software may not be free of bugs or errors, and agree that the existence of minor errors shall not constitute a breach of this Licence. 
-4.4.	We do not offer any warranty or guarantee in respect of the operation of your Google Account and we shall have no liability to you resulting from the operation of your Google account and the effect that has on the Software.
-4.5.	We shall have no liability under or in connection with this Licence whether in contract, tort (including negligence), breach of statutory duty or otherwise This does not apply to the types of loss set out in condition 4.6.
-4.6.	Nothing in this Licence shall limit or exclude our liability for.
-4.6.1.	death or personal injury resulting from our and/or your negligence.
-4.6.2.	fraud or fraudulent misrepresentation.
-4.6.3.	hardware damage resulting from our and/or your negligence.
-4.6.3.	any other liability that cannot be excluded or limited by English law.
-4.7.	This Licence sets out the full extent of our obligations and liabilities in respect of the supply of the Software and Documents. Except as expressly stated in this Licence, there are no conditions, warranties, representations or other terms, express or implied, that are binding on us. Any condition, warranty, representation or other term concerning the supply of the Software and Documents which might otherwise be implied into, or incorporated in, this Licence whether by statute, common law or otherwise, is excluded to the fullest extent permitted by law.
-
-5.	TERMINATION
-5.1.	We may terminate this Licence immediately by written notice (digital or otherwise) to you if you commit a material or persistent breach of this Licence which you fail to remedy (if remediable) within 14 days after the service of written notice requiring you to do so. 
-5.2.	Upon termination for any reason:
-5.2.1.	all rights granted to you under this Licence shall cease.
-5.2.2.	you must immediately cease all activities authorised by this Licence. 
-5.2.3.	you must immediately delete or remove the Software from all computer equipment in your possession, and immediately destroy or return to us (at our option) all copies of the Software and Documents then in your possession, custody or control and, in the case of destruction, certify to us that you have done so.
-
-6.	COMMUNICATIONS BETWEEN US
-6.1.	If you wish to contact us in writing, or if any condition in this Licence requires you to give us notice in writing, you can send this to us through GitHub via message or Issue report. We will confirm receipt of this by contacting you in writing. 
-6.2.	If we have to contact you or give you notice in writing, we will do so through GitHub via message or Issue report.
-
-7.	 EVENTS OUTSIDE OUR CONTROL
-7.1.	We will not be liable or responsible for any failure to perform, or delay in performance of, any of our obligations under this Licence that is caused by an Event Outside Our Control. An Event Outside Our Control is defined below in condition 7.2.
-7.2.	An Event Outside Our Control means any act or event beyond our reasonable control, including without limitation to:
-7.2.1.	Failure of public or private telecommunications networks.
-7.2.2.	Illness that may or may not result in hospitalization.
-7.2.3.	Natural disaster or other unaccountable damage to our selves and/or hardware.
-7.3.	If an Event Outside Our Control takes place that affects the performance of our obligations under this Licence:
-7.3.1.	our obligations under this Licence will be suspended and the time for performance of our obligations will be extended for the duration of the Event Outside Our Control.
-7.3.2.	we will use our reasonable endeavours to find a solution by which our obligations under this Licence may be performed despite the Event Outside Our Control.
-
-8.	OTHER IMPORTANT TERMS
-8.1.	We may transfer our rights and obligations under this Licence to another organisation, but this will not affect your rights or our obligations under this Licence. 
-8.2.	We may amend this Licence at any time at our sole discretion. You can view the Licence at any time at the GitHub page for the Program. If you do not agree to the amendments or any of the terms of this Licence, your only remedy shall be to terminate the Licence. We shall not have any obligation to refund you for any reason.
-8.3.	You may only transfer your rights or your obligations under this Licence to another person if we agree in writing.
-8.4.	If we fail to insist that you perform any of your obligations under this Licence, or if we do not enforce our rights against you, or if we delay in doing so, that will not mean that we have waived our rights against you and will not mean that you do not have to comply with those obligations. If we do waive a default by you, we will only do so in writing, and that will not mean that we will automatically waive any later default by you. 
-8.5.	Each of the conditions of this Licence operates separately. If any court or competent authority decides that any of them are unlawful or unenforceable, the remaining conditions will remain in full force and effect. 
-8.6.	Please note that this Licence, its subject matter and its formation, are governed by American law. You and we both agree to that the courts of America will have non-exclusive jurisdiction.
-
+- Eternal Media Bar
+We licence use of the Software and Documents to you on the basis of this Licence. We do not sell the Software or Documents to you. We remain the owners of the Software and Documents at all times.
+IMPORTANT NOTICE TO ALL USERS:
+BY DOWNLOADING OR ACCESSING THE SOFTWARE BY ANY OTHER MEANS, YOU AGREE TO THE TERMS OF THIS LICENCE WHICH WILL BIND YOU. THE TERMS OF THIS LICENCE INCLUDE, IN PARTICULAR, LIMITATIONS ON LIABILITY IN CONDITION 4.
+IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENCE, WE WILL NOT LICENSE THE SOFTWARE AND DOCUMENTS TO YOU AND YOU MUST DISCONTINUE THE DOWNLOADING PROCESS NOW.
+1. GRANT AND SCOPE OF LICENCE
+1.1. We hereby grant to you a non-exclusive, non-transferable licence to use the Software and the Documents for your personal, non-commercial use (except where commercial use has been expressly permitted by us) on the terms of this Licence.
+1.2. You may:
+1.2.1. Download, install and use the Software for your personal purposes only and only for the purpose of the operation of the Program/s;
+1.2.2. Provided you comply with the provisions in condition 2, copy the Software for back-up purposes only;
+1.2.3. Receive and use any free supplementary software code or update of the Software as may be provided by us at our discretion
+1.2.4. Use any Documents in support of the use permitted under condition.
+1.4. The Software is made available to you on an "open source" basis and therefore you may use the Source Code to modify the Software and you may use, reproduce, publish, perform, display and distribute any modified Software you create in source but solely on a non-commercial basis (except where commercial use has been expressly permitted by us) and solely in relation to the Program/s.
+1.5. You must not misrepresent modified Software as the original Software and you agree to use all reasonable endeavours to credit us as the owners of the Software and modified Software as part of any modified Software created and distributed by you. Without prejudice to the generality of the foregoing, you must ensure all modified Software carries a prominent notice stating that you have modified the Software.
+1.6. YOU UNCONDITIONALLY UNDERTAKE NOT TO SELL, LOAN, LEASE OR SUB-LICENCE MODIFIED SOFTWARE TO ANY THIRD PARTY USER AND YOU UNDERTAKE NOT TO TRANSFER TO, SHARE WITH OR IN ANY WAY DISTRIBUTE MODIFIED SOFTWARE TO ANY THIRD PARTY USER WHO HAS NOT ALREADY LICENSED THE SOFTWARE FROM US AND WHO IS NOT ALREADY AGREED TO THE TERMS OF THIS LICENCE.
+1.7. Without prejudice to clause 3.2 of this Licence, you grant to us a non-exclusive, irrevocable right to use, reproduce, modify, create derivative works from, distribute, transmit, broadcast or otherwise communicate your modified Software in connection with the promotion and operation of a Program.
+2. RESTRICTIONS
+2.1. Except as otherwise permitted in this agreement, you may not use the Software, Documents or any modified Software for any purpose other than in relation to the operation of a Program.
+2.2. Except as expressly set out in this Licence or as permitted by any local law, you agree:
+2.2.1. not to copy the Software or Documents except where such copying is incidental to normal use of the Software, or where it is necessary for the purpose of back-up or operational security.
+2.2.2. not to rent, lease, sub-license, loan, translate, merge, adapt, vary or modify the Software or Documents unless otherwise permitted by us.
+2.2.3. not to create any software which is substantially similar to the Software.
+2.2.4. to keep all copies of the Software secure and to maintain accurate and up-to-date records of the number and locations of all copies of the Software.
+2.2.5. to include our copyright notice on all entire and partial copies and modifications you make of the Software on any medium.
+2.2.6. not to provide or otherwise make available the Software in whole or in part (including but not limited to program listings, object and source program listings, object code and source code), in any form to any person without prior written consent from us.
+3. INTELLECTUAL PROPERTY RIGHTS
+3.1. You acknowledge that all intellectual property rights in the Software and the Documents anywhere in the world belong to us, that rights in the Software are licensed (not sold) to you, and that you have no rights in, or to, the Software or the Documents other than the right to use them in accordance with the terms of this Licence.
+3.2. You acknowledge that all intellectual property rights in any modified Software created by you belong to us and we shall have the exclusive right to deal with and restrict the dealing with of any modified Software at our sole discretion.
+3.3. You must retain, in the source form of any modified Software that you distribute, all copyright, patent, and trade mark notices from the source form of the original Software.
+3.4. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the original software.
+3.5. You acknowledge that in agreeing to the terms of this Licence, you relinquish your legal rights, including your right to bring legal proceedings, in respect of any part of the Software in which you claim to own intellectual property rights.
+4. LIMITATION OF LIABILITY
+4.1. You acknowledge that the Software has not been developed to meet your individual requirements, and that it is therefore your responsibility to ensure that the facilities and functions of the Software meet your requirements.
+4.2. If you are a consumer, we only supply the Software and Documents for domestic and private use. You agree not to use the Software and Documents for any commercial, business or re-sale purposes, and we have no liability to you for any loss of profit, loss of business, business interruption, or loss of business opportunity.
+4.2.1. If you are a business customer (such as an educational establishment), we only supply the Software and the Documents for internal use by your business, and you agree not to use the Software or Documents for any re-sale purposes.
+4.3. You acknowledge that the Software may not be free of bugs or errors, and agree that the existence of minor errors shall not constitute a breach of this Licence.
+4.4. We do not offer any warranty or guarantee in respect of the operation of your Google Account and we shall have no liability to you resulting from the operation of your Google account and the effect that has on the Software.
+4.5. We shall have no liability under or in connection with this Licence whether in contract, tort (including negligence), breach of statutory duty or otherwise This does not apply to the types of loss set out in condition 4.6.
+4.6. Nothing in this Licence shall limit or exclude our liability for.
+4.6.1. death or personal injury resulting from our and/or your negligence.
+4.6.2. fraud or fraudulent misrepresentation.
+4.6.3. hardware damage resulting from our and/or your negligence.
+4.6.3. any other liability that cannot be excluded or limited by English law.
+4.7. This Licence sets out the full extent of our obligations and liabilities in respect of the supply of the Software and Documents. Except as expressly stated in this Licence, there are no conditions, warranties, representations or other terms, express or implied, that are binding on us. Any condition, warranty, representation or other term concerning the supply of the Software and Documents which might otherwise be implied into, or incorporated in, this Licence whether by statute, common law or otherwise, is excluded to the fullest extent permitted by law.
+5. TERMINATION
+5.1. We may terminate this Licence immediately by written notice (digital or otherwise) to you if you commit a material or persistent breach of this Licence which you fail to remedy (if remediable) within 14 days after the service of written notice requiring you to do so.
+5.2. Upon termination for any reason:
+5.2.1. all rights granted to you under this Licence shall cease.
+5.2.2. you must immediately cease all activities authorised by this Licence.
+5.2.3. you must immediately delete or remove the Software from all computer equipment in your possession, and immediately destroy or return to us (at our option) all copies of the Software and Documents then in your possession, custody or control and, in the case of destruction, certify to us that you have done so.
+6. COMMUNICATIONS BETWEEN US
+6.1. If you wish to contact us in writing, or if any condition in this Licence requires you to give us notice in writing, you can send this to us through GitHub via message or Issue report. We will confirm receipt of this by contacting you in writing.
+6.2. If we have to contact you or give you notice in writing, we will do so through GitHub via message or Issue report.
+7. EVENTS OUTSIDE OUR CONTROL
+7.1. We will not be liable or responsible for any failure to perform, or delay in performance of, any of our obligations under this Licence that is caused by an Event Outside Our Control. An Event Outside Our Control is defined below in condition 7.2.
+7.2. An Event Outside Our Control means any act or event beyond our reasonable control, including without limitation to:
+7.2.1. Failure of public or private telecommunications networks.
+7.2.2. Illness that may or may not result in hospitalization.
+7.2.3. Natural disaster or other unaccountable damage to our selves and/or hardware.
+7.3. If an Event Outside Our Control takes place that affects the performance of our obligations under this Licence:
+7.3.1. our obligations under this Licence will be suspended and the time for performance of our obligations will be extended for the duration of the Event Outside Our Control.
+7.3.2. we will use our reasonable endeavours to find a solution by which our obligations under this Licence may be performed despite the Event Outside Our Control.
+8. OTHER IMPORTANT TERMS
+8.1. We may transfer our rights and obligations under this Licence to another organisation, but this will not affect your rights or our obligations under this Licence.
+8.2. We may amend this Licence at any time at our sole discretion. You can view the Licence at any time at the GitHub page for the Program. If you do not agree to the amendments or any of the terms of this Licence, your only remedy shall be to terminate the Licence. We shall not have any obligation to refund you for any reason.
+8.3. You may only transfer your rights or your obligations under this Licence to another person if we agree in writing.
+8.4. If we fail to insist that you perform any of your obligations under this Licence, or if we do not enforce our rights against you, or if we delay in doing so, that will not mean that we have waived our rights against you and will not mean that you do not have to comply with those obligations. If we do waive a default by you, we will only do so in writing, and that will not mean that we will automatically waive any later default by you.
+8.5. Each of the conditions of this Licence operates separately. If any court or competent authority decides that any of them are unlawful or unenforceable, the remaining conditions will remain in full force and effect.
+8.6. Please note that this Licence, its subject matter and its formation, are governed by American law. You and we both agree to that the courts of America will have non-exclusive jurisdiction.
 Thank you and best of luck!
