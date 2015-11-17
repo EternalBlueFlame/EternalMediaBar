@@ -8,7 +8,7 @@ Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/
 
 Lunar Tales: http://lunar-tales.tumblr.com/
 
-
+-----
 
 By downloading, streaming, or otherwise using this software or source code you agree to the following:
 -	The source code and art assets must not to be mistaken for free software, an open source in a free-software activist understanding, copy-left or public domain software. All source code and art assets remain copyrighted and licensed by Eternal Blue Flame and Lunar Tales. And you are allowed to use them (modify, tweak, make a derivative work, distribute, etc.) only under following conditions.
