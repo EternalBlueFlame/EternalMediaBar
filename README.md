@@ -3,7 +3,7 @@ This source is intended for development of Eternal Media Bar so that users may o
 
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
 You may contact us through GitHub via message or Issue report, or by placing an ask on one of our blogs.
-Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/
+Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/ 
 Lunar Tales: http://lunar-tales.tumblr.com/
 
 By downloading, streaming, or otherwise using this software or source code you agree to the following:
@@ -17,5 +17,6 @@ By downloading, streaming, or otherwise using this software or source code you a
 -	Commercial usage is allowed only after you obtain an agreement from us.
 -	We reserve the right to change this license at any time with or without notice, with immediate and/or retroactive effect. We believe that what we ask is reasonable, so please don't try to bypass it. We're trying to be open and honest, and we hope people will do the same for us.
 -	Don't be afraid to experiment with the source code. If you break something, you can always revert by downloading it again.
--	If there's anything legal you're wondering about that wasn't answered: ask us about it. If there's anything you don't understand or you consider confusing, please contact us about it.
+-	If there's anything legal you're wondering about that wasn't answered, ask us about it. If there's anything you don't understand or you consider confusing, please contact us about it.
+
 For more detailed information please read our EULA.
