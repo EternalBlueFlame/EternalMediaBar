@@ -1,8 +1,5 @@
 This source is intended for development of Eternal Media Bar so that users may observe the progress of the program's development, report problems, request features, and even contribute directly to the development.
 
------
-I will upload the source once the program is in a state where it doesn't instantly crash.
------
 
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
 You may contact us through GitHub via message or Issue report, or by placing an ask on one of our blogs.
@@ -20,6 +17,7 @@ Project Goals:
 //Security of user information takes priority.
 
 //RC1 Plans:
+//create and add in the new icons and menu background
 //make the animation for the slide-out menu.
 //need to make control functions for pressing A/X/Enter
 //add missing icons
