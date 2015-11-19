@@ -59,7 +59,7 @@ Legal Stuff
 
 By downloading, streaming, or otherwise using this software or source code you agree to the following:
 -	The source code and art assets must not to be mistaken for free software, an open source in a free-software activist understanding, copy-left or public domain software. All source code and art assets remain copyrighted and licensed by Eternal Blue Flame and Lunar Tales. And you are allowed to use them (modify, tweak, make a derivative work, distribute, etc.) only under following conditions.
--	The source code, modifications or derivative works can be distributed only if they are intended for Personal Use, and only if valid customers would be able to use them. You are not allowed to bypass this restriction and distribute a standalone application or use our code in your projects.
+-	The source code, modifications or derivative works can be distributed only if they are intended for Personal Use, and only if valid customers would be able to use them. You are not allowed to bypass this restriction and commercially distribute a standalone application or use our code in your projects.
 -	You are not allowed to distribute original art assets (textures, models, fonts, icons, etc.)
 -	You are allowed to share the source files with other developers (crediting us when logical/reasonable), downloading and compiling the program locally, modifying and tweaking the game locally, and even publicly forking, modifying, and tweaking the source on GitHub.
 -	The origin of this software must not be misrepresented; you must not claim that you wrote the original software. 
