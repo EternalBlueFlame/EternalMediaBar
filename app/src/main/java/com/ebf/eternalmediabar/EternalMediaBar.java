@@ -41,8 +41,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//LAST KNOWN GOOD 11/18 @  3:40am
+//LAST KNOWN GOOD 11/5 @ 1:32am
 
+
+//make the animation for the slide-out menu.
+//need to make control functions for pressing A/X/Enter
+//add missing icons
+//disable hide apps until RC2
+
+//RC2 Plans:
+//auto app organizer using an XML parse of the google store's website.
+//custom wallpaper for selected app from file, if file exists
+//forced radial corners on icons
+//icon backgrounds based on theme color (glass wave effect)
+//need to make loading images with loadlist() be offloaded to a secondary async thread?
+//listview scroll snapping
+//menu sounds
+//extra settings:
+//change font color --absolute white disables it
+//change icon color --hmenu only --absolute white disables it
+//change menu background color --effects icon background and slide out menu color
+//enable/disable custom app backgrounds
+//download app backgrounds from google play (xml parse)
+//un-hide hidden apps --selective menu
+// enable google icons --uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
+
+//RC3 plans:
+//Custom app/menu icons?
+//Widgets in the scroll list, or on the side?
+//built in music player - Seperate activity for player --seperate activity for background player
+//save custom themes to file for sharing?
+
+//RC4 plans:
+//built in video player. --Built off VLC? - Seperate Activity
+//root checker
+//CPU max clock control for root users
+//max clock control able to be changed per app.
+//Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
 
 public class EternalMediaBar extends Activity {
 
@@ -186,8 +221,22 @@ public class EternalMediaBar extends Activity {
                 }
                 return true;
             }
-
-            //case event for enter/space/A/X needed
+			case KeyEvent.KEYCODE_ENTER:{
+				onEnter(0, true, saveddata.vlists.get(hitem).get(vitem).name, "");
+				return true;
+			}
+			case KeyEvent.KEYCODE_1:{
+				onEnter(0, true, saveddata.vlists.get(hitem).get(vitem).name, "");
+				return true;
+			}
+			case KeyEvent.KEYCODE_4:{
+				onEnter(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
+				return true;
+			}
+			case KeyEvent.KEYCODE_E:{
+				onEnter(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
+				return true;
+			}
 
             //case event for unused keys
             default:

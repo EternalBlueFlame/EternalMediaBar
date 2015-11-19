@@ -19,9 +19,8 @@ Project Goals:
 //RC1 Plans:
 //create and add in the new icons and menu background
 //make the animation for the slide-out menu.
-//need to make control functions for pressing A/X/Enter
 //add missing icons
-//disable hide apps until RC2
+//disable hide apps until RC2 -Done but keeping note for refrence.
 
 //RC2 Plans:
 //auto app organizer using an XML parse of the google store's website.
