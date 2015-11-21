@@ -44,43 +44,9 @@ import java.util.List;
 //LAST KNOWN GOOD 11/5 @ 1:32am
 
 
-//make the animation for the slide-out menu.
-//need to make control functions for pressing A/X/Enter
-//add missing icons
-//disable hide apps until RC2
-
-//RC2 Plans:
-//auto app organizer using an XML parse of the google store's website.
-//custom wallpaper for selected app from file, if file exists
-//forced radial corners on icons
-//icon backgrounds based on theme color (glass wave effect)
-//need to make loading images with loadlist() be offloaded to a secondary async thread?
-//listview scroll snapping
-//menu sounds
-//extra settings:
-//change font color --absolute white disables it
-//change icon color --hmenu only --absolute white disables it
-//change menu background color --effects icon background and slide out menu color
-//enable/disable custom app backgrounds
-//download app backgrounds from google play (xml parse)
-//un-hide hidden apps --selective menu
-// enable google icons --uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
-
-//RC3 plans:
-//Custom app/menu icons?
-//Widgets in the scroll list, or on the side?
-//built in music player - Seperate activity for player --seperate activity for background player
-//save custom themes to file for sharing?
-
-//RC4 plans:
-//built in video player. --Built off VLC? - Seperate Activity
-//root checker
-//CPU max clock control for root users
-//max clock control able to be changed per app.
-//Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
-
 public class EternalMediaBar extends Activity {
 
+    //list and hlist are never used but for some odd reason need to be present for it to render.
     private ListView list;
     private LinearLayout hlist;
     private PackageManager manager;
@@ -88,7 +54,6 @@ public class EternalMediaBar extends Activity {
     private List<AppDetail> hli = new ArrayList<AppDetail>();
     private settingsClass saveddata = new settingsClass();
 
-    //public List<List<AppDetail>> vlists = new ArrayList<>();
     public int hitem = 0;
     private boolean init = false;
     private boolean optionsmenu = false;
@@ -116,11 +81,11 @@ public class EternalMediaBar extends Activity {
                         saveddata = (settingsClass) objStream.readObject();
                         objStream.close();
                         fileStream.close();
-
+                        oldapps = saveddata.oldapps;
                     } catch (Exception e) {
                         //output to debug log just in case something went fully wrong
                         e.printStackTrace();
-                        //catch with below
+                        //catch with below by initializing vlists properly
                         saveddata.vlists.add(new ArrayList<AppDetail>());
                         saveddata.vlists.add(new ArrayList<AppDetail>());
                         saveddata.vlists.add(new ArrayList<AppDetail>());
@@ -132,14 +97,6 @@ public class EternalMediaBar extends Activity {
                         saveddata.vlists.add(new ArrayList<AppDetail>());
                     }
                 }
-                /* untraceable error
-                try {
-                    //List<AppDetail> oldapps = new ArrayList<AppDetail>();
-                    objStream.close();
-                    fileStream.close();
-
-                } catch (Exception e) {e.printStackTrace();}
-                */
                 loadApps();
                 loadListView(saveddata.vlists.get(hitem));
                 init = true;
@@ -160,6 +117,9 @@ public class EternalMediaBar extends Activity {
 
     public void savefiles(){
         try{
+            // for some odd reason this one variable cant be edited directly on a regular basis, so it has to be instanced.
+            saveddata.oldapps = oldapps;
+            //create a file output stream with an object, to save a variable to a file, then close the stream.
             FileOutputStream fileStream = openFileOutput("lists.dat", Context.MODE_PRIVATE);
             ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
             fileOutput.writeObject(saveddata);
@@ -170,18 +130,6 @@ public class EternalMediaBar extends Activity {
             e.printStackTrace();
             // file doesn't exist, or can't get read/write permissions
         }
-        /*try{
-            FileOutputStream fileStreama = openFileOutput("detectedapps.dat", Context.MODE_PRIVATE);
-            ObjectOutputStream fileOutputa = new ObjectOutputStream(fileStreama);
-            fileOutputa.writeObject(oldapps);
-            fileOutputa.close();
-            fileStreama.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            // file doesn't exist, or can't get read/write permissions
-        }
-*/
     }
 
 
@@ -230,11 +178,11 @@ public class EternalMediaBar extends Activity {
 				return true;
 			}
 			case KeyEvent.KEYCODE_4:{
-				onEnter(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
+				onOptions(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
 				return true;
 			}
 			case KeyEvent.KEYCODE_E:{
-				onEnter(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
+				onOptions(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
 				return true;
 			}
 
@@ -245,7 +193,10 @@ public class EternalMediaBar extends Activity {
     }
 
 
+    // NOT YET IMPLEMENTED FUNCTION
     void listmove(int move){
+        //function to move the highlight selection based on which menu you are on.
+        //if you are not on the options menu
             if (!optionsmenu){
                 LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
                 boolean proceed = true;
@@ -259,6 +210,7 @@ public class EternalMediaBar extends Activity {
                     appLabelGlow.setText(((TextView) Vlayout.getChildAt(move).findViewById(R.id.item_app_label)).getText());
                 }
             }
+            //if you are on the options menu
         else{
                 move-=vitem;
                 move+=optionVitem;
@@ -300,7 +252,7 @@ public class EternalMediaBar extends Activity {
             }
         }
 
-        //setup the horizontal bar, theres a pre-defined setting now so that will ease the ability for custom options later down the road.most importantly it simplifies the code.
+        //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
         hli.add(hmenuloader("Settings", getResources().getDrawable(R.drawable.ic_settings_white_48dp)));
         hli.add(hmenuloader("Extra", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
         hli.add(hmenuloader("Photo", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
@@ -315,18 +267,18 @@ public class EternalMediaBar extends Activity {
 
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
-        for (int iii =0; iii < oldapps.size();){
-            if (!saveddata.vlists.get(8).contains(oldapps.get(iii))){
-                for (int iv=0; iv < saveddata.vlists.size();){
-                    if(saveddata.vlists.get(iv).contains(oldapps.get(iii))){
-                        saveddata.vlists.get(iv).remove(oldapps.get(iii));
-                        iv++;
+            for (int iii = 0; iii < oldapps.size(); ) {
+                if (!saveddata.vlists.get(8).contains(oldapps.get(iii))) {
+                    for (int iv = 0; iv < saveddata.vlists.size(); ) {
+                        if (saveddata.vlists.get(iv).contains(oldapps.get(iii))) {
+                            saveddata.vlists.get(iv).remove(oldapps.get(iii));
+                            iv++;
+                        }
                     }
+                    oldapps.remove(iii);
                 }
-                oldapps.remove(iii);
+                iii++;
             }
-            iii++;
-        }
 
         savefiles();
     }
@@ -465,6 +417,7 @@ public class EternalMediaBar extends Activity {
 								saveddata.vlists.get(Integer.parseInt(launchintent)).add(saveddata.vlists.get(hitem).get(vitem));
 								saveddata.vlists.get(hitem).remove(vitem);
 								savefiles();
+                                loadListView(saveddata.vlists.get(hitem));
 								break;
 							}
 

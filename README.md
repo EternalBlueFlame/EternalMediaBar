@@ -12,7 +12,7 @@ Lunar Tales: http://lunar-tales.tumblr.com/
 
 Project Goals:
 //Constant Goals:
-//Anything that will improve preformance for CPU, GPU, and/or RAM takes a priority, even if it's a seemingly miniscule ammount.
+//Anything that will improve performance for CPU, GPU, and/or RAM takes a priority, even if it's a seemingly miniscule ammount.
 //Stability takes the biggest priority.
 //Security of user information takes priority.
 

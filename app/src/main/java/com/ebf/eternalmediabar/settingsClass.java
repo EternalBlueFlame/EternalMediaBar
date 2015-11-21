@@ -16,6 +16,6 @@ public class settingsClass implements Serializable {
     boolean loadappbkg;
     boolean gamingmode;
     List<AppDetail> oldapps;
-    private List<AppDetail> hiddenapps = new ArrayList<AppDetail>();
+    List<AppDetail> hiddenapps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vlists = new ArrayList<>();
 }
