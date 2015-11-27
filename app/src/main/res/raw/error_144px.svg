@@ -1,0 +1,20 @@
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="144" width="144" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 72 72" fill="#ffffff">
+<defs>
+<filter id="b" style="color-interpolation-filters:sRGB">
+<feFlood result="flood" flood-color="rgb(0,0,0)"/>
+<feComposite operator="out" result="composite1" in2="SourceGraphic" in="flood"/>
+<feGaussianBlur stdDeviation="2" result="blur" in="composite1"/>
+<feOffset result="offset" dx="0" dy="0"/>
+<feComposite operator="in" result="composite2" in2="SourceGraphic" in="offset"/>
+</filter>
+<filter id="a" style="color-interpolation-filters:sRGB">
+<feFlood result="flood" flood-color="rgb(0,0,0)"/>
+<feComposite operator="out" result="composite1" in2="SourceGraphic" in="flood"/>
+<feGaussianBlur stdDeviation="2" result="blur" in="composite1"/>
+<feOffset result="offset" dx="0" dy="0"/>
+<feComposite operator="in" result="composite2" in2="SourceGraphic" in="offset"/>
+</filter>
+</defs>
+<path filter="url(#b)" fill="none" d="m0 0h72v72h-72z"/>
+<path filter="url(#a)" d="m36 6c-16.56 0-30 13.44-30 30s13.44 30 30 30 30-13.44 30-30-13.44-30-30-30zm3 45h-6v-6h6v6zm0-12h-6v-18h6v18z"/>
+</svg>
