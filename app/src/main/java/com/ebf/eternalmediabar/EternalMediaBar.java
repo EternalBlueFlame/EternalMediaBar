@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,6 +29,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.larvalabs.svgandroid.SVG;
+import com.larvalabs.svgandroid.SVGParser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,8 +84,10 @@ public class EternalMediaBar extends Activity {
                         FileInputStream fileStream = openFileInput("lists.dat");
                         ObjectInputStream objStream = new ObjectInputStream(fileStream);
                         saveddata = (settingsClass) objStream.readObject();
+                        //close the stream to save RAM.
                         objStream.close();
                         fileStream.close();
+                        //for some odd reason savedata.oldapps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
                         oldapps = saveddata.oldapps;
                     } catch (Exception e) {
                         //output to debug log just in case something went fully wrong
@@ -97,17 +104,21 @@ public class EternalMediaBar extends Activity {
                         saveddata.vlists.add(new ArrayList<AppDetail>());
                     }
                 }
+                //load in the apps
                 loadApps();
+                //render everything
                 loadListView(saveddata.vlists.get(hitem));
+                //make sure this doesnt happen again
                 init = true;
             }
 
-            AsyncTask task = new AsyncTask() {
-                @Override
-                protected Object doInBackground(Object[] params) {
-                    return null;
-                    }
-                };
+            //Async process for use later, this will help with various things, but no use for it just yet.
+            //AsyncTask task = new AsyncTask() {
+            //    @Override
+            //    protected Object doInBackground(Object[] params) {
+            //        return null;
+            //        }
+            //    };
 
             //task.execute();
 
@@ -117,18 +128,19 @@ public class EternalMediaBar extends Activity {
 
     public void savefiles(){
         try{
-            // for some odd reason this one variable cant be edited directly on a regular basis, so it has to be instanced.
+            // apply the instanced value back to the savedata version so we can save it.
             saveddata.oldapps = oldapps;
             //create a file output stream with an object, to save a variable to a file, then close the stream.
             FileOutputStream fileStream = openFileOutput("lists.dat", Context.MODE_PRIVATE);
             ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
             fileOutput.writeObject(saveddata);
+            //close the stream to save RAM
             fileOutput.close();
             fileStream.close();
         }
         catch(Exception e){
             e.printStackTrace();
-            // file doesn't exist, or can't get read/write permissions
+            //can't get read/write permissions, or something unforseen has gone horribly wrong
         }
     }
 
@@ -252,16 +264,17 @@ public class EternalMediaBar extends Activity {
             }
         }
 
+
         //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        hli.add(hmenuloader("Settings", getResources().getDrawable(R.drawable.ic_settings_white_48dp)));
-        hli.add(hmenuloader("Extra", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Photo", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Music", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Video", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Games", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Web", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("Store", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
-        hli.add(hmenuloader("New Apps", getResources().getDrawable(R.drawable.ic_error_outline_white_48dp)));
+        hli.add(hmenuloader("Settings", svgLoad(R.drawable.settings_144px )));
+        hli.add(hmenuloader("Extra", svgLoad(R.drawable.extras_144px)));
+        hli.add(hmenuloader("Photo", svgLoad(R.drawable.photo_144px)));
+        hli.add(hmenuloader("Music", svgLoad(R.drawable.music_144px)));
+        hli.add(hmenuloader("Video", svgLoad(R.drawable.video_144px)));
+        hli.add(hmenuloader("Games", svgLoad(R.drawable.games_144px)));
+        hli.add(hmenuloader("Web", svgLoad(R.drawable.web_144px)));
+        hli.add(hmenuloader("Store", svgLoad(R.drawable.shop_144px)));
+        hli.add(hmenuloader("New Apps", svgLoad(R.drawable.new_install_144px)));
 
 
 
@@ -283,6 +296,18 @@ public class EternalMediaBar extends Activity {
         savefiles();
     }
 
+    //return a drawable from an SVG
+    Drawable svgLoad(int imagetoload){
+        ImageView imageView = new ImageView(this);
+        // Parse the SVG from the variable - will have to wait till android SVG is better implemented.
+        //SVG svg = SVGParser.getSVGFromResource(getResources(), svgtoload);
+
+        imageView.setImageDrawable(getResources().getDrawable(imagetoload));
+
+        //more SVG stuff that has to wait.
+        //imageView.setImageDrawable(svg.createPictureDrawable());
+        return imageView.getDrawable();
+    }
 
     //draws the list of apps and categories to screen
     public void loadListView(final List<AppDetail> appslist){
@@ -326,7 +351,7 @@ public class EternalMediaBar extends Activity {
             try {
                 appIcon.setImageDrawable(manager.getApplicationIcon(appslist.get(ii).name));
             }
-            catch(Exception e){appIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_white_48dp));}
+            catch(Exception e){appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));}
             TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
             appLabel.setText(appslist.get(ii).label);
 
@@ -379,7 +404,7 @@ public class EternalMediaBar extends Activity {
 							try {
 								appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
 							} catch (Exception e) {
-								appIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_white_48dp));
+								appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
 							}
 							appLabel.setText(appname);
 							Button appbutton = (Button) child.findViewById(R.id.item_app_button);
@@ -451,7 +476,7 @@ public class EternalMediaBar extends Activity {
 							try {
 								appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
 							} catch (Exception e) {
-								appIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_white_48dp));
+								appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
 							}
 							appLabel.setText(appname);
 							Button appbutton = (Button) child.findViewById(R.id.item_app_button);
@@ -504,7 +529,7 @@ public class EternalMediaBar extends Activity {
 			try {
 				appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
 			} catch (Exception e) {
-				appIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_error_outline_white_48dp));
+				appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
 			}
 			appLabel.setText(appname);
 			Llayout.addView(child);

@@ -17,5 +17,5 @@ public class settingsClass implements Serializable {
     boolean gamingmode;
     List<AppDetail> oldapps;
     List<AppDetail> hiddenapps = new ArrayList<AppDetail>();
-    List<List<AppDetail>> vlists = new ArrayList<>();
+    List<List<AppDetail>> vlists = new ArrayList<List<AppDetail>>();
 }
