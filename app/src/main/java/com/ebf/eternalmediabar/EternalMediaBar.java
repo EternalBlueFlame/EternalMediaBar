@@ -30,9 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.larvalabs.svgandroid.SVG;
-import com.larvalabs.svgandroid.SVGParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -299,8 +296,6 @@ public class EternalMediaBar extends Activity {
     //return a drawable from an SVG
     Drawable svgLoad(int imagetoload){
         ImageView imageView = new ImageView(this);
-        // Parse the SVG from the variable - will have to wait till android SVG is better implemented.
-        //SVG svg = SVGParser.getSVGFromResource(getResources(), svgtoload);
 
         imageView.setImageDrawable(getResources().getDrawable(imagetoload));
 
