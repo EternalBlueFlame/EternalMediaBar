@@ -8,20 +8,22 @@ Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/
 
 Lunar Tales: http://lunar-tales.tumblr.com/
 
------
 
-Project Goals:
+<hr>
+<strong>Project Goals:</strong>
 -	Constant Goals:
 -	Anything that will improve performance for CPU, GPU, and/or RAM takes a priority, even if it's a seemingly miniscule ammount.
 -	Stability takes the biggest priority.
 -	Security of user information takes priority.
-
--	RC1 Plans:
--	create and add in the new icons and menu background
+</hr>
+<hr>
+<strong>RC1 Plans:<strong>
+-	create and add in /the new icons and menu background
 -	make the animation for the slide-out menu.
 -	disable hide apps until RC2 -Done but keeping note for refrence.
-
--	RC2 Plans:
+</hr>
+<hr>
+<strong>RC2 Plans:</strong>
 -	auto app organizer using an XML parse of the google store's website.
 -	custom wallpaper for selected app from file, if file exists
 -	forced radial corners on icons
@@ -30,30 +32,34 @@ Project Goals:
 -	listview scroll snapping
 -	menu sounds
 -	extra settings:
--	change font color --absolute white disables it
--	change icon color --hmenu only --absolute white disables it
--	change menu background color --effects icon background and slide out menu color
+-	change font color //absolute white disables it
+-	change icon color //hmenu only //absolute white disables it
+-	change menu background color //effects icon background and slide out menu color
 -	enable/disable custom app backgrounds
 -	download app backgrounds from google play (xml parse)
--	un-hide hidden apps --selective menu
--	enable google icons --uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
-
--	RC3 plans:
+-	un-hide hidden apps //selective menu
+-	enable google icons //uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
+</hr>
+<hr>
+<strong>RC3 plans:</strong>
 -	Custom app/menu icons?
 -	Widgets in the scroll list, or on the side?
--	built in music player - Seperate activity for player --seperate activity for background player
+-	built in music player //Seperate activity for player //seperate activity for background player
 -	save custom themes to file for sharing?
-
--	RC4 plans:
+</hr>
+<hr>
+<strong>RC4 plans:</strong>
 -	built in video player. --Built off VLC? - Seperate Activity
 -	root checker
 -	CPU max clock control for root users
 -	max clock control able to be changed per app.
 -	Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
+<hr/>
 
-----
+
+
 Legal Stuff
-----
+
 
 By downloading, streaming, or otherwise using this software or source code you agree to the following:
 -	The source code and art assets must not to be mistaken for free software, an open source in a free-software activist understanding, copy-left or public domain software. All source code and art assets remain copyrighted and licensed by Eternal Blue Flame and Lunar Tales. And you are allowed to use them (modify, tweak, make a derivative work, distribute, etc.) only under following conditions.
