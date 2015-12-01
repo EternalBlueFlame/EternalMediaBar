@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -43,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//LAST KNOWN GOOD 11/5 @ 1:32am
+//LAST KNOWN GOOD 11/29
 
 
 public class EternalMediaBar extends Activity {
@@ -149,17 +150,17 @@ public class EternalMediaBar extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             //case event for down
-            case KeyEvent.KEYCODE_S: {
+            case KeyEvent.KEYCODE_S: case KeyEvent.KEYCODE_DPAD_DOWN: case KeyEvent.KEYCODE_4: case KeyEvent.KEYCODE_NUMPAD_4: {
                 listmove(vitem+1);
                 return true;
             }
             //case event for up
-            case KeyEvent.KEYCODE_W: {
+            case KeyEvent.KEYCODE_W: case KeyEvent.KEYCODE_DPAD_UP: case KeyEvent.KEYCODE_2: case KeyEvent.KEYCODE_NUMPAD_2:{
                 listmove(vitem-1);
                 return true;
             }
             //case event for right
-            case KeyEvent.KEYCODE_D: {
+            case KeyEvent.KEYCODE_D: case KeyEvent.KEYCODE_DPAD_RIGHT: case KeyEvent.KEYCODE_6: case KeyEvent.KEYCODE_NUMPAD_6:{
 
                 if ((hitem+1) < hli.size()) {
                     hitem++;
@@ -169,7 +170,7 @@ public class EternalMediaBar extends Activity {
                 return true;
             }
             //case event for left
-            case KeyEvent.KEYCODE_A: {
+            case KeyEvent.KEYCODE_A: case KeyEvent.KEYCODE_DPAD_LEFT: case KeyEvent.KEYCODE_8: case KeyEvent.KEYCODE_NUMPAD_8: {
 
                 if (hitem > 0) {
                     hitem--;
@@ -178,19 +179,11 @@ public class EternalMediaBar extends Activity {
                 }
                 return true;
             }
-			case KeyEvent.KEYCODE_ENTER:{
+			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: {
 				onEnter(0, true, saveddata.vlists.get(hitem).get(vitem).name, "");
 				return true;
 			}
-			case KeyEvent.KEYCODE_1:{
-				onEnter(0, true, saveddata.vlists.get(hitem).get(vitem).name, "");
-				return true;
-			}
-			case KeyEvent.KEYCODE_4:{
-				onOptions(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
-				return true;
-			}
-			case KeyEvent.KEYCODE_E:{
+			case KeyEvent.KEYCODE_BUTTON_4: case KeyEvent.KEYCODE_E: case KeyEvent.KEYCODE_0: case KeyEvent.KEYCODE_NUMPAD_0: {
 				onOptions(1, false, saveddata.vlists.get(hitem).get(vitem).name, (String) saveddata.vlists.get(hitem).get(vitem).label);
 				return true;
 			}
@@ -384,8 +377,13 @@ public class EternalMediaBar extends Activity {
 			} else {
 				switch (index) {
 					case 0: {
-							//do nothing
-							optionsmenu = false;
+                        //do nothing
+                        optionsmenu = false;
+                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                        //resize the layout, later this should probably be an animation or something.
+                        ViewGroup.LayoutParams layoutparam = Llayout.getLayoutParams();
+                        layoutparam.width = 0;
+                        Llayout.setLayoutParams(layoutparam);
 							break;
 						}
 					case 1: {
@@ -457,6 +455,10 @@ public class EternalMediaBar extends Activity {
 							}
 							optionsmenu = false;
 							optionVitem = 1;
+                        //resize the layout, later this should probably be an animation or something.
+                        ViewGroup.LayoutParams layoutparam = Llayout.getLayoutParams();
+                        layoutparam.width = 0;
+                        Llayout.setLayoutParams(layoutparam);
 							savefiles();
 							break;
 						}
@@ -510,14 +512,22 @@ public class EternalMediaBar extends Activity {
 
 	
 	private void onOptions( final int index, final boolean islaunchable, final String launchintent, final String appname){
+        //first check to be sure its something that should be opening the menu
 		if (islaunchable) {
+            //set the variables for the menu
 			optionsmenu = true;
 			optionVitem = 1;
 			vitem = (index);
+            //load the layout and make sure nothing is in it.
 			loadListView(saveddata.vlists.get(hitem));
 			LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
 			Llayout.removeAllViews();
+            //resize the layout, later this should probably be an animation or something.
+            ViewGroup.LayoutParams layoutparam = Llayout.getLayoutParams();
+            layoutparam.width = (int) (144 * getResources().getDisplayMetrics().density + 0.5f);
+            Llayout.setLayoutParams(layoutparam);
 
+            //add the app thats selected so the user knows for sure what they are messing with.
 			View child = getLayoutInflater().inflate(R.layout.options_header, null);
 			TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
 			ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
@@ -530,6 +540,8 @@ public class EternalMediaBar extends Activity {
 			Llayout.addView(child);
 
 
+            //add all the extra options
+            //first option is to remove or hide an item, this option is ironically hidden until work starts on RC2
 			/*
 			 child = getLayoutInflater().inflate(R.layout.options_item, null);
 			 appLabel = (TextView) child.findViewById(R.id.item_app_label);
@@ -543,6 +555,7 @@ public class EternalMediaBar extends Activity {
 			 Llayout.addView(child);
 			 */
 
+            //copy the item to another category
 			child = getLayoutInflater().inflate(R.layout.options_item, null);
 			appLabel = (TextView) child.findViewById(R.id.item_app_label);
 			appLabel.setText("Copy to...");
@@ -552,6 +565,7 @@ public class EternalMediaBar extends Activity {
 			listenupdown(appbutton, 1, false, launchintent, appname);
 			Llayout.addView(child);
 
+            //move the item to another category
 			child = getLayoutInflater().inflate(R.layout.options_item, null);
 			appLabel = (TextView) child.findViewById(R.id.item_app_label);
 			appLabel.setText("Move to...");
@@ -561,6 +575,7 @@ public class EternalMediaBar extends Activity {
 			listenupdown(appbutton, 3, false, launchintent, appname);
 			Llayout.addView(child);
 
+            //open the app's settings
 			child = getLayoutInflater().inflate(R.layout.options_item, null);
 			appLabel = (TextView) child.findViewById(R.id.item_app_label);
 			appLabel.setText("Application Settings");
@@ -569,9 +584,6 @@ public class EternalMediaBar extends Activity {
 			//if its the selected, make its click function start the app
 			listenupdown(appbutton, 4, false, launchintent, appname);
 			Llayout.addView(child);
-
-
-			//animateopt();
 
 		}
 		}

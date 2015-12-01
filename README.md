@@ -11,46 +11,45 @@ Lunar Tales: http://lunar-tales.tumblr.com/
 -----
 
 Project Goals:
-//Constant Goals:
-//Anything that will improve performance for CPU, GPU, and/or RAM takes a priority, even if it's a seemingly miniscule ammount.
-//Stability takes the biggest priority.
-//Security of user information takes priority.
+-	Constant Goals:
+-	Anything that will improve performance for CPU, GPU, and/or RAM takes a priority, even if it's a seemingly miniscule ammount.
+-	Stability takes the biggest priority.
+-	Security of user information takes priority.
 
-//RC1 Plans:
-//create and add in the new icons and menu background
-//make the animation for the slide-out menu.
-//add missing icons
-//disable hide apps until RC2 -Done but keeping note for refrence.
+-	RC1 Plans:
+-	create and add in the new icons and menu background
+-	make the animation for the slide-out menu.
+-	disable hide apps until RC2 -Done but keeping note for refrence.
 
-//RC2 Plans:
-//auto app organizer using an XML parse of the google store's website.
-//custom wallpaper for selected app from file, if file exists
-//forced radial corners on icons
-//icon backgrounds based on theme color (glass wave effect)
-//make loading images with loadlist() be offloaded to a secondary async thread?
-//listview scroll snapping
-//menu sounds
-//extra settings:
-//change font color --absolute white disables it
-//change icon color --hmenu only --absolute white disables it
-//change menu background color --effects icon background and slide out menu color
-//enable/disable custom app backgrounds
-//download app backgrounds from google play (xml parse)
-//un-hide hidden apps --selective menu
-// enable google icons --uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
+-	RC2 Plans:
+-	auto app organizer using an XML parse of the google store's website.
+-	custom wallpaper for selected app from file, if file exists
+-	forced radial corners on icons
+-	icon backgrounds based on theme color (glass wave effect)
+-	make loading images with loadlist() be offloaded to a secondary async thread?
+-	listview scroll snapping
+-	menu sounds
+-	extra settings:
+-	change font color --absolute white disables it
+-	change icon color --hmenu only --absolute white disables it
+-	change menu background color --effects icon background and slide out menu color
+-	enable/disable custom app backgrounds
+-	download app backgrounds from google play (xml parse)
+-	un-hide hidden apps --selective menu
+-	enable google icons --uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
 
-//RC3 plans:
-//Custom app/menu icons?
-//Widgets in the scroll list, or on the side?
-//built in music player - Seperate activity for player --seperate activity for background player
-//save custom themes to file for sharing?
+-	RC3 plans:
+-	Custom app/menu icons?
+-	Widgets in the scroll list, or on the side?
+-	built in music player - Seperate activity for player --seperate activity for background player
+-	save custom themes to file for sharing?
 
-//RC4 plans:
-//built in video player. --Built off VLC? - Seperate Activity
-//root checker
-//CPU max clock control for root users
-//max clock control able to be changed per app.
-//Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
+-	RC4 plans:
+-	built in video player. --Built off VLC? - Seperate Activity
+-	root checker
+-	CPU max clock control for root users
+-	max clock control able to be changed per app.
+-	Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
 
 ----
 Legal Stuff
