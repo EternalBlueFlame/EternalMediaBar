@@ -1,5 +1,6 @@
 This source is intended for development of Eternal Media Bar so that users may observe the progress of the program's development, report problems, request features, and even contribute directly to the development.
-<strong>This project requires Android Studio 1.5 or later
+
+<strong>This project requires Android Studio 1.5 or later<br/>
 The application is intended for all android devices 3.0 and later, however currently has only been tested on 5.0 and 4.0 in x86 and ARMv7</strong>
 
 <strong>APK builds will come when RC1 goals are met, and thereafter will be generated after each new feature is added, assuming it appears stable.</strong>
