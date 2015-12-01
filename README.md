@@ -18,7 +18,7 @@ Eternal: I am a hobbyist programmer of over 8 years, I mainly use C# in Unity 3D
 
 Lunar Tales is my protégé, she is the one behind the graphics, whether it's making them directly, or helping me get things just right. Skilled in XHTML/CSS I hope to teach her, through our projects, other programming languages later down the road.
 
-We love to see people contribute to our projects, any and all issues and pull requests will be reviewed, and even if we don't use your submission directly, it may help the project in other ways.
+We love to see people contribute to our projects, any and all issues, pull requests, and ideas will be reviewed, and even if we don't use your submission directly, it may help the project in other ways.
 
 
 <hr>
