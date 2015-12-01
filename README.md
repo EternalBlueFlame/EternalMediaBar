@@ -1,4 +1,8 @@
 This source is intended for development of Eternal Media Bar so that users may observe the progress of the program's development, report problems, request features, and even contribute directly to the development.
+<strong>This project requires Android Studio 1.5 or later
+The application is intended for all android devices 3.0 and later, however currently has only been tested on 5.0 and 4.0 in x86 and ARMv7</strong>
+
+<strong>APK builds will come when RC1 goals are met, and thereafter will be generated after each new feature is added, assuming it appears stable.</strong>
 
 <h2>Contact us</h2>
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
@@ -29,6 +33,7 @@ We love to see people contribute to our projects, any and all issues and pull re
 -	create and add in /the new icons and menu background
 -	make the animation for the slide-out menu.
 -	disable hide apps until RC2 -Done but keeping note for reference.
+-	fix all apps being added to newly installed list when they are already present in any list.
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
