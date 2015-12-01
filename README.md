@@ -17,7 +17,7 @@ Lunar Tales: http://lunar-tales.tumblr.com/
 -	Security of user information takes priority.
 </hr>
 <hr>
-<strong>RC1 Plans:<strong>
+<strong>RC1 Plans:</strong>
 -	create and add in /the new icons and menu background
 -	make the animation for the slide-out menu.
 -	disable hide apps until RC2 -Done but keeping note for refrence.
