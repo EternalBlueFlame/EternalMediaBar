@@ -11,7 +11,7 @@ You may contact us through GitHub via message, Issue report, or by placing an as
 
 Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/ 
 
-Lunar Tales: http://lunar-tales.tumblr.com/
+Lunar Tales: No link available at this time. Just use Eternal as a mediator.
 <hr/>
 <h2> About us</h2>
 Eternal: I am a hobbyist programmer of over 8 years, I mainly use C# in Unity 3D to create games and tools, but I have an Android Launcher project in Java that I try and keep up, alongside working on my other programs. Sometimes a bit on an extrovert, as you will usually see on my blog.
