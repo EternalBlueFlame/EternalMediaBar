@@ -31,10 +31,10 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC1 Plans:</strong>
--	create and add in /the new icons and menu background
+-	fix menu background not disappearing when the menu closes.
 -	make the animation for the slide-out menu.
 -	disable hide apps until RC2 -Done but keeping note for reference.
--	fix all apps being added to newly installed list when they are already present in any list.
+-	fix the detection of uninstalled apps.
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
