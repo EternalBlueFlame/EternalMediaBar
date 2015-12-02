@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//LAST KNOWN GOOD 11/29
+//LAST KNOWN GOOD 12/2
 
 
 public class EternalMediaBar extends Activity {
@@ -239,18 +239,28 @@ public class EternalMediaBar extends Activity {
         AppDetail app = new AppDetail();
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent , 0);
         //copy only the necessary info from each app into a copy of the AppDetail Class
-        for(ResolveInfo ri : availableActivities){
+        for(ResolveInfo ri : availableActivities) {
             AppDetail appri = new AppDetail();
             appri.label = ri.loadLabel(manager);
             appri.name = ri.activityInfo.packageName;
             appri.ismenu = 0;
-            //add the setup App Detail class to the currently installed apps, and if it is not in the previously saved oldapps variable, add it.
-            //this can be used to check if apps are new. but this is a rather fat way of doing it....
-            if (!oldapps.contains(appri)){
-                oldapps.add(appri);
-                if (!saveddata.vlists.get(8).contains(appri)){
-                    saveddata.vlists.get(8).add(appri);
+            appri.icon = null;
+            //check if the app has previously been found
+            boolean fail = false;
+            //check each entry in oldapps
+            for (int i=0; i<oldapps.size();){
+                //in each entry check to see if the app launch intent is the same
+                if (oldapps.get(i).name.equals(appri.name)){
+                    //if one entry is the same set fail to true and break the search
+                    fail=true;
                 }
+                if (fail){break;}
+                else{i++;}
+            }
+            //if fail is false, add the app to the newly installed list where the user can organize it, and the old apps list.where we can keep track of it easier.
+            if (!fail) {
+                saveddata.vlists.get(8).add(appri);
+                oldapps.add(appri);
             }
         }
 
@@ -270,17 +280,20 @@ public class EternalMediaBar extends Activity {
 
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
-            for (int iii = 0; iii < oldapps.size(); ) {
-                if (!saveddata.vlists.get(8).contains(oldapps.get(iii))) {
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////// NEEDS TO BE REBUILT BASED ON THE NEW CHECK FOR PREVIOUSLY FOUND APPS //////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+            for (int i = 0; i < oldapps.size(); ) {
+                if (!saveddata.vlists.get(8).contains(oldapps.get(i))) {
                     for (int iv = 0; iv < saveddata.vlists.size(); ) {
-                        if (saveddata.vlists.get(iv).contains(oldapps.get(iii))) {
-                            saveddata.vlists.get(iv).remove(oldapps.get(iii));
+                        if (saveddata.vlists.get(iv).contains(oldapps.get(i))) {
+                            saveddata.vlists.get(iv).remove(oldapps.get(i));
                             iv++;
                         }
                     }
-                    oldapps.remove(iii);
+                    oldapps.remove(i);
                 }
-                iii++;
+                i++;
             }
 
         savefiles();
@@ -300,7 +313,6 @@ public class EternalMediaBar extends Activity {
     //draws the list of apps and categories to screen
     public void loadListView(final List<AppDetail> appslist){
         manager = getPackageManager();
-        //scale = findViewById(R.id.mainlayout).getResources().getDisplayMetrics().density +0.5f;
 
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         layout.removeAllViews();
@@ -329,7 +341,7 @@ public class EternalMediaBar extends Activity {
 
 
 
-        //EXPERIMENTAL, attempt to copy category method but with a verticle list
+        //copy category method but with a verticle list
         LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
         Vlayout.removeAllViews();
         for (int ii=0; ii<appslist.size();) {
