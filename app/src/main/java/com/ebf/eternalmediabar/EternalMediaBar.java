@@ -283,29 +283,25 @@ public class EternalMediaBar extends Activity {
 
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////// NEEDS TO BE REBUILT BASED ON THE NEW CHECK FOR PREVIOUSLY FOUND APPS //////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////
+            //for every item in oldapps
             for(int i=0; i<oldapps.size();){
+                //if oldapps has an entry that is not contained in newapps
 				if (!newapps.contains(oldapps.get(i).name)){
 					//remove all entries of the app from the launcher
-				}
-			}
-		
-		/*
-		for (int i = 0; i < oldapps.size(); ) {
-                if (!saveddata.vlists.get(8).contains(oldapps.get(i))) {
-                    for (int iv = 0; iv < saveddata.vlists.size(); ) {
-                        if (saveddata.vlists.get(iv).contains(oldapps.get(i))) {
-                            saveddata.vlists.get(iv).remove(oldapps.get(i));
-                            iv++;
+                    //do for each list
+                    for (int ii=0; ii < saveddata.vlists.size();){
+                        //search each list entry
+                        for(int iii=0; iii< saveddata.vlists.get(ii).size();){
+                            if (saveddata.vlists.get(ii).get(iii).name.equals(oldapps.get(i).name)){
+                                saveddata.vlists.get(ii).remove(iii);
+                            }
                         }
                     }
+                    //now finally remove it from oldapps itself once the rest of the entries are gone
                     oldapps.remove(i);
-                }
-                i++;
-            }
-		*/
+
+				}
+			}
         savefiles();
     }
 
@@ -393,7 +389,7 @@ public class EternalMediaBar extends Activity {
 		if (islaunchable) {
 			EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchintent));
 		} else {
-			if (launchintent == "") {
+			if (launchintent.equals("")) {
 				hitem = (index);
 				loadListView(saveddata.vlists.get(hitem));
 			} else {
@@ -447,13 +443,13 @@ public class EternalMediaBar extends Activity {
 							LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
 							Llayout.removeAllViews();
 							//copy item
-							if (appname == "2") {
+							if (appname.equals("2")) {
 								saveddata.vlists.get(Integer.parseInt(launchintent)).add(saveddata.vlists.get(hitem).get(vitem));
 								savefiles();
 								break;
 							}
 							//move item
-							if (appname == "3") {
+							if (appname.equals("3")) {
 								saveddata.vlists.get(Integer.parseInt(launchintent)).add(saveddata.vlists.get(hitem).get(vitem));
 								saveddata.vlists.get(hitem).remove(vitem);
 								savefiles();
@@ -469,10 +465,10 @@ public class EternalMediaBar extends Activity {
 								}
 								i++;
 							}
-							if (appname == "1" && ii == 1) {
+							if (appname.equals("1") && ii == 1) {
 								//hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
 								saveddata.vlists.get(hitem).remove(vitem);
-							} else if (appname == "1") {
+							} else if (appname.equals("1")) {
 								saveddata.vlists.get(hitem).remove(vitem);
 							}
 							optionsmenu = false;

@@ -34,7 +34,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	fix menu background not disappearing when the menu closes.
 -	make the animation for the slide-out menu.
 -	disable hide apps until RC2 -Done but keeping note for reference.
--	fix the detection of uninstalled apps.
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
