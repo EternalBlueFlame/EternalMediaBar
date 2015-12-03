@@ -232,6 +232,7 @@ public class EternalMediaBar extends Activity {
 
     //load the installed apps and sort them into their proper places on the lists.
     private void loadApps(){
+		List<String> newapps = new ArrayList<String>();
         manager = getPackageManager();
         //get the apps from the intent activity list of resolve info in the host OS.
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -245,6 +246,8 @@ public class EternalMediaBar extends Activity {
             appri.name = ri.activityInfo.packageName;
             appri.ismenu = 0;
             appri.icon = null;
+			//add the app to the list of all new apps to compair against oldapps later.
+			newapps.add(ri.activityInfo.packageName);
             //check if the app has previously been found
             boolean fail = false;
             //check each entry in oldapps
@@ -283,7 +286,14 @@ public class EternalMediaBar extends Activity {
         ////////////////////////////////////////////////////////////////////////////////////////////////
         //////////// NEEDS TO BE REBUILT BASED ON THE NEW CHECK FOR PREVIOUSLY FOUND APPS //////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////
-            for (int i = 0; i < oldapps.size(); ) {
+            for(int i=0; i<oldapps.size();){
+				if (!newapps.contains(oldapps.get(i).name)){
+					//remove all entries of the app from the launcher
+				}
+			}
+		
+		/*
+		for (int i = 0; i < oldapps.size(); ) {
                 if (!saveddata.vlists.get(8).contains(oldapps.get(i))) {
                     for (int iv = 0; iv < saveddata.vlists.size(); ) {
                         if (saveddata.vlists.get(iv).contains(oldapps.get(i))) {
@@ -295,7 +305,7 @@ public class EternalMediaBar extends Activity {
                 }
                 i++;
             }
-
+		*/
         savefiles();
     }
 
