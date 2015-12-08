@@ -31,8 +31,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC1 Plans:</strong>
--	fix menu background not disappearing when the menu closes.
--	make the animation for the slide-out menu.
+-	Cleanup code and double check for errors before release
 -	disable hide apps until RC2 -Done but keeping note for reference.
 </hr>
 <hr>

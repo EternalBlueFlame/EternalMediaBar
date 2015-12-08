@@ -13,12 +13,13 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="0dp"
+        android:layout_width="144dp"
         android:layout_height="match_parent"
         android:id="@+id/optionslist"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/menu_bg" />
+        android:background="@drawable/menu_bg"
+        android:layout_marginRight="-144dp" />
 
     <HorizontalScrollView
         android:id="@+id/categoriesscroll"
