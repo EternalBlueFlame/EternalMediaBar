@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -107,7 +108,21 @@ public class EternalMediaBar extends Activity {
 
         }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (init){
+            //load in the apps
+            loadApps();
+            //make sure vitem isn't out of bounds
+            if (vitem >= saveddata.vlists.get(hitem).size()){
+                vitem = saveddata.vlists.get(hitem).size();
+            }
+            //render everything
+            loadListView(saveddata.vlists.get(hitem));
 
+        }
+    }
 
     public void savefiles(){
         try{
@@ -289,17 +304,18 @@ public class EternalMediaBar extends Activity {
             }
         }
 
-
+        //empty hli first to be sure we dont accidentally make duplicate entries
+        hli.clear();
         //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        hli.add(hmenuloader("Settings", svgLoad(R.drawable.settings_144px )));
-        hli.add(hmenuloader("Extra", svgLoad(R.drawable.extras_144px)));
-        hli.add(hmenuloader("Photo", svgLoad(R.drawable.photo_144px)));
-        hli.add(hmenuloader("Music", svgLoad(R.drawable.music_144px)));
-        hli.add(hmenuloader("Video", svgLoad(R.drawable.video_144px)));
-        hli.add(hmenuloader("Games", svgLoad(R.drawable.games_144px)));
-        hli.add(hmenuloader("Web", svgLoad(R.drawable.web_144px)));
-        hli.add(hmenuloader("Store", svgLoad(R.drawable.shop_144px)));
-        hli.add(hmenuloader("New Apps", svgLoad(R.drawable.new_install_144px)));
+        hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
+        hli.add(createAppDetail(1, "Extra", svgLoad(R.drawable.extras_144px)));
+        hli.add(createAppDetail(1, "Photo", svgLoad(R.drawable.photo_144px)));
+        hli.add(createAppDetail(1, "Music", svgLoad(R.drawable.music_144px)));
+        hli.add(createAppDetail(1, "Video", svgLoad(R.drawable.video_144px)));
+        hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
+        hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
+        hli.add(createAppDetail(1, "Store", svgLoad(R.drawable.shop_144px)));
+        hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
 
 
 
@@ -307,7 +323,9 @@ public class EternalMediaBar extends Activity {
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
             for (int i = 0; i < oldapps.size(); ) {
                 if (!newapps.contains(oldapps.get(i).name)){
+                    //create an instance of the app
                     AppDetail toremove = oldapps.get(i);
+                    //search all lists for it and remove each entry.
                     for (int ii=0; ii< saveddata.vlists.size();){
                         if (saveddata.vlists.get(ii).contains(toremove)){
                             saveddata.vlists.get(ii).remove(toremove);
@@ -341,24 +359,17 @@ public class EternalMediaBar extends Activity {
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         layout.removeAllViews();
         for (int ii=0; (ii-1)<hli.size();) {
-            View child = getLayoutInflater().inflate(R.layout.category_item, null);
+
             //sometimes layout items are null, when null it will fail to add the rest of the contents and just add an empty space instead
+            View child = getLayoutInflater().inflate(R.layout.category_item, null);
             try {
-                ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-                appIcon.setImageDrawable(hli.get(ii - 1).icon);
-                TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                appLabel.setText(hli.get(ii - 1).label);
-                if (ii==hitem +1) {
+                child = createMenuEntry(R.layout.category_item, hli.get(ii - 1).label, hli.get(ii - 1).icon, ii - 1, 0, false, "", "");
+                if (ii == hitem + 1) {
                     TextView appLabelGlow = (TextView) child.findViewById(R.id.item_app_label_glow);
-                    appLabelGlow.setText(hli.get(ii -1).label);
+                    appLabelGlow.setText(hli.get(ii - 1).label);
                 }
-                child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(this, R.anim.textglow));
-                Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-                //if its the selected, make its click function start the app
-                listenupdown(appbutton, ii -1, 0, false, "", "");
             }
             catch(Exception e){}
-
             layout.addView(child);
             ii++;
         }
@@ -369,32 +380,14 @@ public class EternalMediaBar extends Activity {
         LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
         Vlayout.removeAllViews();
         for (int ii=0; ii<appslist.size();) {
-            View child = getLayoutInflater().inflate(R.layout.list_item, null);
-            ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-            try {
-                appIcon.setImageDrawable(manager.getApplicationIcon(appslist.get(ii).name));
-            }
-            catch(Exception e){appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));}
-            TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-            appLabel.setText(appslist.get(ii).label);
-
+            View child = createMenuEntry(R.layout.list_item, appslist.get(ii).label, null, ii, 0, true, appslist.get(ii).name, (String) appslist.get(ii).label);
             if (ii==vitem) {
                 TextView appLabelGlow = (TextView) child.findViewById(R.id.item_app_label_glow);
                 appLabelGlow.setText(appslist.get(ii).label);
             }
-
-            Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-            //if its the selected, make its click function start the app
-            listenupdown(appbutton, ii, 0, true, appslist.get(ii).name, (String)appslist.get(ii).label);
-            //after all is said and done add the item whether its blank or not
             Vlayout.addView(child);
             ii++;
         }
-        try{
-            Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(this, R.anim.textglow));
-        }
-        catch (Exception e){}
-
     }
 
 
@@ -451,24 +444,35 @@ public class EternalMediaBar extends Activity {
                         LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
                         Llayout.removeAllViews();
                         int optii = 0;
-                        View child = getLayoutInflater().inflate(R.layout.options_header, null);
-                        TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                        ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-                        try {
-                            appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
-                        } catch (Exception e) {
-                            appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
-                        }
-                        appLabel.setText(appname);
-                        Button appbutton = (Button) child.findViewById(R.id.item_app_button);
+                        //View child = getLayoutInflater().inflate(R.layout.options_header, null);
+                        View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
+                        //TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
+                        //ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
+                        //try {
+                        //    appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
+                        //} catch (Exception e) {
+                        //    appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
+                        //}
+                        //appLabel.setText(appname);
+                        //Button appbutton = (Button) child.findViewById(R.id.item_app_button);
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
                         Llayout.addView(child);
                         optii++;
 
                         for (; optii <= 8; ) {
                             if (optii - 1 != hitem)
                                 child = getLayoutInflater().inflate(R.layout.options_item, null);
-                            appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                            appbutton = (Button) child.findViewById(R.id.item_app_button);
+                            TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
+                            Button appbutton = (Button) child.findViewById(R.id.item_app_button);
 
                             appLabel.setText("Copy to " + hli.get(optii - 1).label);
                             listenupdown(appbutton, 2, optii -1, false, ".", "2");
@@ -560,6 +564,9 @@ public class EternalMediaBar extends Activity {
                         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + Uri.parse(launchintent)));
                         startActivity(intent);
+                    }
+                    case 5: {
+                        //do nothing
                     }
 				}
 			}
@@ -688,12 +695,47 @@ public class EternalMediaBar extends Activity {
 
 
 
-    //call function for asigning categories to the horizontal menu
-    public AppDetail hmenuloader (String name, Drawable icon){
+    //call function for creating app detail entries, usually for menus
+    public AppDetail createAppDetail (int ismenu, String name, @Nullable Drawable icon){
         AppDetail app = new AppDetail();
-        app.ismenu = 1;
+        app.ismenu = ismenu;
         app.label = (CharSequence) name;
-        app.icon = icon;
+        if (icon!=null) {
+            app.icon = icon;
+        }
+        else{
+            app.icon=getResources().getDrawable(R.drawable.error_144px);
+        }
         return app;
+    }
+
+    //call function for drawing menu entries
+    public View createMenuEntry(int inflater, CharSequence text, @Nullable Drawable icon, int index, int secondaryIndex, Boolean isLaunchable, String launchintent, String appname){
+        View child = getLayoutInflater().inflate(inflater, null);
+        TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
+        appLabel.setText(text);
+        child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
+        ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
+        if (launchintent!="") {
+            try {
+                //null icon or a new blank one will be blank, invalid icons will show up as exclimations
+                appIcon.setImageDrawable(manager.getApplicationIcon(launchintent));
+            } catch (Exception e) {
+                appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
+            }
+        }
+        else{
+            try {
+                //null icon or a new blank one will be blank, invalid icons will show up as exclimations
+                appIcon.setImageDrawable(icon);
+            } catch (Exception e) {
+                appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
+            }
+        }
+
+        Button appbutton = (Button) child.findViewById(R.id.item_app_button);
+        //if the launch intent isn't null, and its clicked/tapped, make its click function start the app
+            listenupdown(appbutton, index, secondaryIndex, isLaunchable, launchintent, appname);
+        return child;
     }
 }
