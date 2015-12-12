@@ -12,8 +12,6 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="52dp" />
 
-
-
     <TextView
         android:id="@+id/item_app_label"
         android:layout_width="match_parent"
@@ -23,6 +21,27 @@
         android:layout_below="@+id/item_app_icon"
         android:gravity="center_horizontal"
         android:layout_marginLeft="0dp"/>
+
+    <TextView
+        android:id="@+id/item_app_label_glow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:textColor="#ffffffff"
+        android:alpha="1"
+        android:shadowRadius="5"
+        android:shadowColor="#ffffff"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/item_app_button"
+        android:layout_width="144dp"
+        android:layout_height="48dp"
+        android:alpha="0"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:clickable="true" />
 
 
 </RelativeLayout>

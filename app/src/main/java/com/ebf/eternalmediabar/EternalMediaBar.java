@@ -19,7 +19,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.FileInputStream;
@@ -30,17 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//LAST KNOWN GOOD 12/9
+//LAST KNOWN GOOD 12/12
 
 
 public class EternalMediaBar extends Activity {
 
-    //list and hlist are never used but for some odd reason need to be present for it to render.
-    private ListView list;
-    private LinearLayout hlist;
     private PackageManager manager;
-    private List<AppDetail> oldapps = new ArrayList<AppDetail>();
-    private List<AppDetail> hli = new ArrayList<AppDetail>();
+    private List<AppDetail> oldapps = new ArrayList<>();
+    private List<AppDetail> hli = new ArrayList<>();
     private settingsClass saveddata = new settingsClass();
 
     public int hitem = 0;
@@ -182,7 +178,6 @@ public class EternalMediaBar extends Activity {
             //event for when enter/x/a is pressed
 			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_DPAD_CENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
                 if (!optionsmenu) {
-                    //onEnter(0, 0, true, saveddata.vlists.get(hitem).get(vitem).name, saveddata.vlists.get(hitem).get(vitem).label);
                     //get the layout
                     LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
@@ -190,7 +185,7 @@ public class EternalMediaBar extends Activity {
                 }
                 else{
                     //get the layout
-                    LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                    LinearLayout Llayout = (LinearLayout)findViewById(R.id.optionslist);
                     //get the item in the layout and activate its button function
                     Llayout.getChildAt(optionVitem).findViewById(R.id.item_app_button).performClick();
                 }
@@ -270,11 +265,10 @@ public class EternalMediaBar extends Activity {
     //load the installed apps and sort them into their proper places on the lists.
     private void loadApps(){
         manager = getPackageManager();
-        List<String> newapps = new ArrayList<String>();
+        List<String> newapps = new ArrayList<>();
         //get the apps from the intent activity list of resolve info in the host OS.
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        AppDetail app = new AppDetail();
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent , 0);
         //copy only the necessary info from each app into a copy of the AppDetail Class
         for(ResolveInfo ri : availableActivities) {
@@ -420,8 +414,7 @@ public class EternalMediaBar extends Activity {
                         //now move the menu itself
                         Llayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                             @Override
-                            public void onAnimationStart(Animation animation) {
-                            }
+                            public void onAnimationStart(Animation animation) {}
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
@@ -432,8 +425,7 @@ public class EternalMediaBar extends Activity {
                             }
 
                             @Override
-                            public void onAnimationRepeat(Animation animation) {
-                            }
+                            public void onAnimationRepeat(Animation animation) {}
                         });
                         //save just to be sure.
                         savefiles();
@@ -444,59 +436,50 @@ public class EternalMediaBar extends Activity {
                         LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
                         Llayout.removeAllViews();
                         int optii = 0;
-                        //View child = getLayoutInflater().inflate(R.layout.options_header, null);
                         View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
-                        //TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                        //ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-                        //try {
-                        //    appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
-                        //} catch (Exception e) {
-                        //    appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
-                        //}
-                        //appLabel.setText(appname);
-                        //Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
                         Llayout.addView(child);
                         optii++;
 
-                        for (; optii <= 8; ) {
-                            if (optii - 1 != hitem)
-                                child = getLayoutInflater().inflate(R.layout.options_item, null);
-                            TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                            Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-
-                            appLabel.setText("Copy to " + hli.get(optii - 1).label);
-                            listenupdown(appbutton, 2, optii -1, false, ".", "2");
-                            child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-                            Llayout.addView(child);
+                        for (; optii <= saveddata.vlists.size(); ) {
+                            if (optii - 1 != hitem) {
+                                child = createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii - 1).label, null, 3, optii - 1, false, ".", "3");
+                                Llayout.addView(child);
+                            }
                             optii++;
                         }
-
                         optionVitem = 1;
-                        TextView appLabelGlow = (TextView) Llayout.getChildAt(1).findViewById(R.id.item_app_label_glow);
-                        appLabelGlow.setText(((TextView) Llayout.getChildAt(1).findViewById(R.id.item_app_label)).getText());
                         break;
                     }
-					case 2: {
+                    case 2: {
+                        //move item list
+                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                        Llayout.removeAllViews();
+                        int optii = 0;
+                        View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
+                        Llayout.addView(child);
+                        optii++;
+
+                        for (; optii <= saveddata.vlists.size(); ) {
+                            if (optii - 1 != hitem) {
+                                child = createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii - 1).label, null, 3, optii - 1, false, ".", "3");
+                                Llayout.addView(child);
+                            }
+                            optii++;
+                        }
+                        optionVitem = 1;
+                        break;
+                    }
+					case 3: {
                         LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
                         Llayout.removeAllViews();
                         //copy item
-                        if (appname == "2") {
+                        if (appname.equals("2")) {
                             saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
                             onEnter(0,0,false,".",".");
                             break;
                         }
                         //move item
-                        if (appname == "3") {
+                        if (appname.equals("3")) {
                             saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
                             saveddata.vlists.get(hitem).remove(vitem);
                             onEnter(0,0,false,".",".");
@@ -505,58 +488,24 @@ public class EternalMediaBar extends Activity {
                         }
 
                         //remove/hide item
-                        int ii = 0;
-                        for (int i = 0; i <= saveddata.vlists.size(); ) {
-                            if (saveddata.vlists.get(i).contains(saveddata.vlists.get(hitem).get(vitem))) {
-                                ii++;
+                        if (appname.equals("4")){
+                            int ii = 0;
+                            for (int i = 0; i <= saveddata.vlists.size(); ) {
+                                if (saveddata.vlists.get(i).contains(saveddata.vlists.get(hitem).get(vitem))) {
+                                    ii++;
+                                }
+                                i++;
                             }
-                            i++;
+                            if (appname.equals("1") && ii == 1) {
+                                //hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
+                                saveddata.vlists.get(hitem).remove(vitem);
+                            } else if (appname.equals("1")) {
+                                saveddata.vlists.get(hitem).remove(vitem);
+                            }
+                            //resize the layout and save, later this should probably be an animation or something.
+                            onEnter(0,0,false,"","");
+                            break;
                         }
-                        if (appname == "1" && ii == 1) {
-                            //hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
-                            saveddata.vlists.get(hitem).remove(vitem);
-                        } else if (appname == "1") {
-                            saveddata.vlists.get(hitem).remove(vitem);
-                        }
-                        //resize the layout and save, later this should probably be an animation or something.
-                        onEnter(0,0,false,"","");
-                        break;
-                    }
-					case 3: {
-                        //move item list
-                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        Llayout.removeAllViews();
-                        int optii = 0;
-                        View child = getLayoutInflater().inflate(R.layout.options_header, null);
-                        TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                        ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-                        try {
-                            appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
-                        } catch (Exception e) {
-                            appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
-                        }
-                        appLabel.setText(appname);
-                        Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-                        Llayout.addView(child);
-                        optii++;
-
-                        for (; optii <= 8; ) {
-                            if (optii - 1 != hitem)
-                                child = getLayoutInflater().inflate(R.layout.options_item, null);
-                            appLabel = (TextView) child.findViewById(R.id.item_app_label);
-                            appbutton = (Button) child.findViewById(R.id.item_app_button);
-
-                            appLabel.setText("Move to " + hli.get(optii - 1).label);
-                            listenupdown(appbutton, 2, optii -1, false, ".", "3");
-                            child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-                            Llayout.addView(child);
-                            optii++;
-                        }
-                        optionVitem = 1;
-                        TextView appLabelGlow = (TextView) Llayout.getChildAt(1).findViewById(R.id.item_app_label_glow);
-                        appLabelGlow.setText(((TextView) Llayout.getChildAt(1).findViewById(R.id.item_app_label)).getText());
-                        Llayout.getChildAt(1).findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-                        break;
                     }
 					case 4: {
                         //open application settings
@@ -612,61 +561,28 @@ public class EternalMediaBar extends Activity {
 
 
             //add the app thats selected so the user knows for sure what they are messing with.
-            View child = getLayoutInflater().inflate(R.layout.options_header, null);
-            TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-            ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-            try {
-                appIcon.setImageDrawable(getPackageManager().getApplicationIcon(launchintent));
-            } catch (Exception e) {
-                appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
-            }
-            appLabel.setText(appname);
+            View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
             Llayout.addView(child);
 
 
             //add all the extra options
             //first option is to remove or hide an item, this option is ironically hidden until work starts on RC2
             /*
-             child = getLayoutInflater().inflate(R.layout.options_item, null);
-             appLabel = (TextView) child.findViewById(R.id.item_app_label);
-             appLabel.setText("Remove/Hide");
-             Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-             TextView appLabelGlow = (TextView) child.findViewById(R.id.item_app_label_glow);
-             appLabelGlow.setText("Remove/Hide");
-             //if its the selected, make its click function start the app
-             listenupdown(appbutton, 2, 0, false, launchintent, appname);
-             child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
+            child = createMenuEntry(R.layout.options_item, "Remove/Hide...", null, 2, 0, false, launchintent, "4);
              Llayout.addView(child);
              */
 
             //copy the item to another category
-            child = getLayoutInflater().inflate(R.layout.options_item, null);
-            appLabel = (TextView) child.findViewById(R.id.item_app_label);
-            appLabel.setText("Copy to...");
-            child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-            Button appbutton = (Button) child.findViewById(R.id.item_app_button);
-            //if its the selected, make its click function start the app
-            listenupdown(appbutton, 1, 0, false, launchintent, appname);
+            child = createMenuEntry(R.layout.options_item, "Copy to...", null, 1, 0, false, launchintent, appname);
             Llayout.addView(child);
 
             //move the item to another category
-            child = getLayoutInflater().inflate(R.layout.options_item, null);
-            appLabel = (TextView) child.findViewById(R.id.item_app_label);
-            appLabel.setText("Move to...");
-            child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-            appbutton = (Button) child.findViewById(R.id.item_app_button);
-            //if its the selected, make its click function start the app
-            listenupdown(appbutton, 3, 0, false, launchintent, appname);
+            child = createMenuEntry(R.layout.options_item, "Move to...", null, 2, 0, false, launchintent, appname);
             Llayout.addView(child);
 
             //open the app's settings
-            child = getLayoutInflater().inflate(R.layout.options_item, null);
-            appLabel = (TextView) child.findViewById(R.id.item_app_label);
-            appLabel.setText("Application Settings");
-            child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-            appbutton = (Button) child.findViewById(R.id.item_app_button);
-            //if its the selected, make its click function start the app
-            listenupdown(appbutton, 4, 0, false, launchintent, appname);
+
+            child = createMenuEntry(R.layout.options_item, "Application Settings", null, 4, 0, false, launchintent, appname);
             Llayout.addView(child);
 
         }
@@ -699,7 +615,7 @@ public class EternalMediaBar extends Activity {
     public AppDetail createAppDetail (int ismenu, String name, @Nullable Drawable icon){
         AppDetail app = new AppDetail();
         app.ismenu = ismenu;
-        app.label = (CharSequence) name;
+        app.label = name;
         if (icon!=null) {
             app.icon = icon;
         }
@@ -711,31 +627,38 @@ public class EternalMediaBar extends Activity {
 
     //call function for drawing menu entries
     public View createMenuEntry(int inflater, CharSequence text, @Nullable Drawable icon, int index, int secondaryIndex, Boolean isLaunchable, String launchintent, String appname){
+        //ilitialize the views we know will be there
         View child = getLayoutInflater().inflate(inflater, null);
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
         appLabel.setText(text);
         child.findViewById(R.id.item_app_label_glow).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
-        ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-        if (launchintent!="") {
+        //if the launch intent exists try and add an icon from it
+        if (launchintent.length()>1) {
             try {
-                //null icon or a new blank one will be blank, invalid icons will show up as exclimations
-                appIcon.setImageDrawable(manager.getApplicationIcon(launchintent));
-            } catch (Exception e) {
-                appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
+                //if it's an options menu item the image view will fail and skip this
+                ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
+
+                try {
+                    //attempt to add the icon from the launchintent
+                    //null icon or a new blank one will be blank, invalid icons will show up as exclimations
+                    appIcon.setImageDrawable(manager.getApplicationIcon(launchintent));
+                } catch (Exception e) {
+                    //if it fails add the error icon in it's place
+                    appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
+                }
             }
+            catch (Exception e){}
         }
         else{
             try {
-                //null icon or a new blank one will be blank, invalid icons will show up as exclimations
+                //try to load pre-designated icon, only for bundeled icons.
+                ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
                 appIcon.setImageDrawable(icon);
-            } catch (Exception e) {
-                appIcon.setImageDrawable(getResources().getDrawable(R.drawable.error_144px));
-            }
+            } catch (Exception e) {}
         }
 
-        Button appbutton = (Button) child.findViewById(R.id.item_app_button);
         //if the launch intent isn't null, and its clicked/tapped, make its click function start the app
-            listenupdown(appbutton, index, secondaryIndex, isLaunchable, launchintent, appname);
+            listenupdown((Button) child.findViewById(R.id.item_app_button), index, secondaryIndex, isLaunchable, launchintent, appname);
         return child;
     }
 }
