@@ -397,14 +397,16 @@ public class EternalMediaBar extends Activity {
 				hitem = (index);
 				loadListView(saveddata.vlists.get(hitem));
 			} else {
+                //initialize the variables for the list ahead of time
+                final LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                Llayout.removeAllViews();
+                int optii = 0;
+                //choose which list to make dependant on the values given for the call.
 				switch (index) {
 					case 0: {
                         //do nothing/close and save settings
                         optionsmenu = false;
                         optionVitem=1;
-                        final LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        //remove all items in menu
-                        Llayout.removeAllViews();
                         //animate menu closing
                         TranslateAnimation anim = new TranslateAnimation(0,(144 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
                         anim.setDuration(200);
@@ -433,10 +435,7 @@ public class EternalMediaBar extends Activity {
 						}
 					case 1: {
                         //Copy Item List
-                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        Llayout.removeAllViews();
-                        int optii = 0;
-                        View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
+                        View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchintent, "");
                         Llayout.addView(child);
                         optii++;
 
@@ -452,16 +451,13 @@ public class EternalMediaBar extends Activity {
                     }
                     case 2: {
                         //move item list
-                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        Llayout.removeAllViews();
-                        int optii = 0;
-                        View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
+                        View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchintent, "");
                         Llayout.addView(child);
                         optii++;
 
                         for (; optii <= saveddata.vlists.size(); ) {
                             if (optii - 1 != hitem) {
-                                child = createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii - 1).label, null, 3, optii - 1, false, ".", "3");
+                                child = createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii - 1).label, null, 4, optii - 1, false, ".", "");
                                 Llayout.addView(child);
                             }
                             optii++;
@@ -469,52 +465,47 @@ public class EternalMediaBar extends Activity {
                         optionVitem = 1;
                         break;
                     }
-					case 3: {
-                        LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        Llayout.removeAllViews();
+                    case 3:{
                         //copy item
-                        if (appname.equals("2")) {
-                            saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
-                            onEnter(0,0,false,".",".");
-                            break;
-                        }
-                        //move item
-                        if (appname.equals("3")) {
-                            saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
-                            saveddata.vlists.get(hitem).remove(vitem);
-                            onEnter(0,0,false,".",".");
-                            loadListView(saveddata.vlists.get(hitem));
-                            break;
-                        }
-
-                        //remove/hide item
-                        if (appname.equals("4")){
-                            int ii = 0;
-                            for (int i = 0; i <= saveddata.vlists.size(); ) {
-                                if (saveddata.vlists.get(i).contains(saveddata.vlists.get(hitem).get(vitem))) {
-                                    ii++;
-                                }
-                                i++;
-                            }
-                            if (appname.equals("1") && ii == 1) {
-                                //hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
-                                saveddata.vlists.get(hitem).remove(vitem);
-                            } else if (appname.equals("1")) {
-                                saveddata.vlists.get(hitem).remove(vitem);
-                            }
-                            //resize the layout and save, later this should probably be an animation or something.
-                            onEnter(0,0,false,"","");
-                            break;
-                        }
+                        saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
+                        onEnter(0, 0, false, ".", ".");
+                        break;
                     }
-					case 4: {
+                    case 4:{
+                        //move item
+                        saveddata.vlists.get(secondaryIndex).add(saveddata.vlists.get(hitem).get(vitem));
+                        saveddata.vlists.get(hitem).remove(vitem);
+                        onEnter(0,0,false,".",".");
+                        loadListView(saveddata.vlists.get(hitem));
+                        break;
+                    }
+					case 5: {
+                        //remove/hide item
+                        int ii = 0;
+                        for (int i = 0; i <= saveddata.vlists.size(); ) {
+                            if (saveddata.vlists.get(i).contains(saveddata.vlists.get(hitem).get(vitem))) {
+                                ii++;
+                            }
+                            i++;
+                        }
+                        if (appname.equals("1") && ii == 1) {
+                            //hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
+                            saveddata.vlists.get(hitem).remove(vitem);
+                        } else if (appname.equals("1")) {
+                            saveddata.vlists.get(hitem).remove(vitem);
+                        }
+                        //resize the layout and save, later this should probably be an animation or something.
+                        onEnter(0,0,false,"","");
+                        break;
+                    }
+					case 6: {
                         //open application settings
                         Intent intent = new Intent();
                         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + Uri.parse(launchintent)));
                         startActivity(intent);
                     }
-                    case 5: {
+                    case 7: {
                         //do nothing
                     }
 				}
@@ -561,14 +552,14 @@ public class EternalMediaBar extends Activity {
 
 
             //add the app thats selected so the user knows for sure what they are messing with.
-            View child = createMenuEntry(R.layout.options_header, appname, null, 5, 0, false, launchintent, "");
+            View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchintent, "");
             Llayout.addView(child);
 
 
             //add all the extra options
             //first option is to remove or hide an item, this option is ironically hidden until work starts on RC2
             /*
-            child = createMenuEntry(R.layout.options_item, "Remove/Hide...", null, 2, 0, false, launchintent, "4);
+            child = createMenuEntry(R.layout.options_item, "Remove/Hide...", null, 5, 0, false, launchintent, "4);
              Llayout.addView(child);
              */
 
@@ -581,30 +572,10 @@ public class EternalMediaBar extends Activity {
             Llayout.addView(child);
 
             //open the app's settings
-
-            child = createMenuEntry(R.layout.options_item, "Application Settings", null, 4, 0, false, launchintent, appname);
+            child = createMenuEntry(R.layout.options_item, "Application Settings", null, 6, 0, false, launchintent, appname);
             Llayout.addView(child);
 
         }
-    }
-
-    //call function for asigning button functionality on A/X/Enter/left mouse pressed
-    private void listenupdown(Button btn, final int index, final int secondaryIndex, final boolean islaunchable, final String launchintent, final String appname){
-
-        btn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-				onEnter(index, secondaryIndex, islaunchable, launchintent, appname);
-        }
-		});
-
-        btn.setOnLongClickListener(new Button.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                onOptions(index, islaunchable, launchintent, appname);
-				return true;
-            }
-        });
     }
 
 
@@ -626,7 +597,7 @@ public class EternalMediaBar extends Activity {
     }
 
     //call function for drawing menu entries
-    public View createMenuEntry(int inflater, CharSequence text, @Nullable Drawable icon, int index, int secondaryIndex, Boolean isLaunchable, String launchintent, String appname){
+    public View createMenuEntry(int inflater, CharSequence text, @Nullable Drawable icon, final int index, final int secondaryIndex, final Boolean isLaunchable, final String launchintent, final String appname){
         //ilitialize the views we know will be there
         View child = getLayoutInflater().inflate(inflater, null);
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
@@ -657,8 +628,24 @@ public class EternalMediaBar extends Activity {
             } catch (Exception e) {}
         }
 
-        //if the launch intent isn't null, and its clicked/tapped, make its click function start the app
-            listenupdown((Button) child.findViewById(R.id.item_app_button), index, secondaryIndex, isLaunchable, launchintent, appname);
+        //setup the onclick listener and button
+        Button btn = (Button) child.findViewById(R.id.item_app_button);
+        btn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onEnter(index, secondaryIndex, isLaunchable, launchintent, appname);
+            }
+        });
+
+        btn.setOnLongClickListener(new Button.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onOptions(index, isLaunchable, launchintent, appname);
+                return true;
+            }
+        });
+
+        //return the view value
         return child;
     }
 }
