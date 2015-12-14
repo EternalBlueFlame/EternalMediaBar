@@ -213,7 +213,7 @@ public class EternalMediaBar extends Activity {
     }
 
 
-    // NOT YET IMPLEMENTED FUNCTION
+    // function to move when a key or button is pressed, it's much lighter than the usual loadlist function.
     void listmove(int move){
         //function to move the highlight selection based on which menu you are on.
         //if you are not on the options menu
@@ -446,6 +446,12 @@ public class EternalMediaBar extends Activity {
                             }
                             optii++;
                         }
+                        //return to first settings menu
+                        child = createMenuEntry(R.layout.options_item, "Go Back", null, 8, 0, false, launchintent, appname);
+                        Llayout.addView(child);
+                        //close settings menu
+                        child = createMenuEntry(R.layout.options_item, "Exit Options", null, 0, 0, false, launchintent, appname);
+                        Llayout.addView(child);
                         optionVitem = 1;
                         break;
                     }
@@ -462,6 +468,12 @@ public class EternalMediaBar extends Activity {
                             }
                             optii++;
                         }
+                        //return to first settings menu
+                        child = createMenuEntry(R.layout.options_item, "Go Back", null, 8, 0, false, launchintent, appname);
+                        Llayout.addView(child);
+                        //close settings menu
+                        child = createMenuEntry(R.layout.options_item, "Exit Options", null, 0, 0, false, launchintent, appname);
+                        Llayout.addView(child);
                         optionVitem = 1;
                         break;
                     }
@@ -480,21 +492,9 @@ public class EternalMediaBar extends Activity {
                         break;
                     }
 					case 5: {
-                        //remove/hide item
-                        int ii = 0;
-                        for (int i = 0; i <= saveddata.vlists.size(); ) {
-                            if (saveddata.vlists.get(i).contains(saveddata.vlists.get(hitem).get(vitem))) {
-                                ii++;
-                            }
-                            i++;
-                        }
-                        if (appname.equals("1") && ii == 1) {
-                            //hiddenapps.add(saveddata.vlists.get(hitem).get(vitem));
+                        //remove/hide item(vitem);
                             saveddata.vlists.get(hitem).remove(vitem);
-                        } else if (appname.equals("1")) {
-                            saveddata.vlists.get(hitem).remove(vitem);
-                        }
-                        //resize the layout and save, later this should probably be an animation or something.
+                        //resize the layout and save,
                         onEnter(0,0,false,"","");
                         break;
                     }
@@ -507,6 +507,10 @@ public class EternalMediaBar extends Activity {
                     }
                     case 7: {
                         //do nothing
+                    }
+                    case 8: {
+                        //go back to main options menu
+                        onOptions(index, true, launchintent, appname);
                     }
 				}
 			}
@@ -557,11 +561,6 @@ public class EternalMediaBar extends Activity {
 
 
             //add all the extra options
-            //first option is to remove or hide an item, this option is ironically hidden until work starts on RC2
-            /*
-            child = createMenuEntry(R.layout.options_item, "Remove/Hide...", null, 5, 0, false, launchintent, "4);
-             Llayout.addView(child);
-             */
 
             //copy the item to another category
             child = createMenuEntry(R.layout.options_item, "Copy to...", null, 1, 0, false, launchintent, appname);
@@ -571,8 +570,29 @@ public class EternalMediaBar extends Activity {
             child = createMenuEntry(R.layout.options_item, "Move to...", null, 2, 0, false, launchintent, appname);
             Llayout.addView(child);
 
+            //first option is to remove an item from the list.
+            //in RC2 this will be modified to support hiding the icon even when it's only in one menu
+            int i=0;
+            for (int ii=0; ii<saveddata.vlists.size();){
+                for (int iii=0; iii<saveddata.vlists.get(ii).size();){
+                    if (saveddata.vlists.get(ii).get(iii).name.equals(saveddata.vlists.get(hitem).get(vitem).name)){
+                        i++;
+                    }
+                    iii++;
+                }
+                ii++;
+            }
+            if (i>1) {
+                child = createMenuEntry(R.layout.options_item, "Remove From This List", null, 5, 0, false, launchintent, "4");
+                Llayout.addView(child);
+            }
+
             //open the app's settings
             child = createMenuEntry(R.layout.options_item, "Application Settings", null, 6, 0, false, launchintent, appname);
+            Llayout.addView(child);
+
+            //close settings menu
+            child = createMenuEntry(R.layout.options_item, "Exit Options", null, 0, 0, false, launchintent, appname);
             Llayout.addView(child);
 
         }

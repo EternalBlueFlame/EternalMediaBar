@@ -5,6 +5,9 @@ The application is intended for all android devices 3.0 and later, however curre
 
 <strong>APK builds will come when RC1 goals are met, and thereafter will be generated after each new feature is added, assuming it appears stable.</strong>
 
+<strong> UPDATE: </strong>RC1 is complete and ready, but my tablet has bricked this week. It will be at worst 2 more weeks before I can get it upgraded or repaired, so I can do ARM(Neon) testing.
+<br/>I do not want to make any releases until ARM testing has been done.
+
 <h2>Contact us</h2>
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
 You may contact us through GitHub via message, Issue report, or by placing an ask on one of our blogs.
@@ -30,8 +33,8 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	Security of user information takes priority.
 </hr>
 <hr>
-<strong>RC1 Plans:</strong>
--	Cleanup code and double check for errors before release
+<strong>RC1 Plans: DONE</strong>
+-	Cleanup code and double check for errors before release -Need to do ARM(Neon) testing, waiting on my tablet getting repaired or refunded (thank god for warranties). Estimated Wait time is 2 weeks from 12/14/2015.
 -	disable hide apps until RC2 -Done but keeping note for reference.
 </hr>
 <hr>
@@ -40,7 +43,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	custom wallpaper for selected app from file, if file exists
 -	forced radial corners on icons
 -	icon backgrounds based on theme color (glass wave effect)
--	make loading images with loadlist() be offloaded to a secondary async thread?
+-	make loading images be offloaded to a secondary async thread?
 -	listview scroll snapping
 -	menu sounds
 -	extra settings:
