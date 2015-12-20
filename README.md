@@ -39,11 +39,11 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
--	auto app organizer using an XML parse of the google store's website.
--	custom wallpaper for selected app from file, if file exists
+-	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background)
+-	auto app organizer using an XML parse of the google store's website (probably offload to an async task so the progress can be measured and a loading screen can be given to the user).
+-	custom wallpaper for selected app from file, if file exists (use an async task).
 -	forced radial corners on icons
 -	icon backgrounds based on theme color (glass wave effect)
--	make loading images be offloaded to a secondary async thread?
 -	listview scroll snapping
 -	menu sounds
 -	extra settings:
@@ -54,6 +54,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	download app backgrounds from google play (xml parse)
 -	un-hide hidden apps //selective menu
 -	enable google icons //uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
+-	disable app boot animation
 </hr>
 <hr>
 <strong>RC3 plans:</strong>
