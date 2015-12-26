@@ -284,7 +284,7 @@ public class EternalMediaBar extends Activity {
             }
             //if fail is false, add the app to the newly installed list where the user can organize it, and the old apps list.where we can keep track of it easier.
             if (!fail) {
-                saveddata.vLists.get(8).add(appri);
+                saveddata.vLists.get(saveddata.vLists.size()-1).add(appri);
                 oldApps.add(appri);
             }
         }
@@ -295,13 +295,19 @@ public class EternalMediaBar extends Activity {
         hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
         hli.add(createAppDetail(1, "Extra", svgLoad(R.drawable.extras_144px)));
         hli.add(createAppDetail(1, "Photo", svgLoad(R.drawable.photo_144px)));
-        hli.add(createAppDetail(1, "Music", svgLoad(R.drawable.music_144px)));
-        hli.add(createAppDetail(1, "Video", svgLoad(R.drawable.video_144px)));
+        hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
         hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
         hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
+        hli.add(createAppDetail(1, "News & Weather", svgLoad(R.drawable.news_weather_144px)));
         hli.add(createAppDetail(1, "Store", svgLoad(R.drawable.shop_144px)));
-        hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
-
+        if (saveddata.vLists.get(saveddata.vLists.size()-1).size() >0) {
+            hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
+        }
+        else{
+            if (hitem>hli.size()){
+                hitem=hli.size();
+            }
+        }
 
 
 
