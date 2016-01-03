@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class EternalMediaBar extends Activity {
     private boolean optionsmenu = false;
     public int vitem = 0;
     public int optionVitem =1;
+    public boolean[] warningtoggle;
 
 
 
@@ -90,6 +92,11 @@ public class EternalMediaBar extends Activity {
                 loadApps();
                 //render everything
                 loadListView(saveddata.vLists.get(hitem));
+
+                //setup the warning variable
+                warningtoggle= new boolean[1];
+                warningtoggle[0] = false;
+
                 //make sure this doesnt happen again
                 init = true;
             }
@@ -465,6 +472,20 @@ public class EternalMediaBar extends Activity {
                             }
                             optii++;
                         }
+                        //Automatically get the category for this item from google play
+                        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                        if (cm.getActiveNetworkInfo() != null) {
+                            //if there is Wifi, go ahead and try.
+                            if (cm.getActiveNetworkInfo() == cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)) {
+                                child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, optii - 1, false, launchIntent, appname);
+                                Llayout.addView(child);
+                            }
+                            //if there is no wifi but there is still internet
+                            else{
+                                child = createMenuEntry(R.layout.options_item, "Auto Move", null, 10, optii - 1, false, launchIntent, appname);
+                                Llayout.addView(child);
+                            }
+                        }
                         //return to first settings menu
                         child = createMenuEntry(R.layout.options_item, "Go Back", null, 8, 0, false, launchIntent, appname);
                         Llayout.addView(child);
@@ -508,6 +529,23 @@ public class EternalMediaBar extends Activity {
                     case 8: {
                         //go back to main options menu
                         onOptions(index, true, launchIntent, appname);
+                    }
+
+                    case 9:{
+                        //search google play for the app and reorganize this app into the appropriate category
+
+
+                        //display error if app not found
+
+                        //close menu
+
+                    }
+                    case 10:{
+                        //Warn that this action will use #MB of the user's mobile data before searching google play
+
+                        //okay option
+                        //nevermind option
+                        //okay and don't remind me again option; Will set warningtoggle[1] to true;
                     }
 				}
 			}
