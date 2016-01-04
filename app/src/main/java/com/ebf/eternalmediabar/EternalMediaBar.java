@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,7 +23,11 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import com.gc.android.market.api.MarketSession;
+import com.gc.android.market.api.model.Market;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -48,6 +53,7 @@ public class EternalMediaBar extends Activity {
     public int vitem = 0;
     public int optionVitem =1;
     public boolean[] warningtoggle;
+    private boolean foundApp = false;
 
 
 
@@ -532,20 +538,114 @@ public class EternalMediaBar extends Activity {
                     }
 
                     case 9:{
+                        //search for if the app is locally defined first
+                        //if (launchintent == com.google.googleplay || launchintent == com.aptoide.aptoide ||...){
+                        //Move it to store; foundapp = true;}
+                        //else if....{play music, play videos, play games, gallery, photos, }
+                        //else{//use below market search
+
                         //search google play for the app and reorganize this app into the appropriate category
 
+                        //first we make a search request
+                        Market.AppsRequest appsRequest = Market.AppsRequest.newBuilder()
+                                .setQuery(launchIntent)
+                                .setStartIndex(0).setEntriesCount(1)
+                                .setWithExtendedInfo(false)
+                                .build();
 
-                        //display error if app not found
+                        //now we search the store for the app
+                        MarketSession.Callback<Market.AppsResponse> callback = new MarketSession.Callback<Market.AppsResponse>() {
 
-                        //close menu
+                            @Override
+                            public void onResult(Market.ResponseContext context, Market.AppsResponse response) {
 
+                                //using the results, we organize the app as necessary
+                                String appCategory = response.getApp(0).getExtendedInfo().getCategory();
+                                //let's put the results to logcat just so we can be sure what the category results are actually supposed to be.
+                                Log.d("EternalMediaBar", "Searched GooglePlay for: " + appCategory);
+
+
+                                switch (appCategory) {
+
+                                    //WARNING: the case values may not be accurate, need the debug log output to find true values
+
+                                    case "TOOLS": {
+                                        //Move to settings
+                                        saveddata.vLists.get(0).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                    case "GAME":{
+                                        //Move to games
+                                        saveddata.vLists.get(4).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                    case "NEWS_AND_MAGAZINES": case "WEATHER":{
+                                        //Move to news & weather
+                                        saveddata.vLists.get(6).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                    case "COMMUNICATION":{
+                                        //Move to web
+                                        saveddata.vLists.get(5).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                    case "MEDIA_AND_VIDEO":case "MUSIC_AND_AUDIO":{
+                                        //Move to media
+                                        saveddata.vLists.get(3).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                    case "PHOTOGRAPHY":{
+                                        //Move to photo
+                                        saveddata.vLists.get(2).add(saveddata.vLists.get(hitem).get(vitem));
+                                        saveddata.vLists.get(hitem).remove(vitem);
+                                        foundApp = true;
+                                    }
+                                }
+
+                            }
+                        };
+                        //now append the results to a session
+                        MarketSession session = new MarketSession();
+                        session.append(appsRequest, callback);
+                        session.flush();
+
+
+                        //do the below after all the organization attempts
+
+                        //if the app wasint found, display a warning error
+                        if (!foundApp){
+                            //go to the menu that will display the error warning
+                            onEnter(10,1,false,launchIntent,appname);
+                        }
+                        else{
+                            //reload the listview to see the changes.
+                            loadListView(saveddata.vLists.get(hitem));
+                            //set foundApp to false so we can do this all again at some point
+                            foundApp = false;
+                            onEnter(0,0,false,".",".");
+                        }
                     }
                     case 10:{
-                        //Warn that this action will use #MB of the user's mobile data before searching google play
+                        switch (secondaryIndex){
+                            case 0:{
+                                //Warn that this action will use #MB of the user's mobile data before searching google play
 
-                        //okay option
-                        //nevermind option
-                        //okay and don't remind me again option; Will set warningtoggle[1] to true;
+                                //okay option
+                                //nevermind option
+                                //okay and don't remind me again option; Will set warningtoggle[1] to true;
+                            }
+                            case 1:{
+                                //warning that the app wasint found during search
+                                //for now since the app is still in early beta of RC1, let's just send it to the logcat
+                                Log.d("EternalMediaBar", "Couldn't organize app: " + launchIntent);
+                                onEnter(0,0,false,".",".");
+                            }
+                        }
                     }
 				}
 			}
