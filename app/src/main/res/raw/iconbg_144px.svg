@@ -1,0 +1,32 @@
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="144" width="144" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 144 144" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<defs>
+<filter id="b" style="color-interpolation-filters:sRGB" height="1.4" width="1.4" y="-.2" x="-.2">
+<feGaussianBlur stdDeviation="2" result="blur1" in="SourceAlpha"/>
+<feComposite operator="out" result="composite1" in2="blur1" in="SourceGraphic"/>
+<feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1 " result="colormatrix1"/>
+<feGaussianBlur stdDeviation="0.5" result="blur2"/>
+<feComposite operator="in" result="composite2" in2="blur2" in="blur2"/>
+<feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 50 -5 " result="colormatrix2"/>
+<feGaussianBlur stdDeviation="1" result="blur3"/>
+<feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 5 -1 " result="colormatrix3"/>
+<feFlood result="flood" flood-color="rgb(0,0,0)"/>
+<feComposite in2="colormatrix3" k2="1" result="composite3" in="flood" operator="in"/>
+<feComposite operator="out" result="composite4" in2="colormatrix3" in="composite3"/>
+<feComposite in2="composite3" k3="1" k2="1" result="composite5" in="composite4" operator="arithmetic"/>
+</filter>
+<linearGradient id="a" y2="1015.5" gradientUnits="userSpaceOnUse" x2="72.226" gradientTransform="matrix(1.0201 0 0 .49468 -1.8235 458.29)" y1="907.96" x1="71.216">
+<stop offset="0"/>
+<stop stop-opacity="0" offset="1"/>
+</linearGradient>
+</defs>
+<g>
+<rect transform="translate(0 -908.36)" stroke-opacity=".19797" ry="25.254" height="142.94" width="142.94" stroke="#000" y="908.92" x=".50508" fill="#33b5e5"/>
+</g>
+<g transform="translate(0 -908.36)">
+<ellipse rx="68.059" ry="34.471" cy="970.41" cx="91.293" fill="none"/>
+<ellipse rx="70.584" ry="23.486" cy="931.65" cx="71.595" fill="url(#a)"/>
+</g>
+<g>
+<rect transform="matrix(.98739 0 0 .98739 .65856 2.155)" ry="25.254" height="142.94" filter="url(#b)" width="142.94" y="-.70435" x=".75762"/>
+</g>
+</svg>

@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:textColor="#ffffffff"
-        android:alpha="1"
         android:shadowRadius="5"
         android:shadowColor="#ffffff"
         android:layout_marginTop="10dp" />

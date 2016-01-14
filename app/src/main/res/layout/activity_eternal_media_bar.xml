@@ -19,7 +19,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/menu_bg"
-        android:layout_marginRight="-144dp" />
+        android:layout_marginRight="-144dp"
+        android:elevation="2dp" />
 
     <HorizontalScrollView
         android:id="@+id/categoriesscroll"
