@@ -1,17 +1,21 @@
 package com.ebf.eternalmediabar;
 
+import android.graphics.Color;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class settingsClass implements Serializable {
     private static final long serialVersionUID = 0L;
-    int iconCol;
-    int menuCol;
-    int fontCol;
+    Color iconCol;
+    Color menuCol;
+    Color fontCol;
     boolean cleanCacheOnStart;
     boolean loadAppBG;
     boolean gamingMode;
+    boolean useGoogleIcons;
+    boolean useManufacturerIcons;
     List<AppDetail> oldApps;
     List<AppDetail> hiddenApps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();

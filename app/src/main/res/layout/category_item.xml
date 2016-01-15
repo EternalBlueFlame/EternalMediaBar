@@ -13,13 +13,6 @@
         android:layout_marginLeft="24dp"
         android:elevation="1dp" />
 
-    <ImageView
-        android:id="@+id/item_app_icon_bg"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="24dp" />
-
     <TextView
         android:id="@+id/item_app_label"
         android:layout_width="96dp"
@@ -27,18 +20,6 @@
         android:textColor="#ffffffff"
         android:layout_marginTop="44dp"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="0dp" />
-
-    <TextView
-        android:id="@+id/item_app_label_glow"
-        android:layout_width="96dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:gravity="center_horizontal"
-        android:textColor="#ffffffff"
-        android:alpha="1"
-        android:shadowRadius="5"
-        android:shadowColor="#ffffff"
         android:layout_marginLeft="0dp" />
 
     <Button

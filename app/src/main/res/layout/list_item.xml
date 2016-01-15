@@ -13,39 +13,20 @@
         android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp" />
 
-    <ImageView
-        android:id="@+id/item_app_icon_bg"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentLeft="true"
-        />
-
-
     <TextView
         android:id="@+id/item_app_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/item_app_icon"
-        android:layout_toRightOf="@+id/item_app_icon"
-        android:paddingLeft="10dp"
-        android:textColor="#ffffffff" />
-
-    <TextView
-        android:id="@+id/item_app_label_glow"
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/item_app_icon"
         android:layout_toRightOf="@+id/item_app_icon"
         android:paddingLeft="10dp"
         android:textColor="#ffffffff"
-        android:alpha="1"
-        android:shadowRadius="5"
-        android:shadowColor="#ffffff" />
-
+        android:lines="2"
+        />
 
     <Button
         android:id="@+id/item_app_button"
-        android:layout_width="144dp"
+        android:layout_width="160dp"
         android:layout_height="48dp"
         android:alpha="0"
         android:layout_alignParentTop="false"

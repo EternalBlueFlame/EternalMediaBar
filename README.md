@@ -1,12 +1,12 @@
 This source is intended for development of Eternal Media Bar so that users may observe the progress of the program's development, report problems, request features, and even contribute directly to the development.
 
 <strong>This project requires Android Studio 1.5 or later<br/>
-The application is intended for all android devices 3.0 and later, however currently has only been tested on 5.0 and 4.0 in x86 and ARMv7</strong>
+The application is intended for all android devices 4.0.3 and later, however currently has only been tested on 5.0, 6.0 and 4.0.3 in x86, ARMv7, and ARMv9</strong>
 
-<strong>APK builds will come when RC1 goals are met, and thereafter will be generated after each new feature is added, assuming it appears stable.</strong>
+<strong><h3>WARNING: save files have changed between the Alpha and the Stable build. If you are upgrading from the Alpha build, please clear the data of the app or it will crash.</h3></strong>
+This can be done in your settings menu, under the apps category.
 
-<strong> UPDATE: </strong>RC1 is complete and ready, but my tablet has bricked this week. It will be at worst 2 more weeks before I can get it upgraded or repaired, so I can do ARM(Neon) testing.
-<br/>I do not want to make any releases until ARM testing has been done.
+<strong>APK builds will be generated after each new feature is added, assuming it appears stable.</strong>
 
 <h2>Contact us</h2>
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
@@ -33,43 +33,42 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	Security of user information takes priority.
 </hr>
 <hr>
-<strong>RC1 Plans: DONE</strong>
--	Cleanup code and double check for errors before release -Need to do ARM(Neon) testing, waiting on my tablet getting repaired or refunded (thank god for warranties). Estimated Wait time is 2 weeks from 12/14/2015.
--	disable hide apps until RC2 -Done but keeping note for reference.
-</hr>
-<hr>
 <strong>RC2 Plans:</strong>
--	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background)
+-	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
+-	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background).
 -	auto app organizer using an XML parse of the google store's website (probably offload to an async task so the progress can be measured and a loading screen can be given to the user).
 -	custom wallpaper for selected app from file, if file exists (use an async task).
--	forced radial corners on icons
--	icon backgrounds based on theme color (glass wave effect)
--	listview scroll snapping
--	menu sounds
+-	listview scroll snapping.
+-	menu sounds.
 -	extra settings:
--	change font color //absolute white disables it
--	change icon color //hmenu only //absolute white disables it
--	change menu background color //effects icon background and slide out menu color
--	enable/disable custom app backgrounds
--	download app backgrounds from google play (xml parse)
--	un-hide hidden apps //selective menu
+-	change font color //absolute white disables it.
+-	change icon color //hmenu only //absolute white disables it.
+-	change menu background color //effects icon background and slide out menu color.
+-	enable/disable custom app backgrounds.
+-	download app backgrounds from google play (xml parse).
+-	un-hide hidden apps //selective menu.
 -	enable google icons //uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
--	disable app boot animation
+-	enable manufacturer icons //same as google icons, but instead uses the icons from HTC/Samgsung/Sony/etc apps.
+-	disable app boot animation.
 </hr>
 <hr>
 <strong>RC3 plans:</strong>
--	Custom app/menu icons?
+-	User defined app/menu icons?
 -	Widgets in the scroll list, or on the side?
--	built in music player //Separate activity for player //Separate activity for background player
+-	built in music player //Separate activity for player //Separate activity for background player.
 -	save custom themes to file for sharing?
 </hr>
 <hr>
 <strong>RC4 plans:</strong>
--	built in video player. //Built off VLC? //Separate Activity
--	root checker
--	CPU max clock control for root users
+-	built in video player. //Built off VLC? //Separate Activity.
+-	root checker.
+-	CPU max clock control for root users.
 -	max clock control able to be changed per app.
 -	Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
+<hr/>
+<hr>
+<strong>RC5 plans:</strong>
+-	Optional grid UI.
 <hr/>
 
 

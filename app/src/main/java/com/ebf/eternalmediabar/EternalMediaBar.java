@@ -1,17 +1,14 @@
 package com.ebf.eternalmediabar;
 
 
-import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Interpolator;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,15 +18,12 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.gc.android.market.api.MarketSession;
@@ -44,8 +38,6 @@ import java.util.List;
 
 
 //LAST KNOWN GOOD 1/14
-//ERROR: iconBG doesn't draw.
-//ERROR: Hmenu text glow won't glow. Might be better to replace with a fully encompassing icon anyway
 
 
 public class EternalMediaBar extends Activity {
@@ -234,18 +226,25 @@ public class EternalMediaBar extends Activity {
                 }
 
                 if (proceed) {
-                    //change the old glow
-                    TextView appLabelGlow = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label_glow);
-                    appLabelGlow.setText("");
-                    ImageView appIconBG = (ImageView) Vlayout.getChildAt(hitem).findViewById(R.id.item_app_icon_bg);
-                    appIconBG.setImageDrawable(svgLoad(R.drawable.blank));
+                    //change the old shadow
+                    TextView appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
+                    appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
+                    appLabel.setLines(2);
+                    appLabel.setTypeface(null, Typeface.NORMAL);
+                    ImageView appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1f);
+                    appIcon.setScaleY(1f);
                     //change vitem
                     vitem = move;
-                    //change the new glow
-                    appLabelGlow = (TextView) Vlayout.getChildAt(move).findViewById(R.id.item_app_label_glow);
-                    appLabelGlow.setText(((TextView) Vlayout.getChildAt(move).findViewById(R.id.item_app_label)).getText());
-                    appIconBG = (ImageView) Vlayout.getChildAt(hitem).findViewById(R.id.item_app_icon_bg);
-                    appIconBG.setImageDrawable(svgLoad(R.drawable.iconbg_144px));
+                    //change the new shadow
+                    appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
+                    appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
+                    appLabel.setLines(2);
+                    appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1.25f);
+                    appIcon.setScaleY(1.25f);
+
                     //scroll to the new entry
                     Vlayout.scrollTo((int) Vlayout.getChildAt(vitem).getX(), 0);
 
@@ -269,14 +268,24 @@ public class EternalMediaBar extends Activity {
                 }
 
                 if (proceed) {
-                    //change the old glow
-                    TextView appLabelGlow = (TextView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_label_glow);
-                    appLabelGlow.setText("");
+                    //change the old shadow
+                    TextView appLabel = (TextView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
+                    appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
+                    appLabel.setLines(2);
+                    appLabel.setTypeface(null, Typeface.NORMAL);
+                    ImageView appIcon = (ImageView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1f);
+                    appIcon.setScaleY(1f);
                     //change Optionsvitem
                     optionVitem = move;
-                    //change the new glow
-                    appLabelGlow = (TextView) Vlayout.getChildAt(move).findViewById(R.id.item_app_label_glow);
-                    appLabelGlow.setText(((TextView) Vlayout.getChildAt(move).findViewById(R.id.item_app_label)).getText());
+                    //change the new shadow
+                    appLabel = (TextView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
+                    appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
+                    appLabel.setLines(2);
+                    appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    appIcon = (ImageView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1.25f);
+                    appIcon.setScaleY(1.25f);
                     //scroll to the new entry
                     Vlayout.scrollTo((int) Vlayout.getChildAt(optionVitem).getX(), 0);
                 }
@@ -298,22 +307,20 @@ public class EternalMediaBar extends Activity {
             }
 
             if (proceed) {
-                //change the old glow
-                TextView appLabelGlow = (TextView) Hlayout.getChildAt(hitem).findViewById(R.id.item_app_label_glow);
-                appLabelGlow.setText("");
-                ImageView appIconBG = (ImageView) Hlayout.getChildAt(hitem).findViewById(R.id.item_app_icon_bg);
-                appIconBG.setImageDrawable(svgLoad(R.drawable.blank));
                 //change hitem
                 hitem = move;
                 //reload the list
                 loadListView();
-                //change the new glow
-                appLabelGlow = (TextView) Hlayout.getChildAt(move).findViewById(R.id.item_app_label_glow);
-                appLabelGlow.setText(((TextView) Hlayout.getChildAt(move).findViewById(R.id.item_app_label)).getText());
-                appIconBG = (ImageView) Hlayout.getChildAt(hitem).findViewById(R.id.item_app_icon_bg);
-                appIconBG.setImageDrawable(svgLoad(R.drawable.iconbg_144px));
+                //change the new shadow, because we reload the list first, we don't have to manually reset the previous entry.
+                TextView appLabel = (TextView) Hlayout.getChildAt(move + 1).findViewById(R.id.item_app_label);
+                appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
+                appLabel.setLines(2);
+                appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                ImageView appIcon = (ImageView) Hlayout.getChildAt(hitem+1).findViewById(R.id.item_app_icon);
+                appIcon.setScaleX(1.25f);
+                appIcon.setScaleY(1.25f);
                 //scroll to the new entry
-                Hlayout.scrollTo(0, (int) Hlayout.getChildAt(hitem).getY());
+                Hlayout.scrollTo(0, (int) Hlayout.getChildAt(move).getY());
             }
         }
     }
@@ -431,12 +438,7 @@ public class EternalMediaBar extends Activity {
         LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
         Vlayout.removeAllViews();
         for (int ii=0; ii<saveddata.vLists.get(hitem).size();) {
-            View child = createMenuEntry(R.layout.list_item, saveddata.vLists.get(hitem).get(ii).label, null, ii, 0, true, saveddata.vLists.get(hitem).get(ii).name, (String) saveddata.vLists.get(hitem).get(ii).label);
-            if (ii==vitem) {
-                TextView appLabelGlow = (TextView) child.findViewById(R.id.item_app_label_glow);
-                appLabelGlow.setText(saveddata.vLists.get(hitem).get(ii).label);
-            }
-            Vlayout.addView(child);
+            Vlayout.addView(createMenuEntry(R.layout.list_item, saveddata.vLists.get(hitem).get(ii).label, null, ii, 0, true, saveddata.vLists.get(hitem).get(ii).name, (String) saveddata.vLists.get(hitem).get(ii).label));
             ii++;
         }
     }
@@ -806,8 +808,6 @@ public class EternalMediaBar extends Activity {
         View child = getLayoutInflater().inflate(inflater, null);
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
         appLabel.setText(text);
-        //TextView appGlow = (TextView) child.findViewById(R.id.item_app_label_glow);
-        //appGlow.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.textglow));
         //if the launch intent exists try and add an icon from it
         if (launchIntent.length()>1) {
             //if it's an options menu item the image view will fail and skip this
@@ -843,6 +843,9 @@ public class EternalMediaBar extends Activity {
         btn.setOnLongClickListener(new Button.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                if (optionsmenu){
+                    onEnter(0,0,false,".",".");
+                }
                 onOptions(index, isLaunchable, launchIntent, appname);
                 return true;
             }

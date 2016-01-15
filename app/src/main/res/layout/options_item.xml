@@ -13,17 +13,6 @@
         android:textColor="#ffffffff"
         android:layout_marginTop="10dp" />
 
-    <TextView
-        android:id="@+id/item_app_label_glow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:textColor="#ffffffff"
-        android:shadowRadius="5"
-        android:shadowColor="#ffffff"
-        android:layout_marginTop="10dp" />
-
-
     <Button
         android:id="@+id/item_app_button"
         android:layout_width="144dp"
