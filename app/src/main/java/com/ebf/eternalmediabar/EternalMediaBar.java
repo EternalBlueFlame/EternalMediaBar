@@ -24,6 +24,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.gc.android.market.api.MarketSession;
@@ -456,7 +457,8 @@ public class EternalMediaBar extends Activity {
                 listmove(index, true);
 			} else {
                 //initialize the variables for the list ahead of time
-                final LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
+                LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
                 Llayout.removeAllViews();
                 int optii = 0;
                 //choose which list to make dependant on the values given for the call.
@@ -470,18 +472,19 @@ public class EternalMediaBar extends Activity {
                         anim.setDuration(200);
                         anim.setInterpolator(new LinearInterpolator());
                         anim.setFillEnabled(false);
-                        Llayout.setAnimation(anim);
+                        Slayout.setAnimation(anim);
                         //now move the menu itself
-                        Llayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+                        Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {}
 
                             @Override
                             public void onAnimationEnd(Animation animation) {
+                                ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
                                 // clear animation to prevent flicker
-                                Llayout.clearAnimation();
+                                Slayout.clearAnimation();
                                 //manually set position of menu off screen
-                                Llayout.setX(getResources().getDisplayMetrics().widthPixels);
+                                Slayout.setX(getResources().getDisplayMetrics().widthPixels);
                             }
 
                             @Override
@@ -717,27 +720,29 @@ public class EternalMediaBar extends Activity {
 			optionVitem = 1;
             //load the layout and make sure nothing is in it.
 			//loadListView();
-			final LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
+            ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
+            LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
 			Llayout.removeAllViews();
             //reset the position
-            Llayout.setX(getResources().getDisplayMetrics().widthPixels);
+            Slayout.setX(getResources().getDisplayMetrics().widthPixels);
             //animate the menu opening
             TranslateAnimation anim = new TranslateAnimation(0,-(144 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
             anim.setDuration(200);
             anim.setInterpolator(new LinearInterpolator());
             anim.setFillEnabled(false);
-            Llayout.setAnimation(anim);
+            Slayout.setAnimation(anim);
             //now move the menu itself
-            Llayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+            Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {}
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
                     // clear animation to prevent flicker
-                    Llayout.clearAnimation();
+                    Slayout.clearAnimation();
                     //manually set position of menu
-                    Llayout.setX(getResources().getDisplayMetrics().widthPixels-(144 * getResources().getDisplayMetrics().density + 0.5f));
+                    Slayout.setX(getResources().getDisplayMetrics().widthPixels-(144 * getResources().getDisplayMetrics().density + 0.5f));
                 }
 
                 @Override

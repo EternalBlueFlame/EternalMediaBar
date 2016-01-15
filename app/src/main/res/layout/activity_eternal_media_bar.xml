@@ -11,16 +11,28 @@
         android:id="@+id/backgroundview"
         android:contentDescription="@string/nullicon" />
 
-    <LinearLayout
+    <ScrollView
         android:orientation="vertical"
         android:layout_width="144dp"
-        android:layout_height="match_parent"
-        android:id="@+id/optionslist"
+        android:id="@+id/options_displayscroll"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/menu_bg"
         android:layout_marginRight="-144dp"
-        android:elevation="2dp" />
+        android:layout_below="@+id/categoriesscroll"
+        android:layout_height="match_parent"
+        android:background="@drawable/menu_bg"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="144dp"
+            android:layout_height="match_parent"
+            android:id="@+id/optionslist"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:elevation="2dp"
+            android:background="#00ffffff" />
+    </ScrollView>
 
     <HorizontalScrollView
         android:id="@+id/categoriesscroll"
@@ -28,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="84dp"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/optionslist"
+        android:layout_toLeftOf="@+id/options_displayscroll"
         android:layout_alignParentLeft="true">
 
         <LinearLayout

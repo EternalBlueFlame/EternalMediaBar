@@ -61,6 +61,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <hr>
 <strong>RC4 plans:</strong>
 -	built in video player. //Built off VLC? //Separate Activity.
+-	Google Play Release?
 -	root checker.
 -	CPU max clock control for root users.
 -	max clock control able to be changed per app.
