@@ -403,7 +403,7 @@ public class EternalMediaBar extends Activity {
         //empty hli first to be sure we dont accidentally make duplicate entries
         hli.clear();
         //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.photo_144px)));
+        hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
         hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
         hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
         hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
