@@ -3,8 +3,9 @@ This source is intended for development of Eternal Media Bar so that users may o
 <strong>This project requires Android Studio 1.5 or later<br/>
 The application is intended for all android devices 4.0.3 and later, however currently has only been tested on 5.0, 6.0 and 4.0.3 in x86, ARMv7, and ARMv9</strong>
 
-<strong><h3>WARNING: save files have changed between the Alpha and the Stable build. If you are upgrading from the Alpha build, please clear the data of the app or it will crash.</h3></strong>
+<strong><h3>WARNING: save files have changed between every build of RC1. If you are upgrading from a previous build, please clear the data of the app.</h3></strong>
 This can be done in your settings menu, under the apps category.
+Failing to do so will lead to crashing, instability, and/or missing shortcuts.
 
 <strong>APK builds will be generated after each new feature is added, assuming it appears stable.</strong>
 

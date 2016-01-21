@@ -362,24 +362,6 @@ public class EternalMediaBar extends Activity {
             }
         }
 
-        //empty hli first to be sure we dont accidentally make duplicate entries
-        hli.clear();
-        //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
-        hli.add(createAppDetail(1, "Extra", svgLoad(R.drawable.extras_144px)));
-        hli.add(createAppDetail(1, "Photo", svgLoad(R.drawable.photo_144px)));
-        hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
-        hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
-        hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
-        hli.add(createAppDetail(1, "News & Weather", svgLoad(R.drawable.news_weather_144px)));
-        hli.add(createAppDetail(1, "Store", svgLoad(R.drawable.shop_144px)));
-        if (saveddata.vLists.get(saveddata.vLists.size()-1).size() >0) {
-            hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
-        }
-        if (hitem>hli.size()){
-            hitem=hli.size();
-        }
-
 
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
@@ -418,20 +400,31 @@ public class EternalMediaBar extends Activity {
     public void loadListView(){
         manager = getPackageManager();
 
-        LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
-        layout.removeAllViews();
-        for (int ii=0; (ii-1)<=hli.size();) {
-
-            //sometimes layout items are null, when null it will fail to add the rest of the contents and just add an empty space instead
-            //this is used to make the first entry blank
-            View child = getLayoutInflater().inflate(R.layout.category_item, null);
-            try {
-                child = createMenuEntry(R.layout.category_item, hli.get(ii - 1).label, hli.get(ii - 1).icon, ii - 1, 0, false, "", "");
-            }
-            catch(Exception e){}
-            layout.addView(child);
-            ii++;
+        //empty hli first to be sure we dont accidentally make duplicate entries
+        hli.clear();
+        //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
+        hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.photo_144px)));
+        hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
+        hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
+        hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
+        hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));
+        hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
+        if (saveddata.vLists.get(saveddata.vLists.size()-1).size() >0) {
+            hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
         }
+
+        LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
+        //empty the list
+        layout.removeAllViews();
+        //add a blank view to the front
+        layout.addView(createMenuEntry(R.layout.category_item, "", svgLoad(R.drawable.blank), -1, 0, false, "", ""));
+        //loop to add all entries of hli to the list
+        for (int ii=0; (ii)<hli.size();) {
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii ).label, hli.get(ii).icon, ii, 0, false, "", ""));
+        ii++;
+        }
+        //add an empty view to the end of the list
+        layout.addView(createMenuEntry(R.layout.category_item, "", svgLoad(R.drawable.blank), -1, 0, false, "", ""));
 
 
 
@@ -452,10 +445,14 @@ public class EternalMediaBar extends Activity {
 	private void onEnter(final int index, final int secondaryIndex, final boolean islaunchable, final String launchIntent, final String appname){
 		if (islaunchable) {
 			EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
-		} else {
+		}
+        else {
 			if (launchIntent.equals("")) {
-                listmove(index, true);
-			} else {
+                if (index!=-1){
+                    listmove(index, true);
+                }
+			}
+            else {
                 //initialize the variables for the list ahead of time
                 ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
                 LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
@@ -568,10 +565,11 @@ public class EternalMediaBar extends Activity {
                         break;
                     }
 					case 5: {
+                        //resize the layout and save, we have to hide the menu first because the layouts reload when an item is removed.
+                        onEnter(0,0,false,".",".");
                         //remove/hide item(vitem);
-                            saveddata.vLists.get(hitem).remove(vitem);
-                        //resize the layout and save,
-                        onEnter(0,0,false,"","");
+                        saveddata.vLists.get(hitem).remove(vitem);
+                        loadListView();
                         break;
                     }
 					case 6: {
