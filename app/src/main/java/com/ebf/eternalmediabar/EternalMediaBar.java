@@ -91,8 +91,6 @@ public class EternalMediaBar extends Activity {
                         saveddata.vLists.add(new ArrayList<AppDetail>());
                         saveddata.vLists.add(new ArrayList<AppDetail>());
                         saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
                     }
                 }
                 //load in the apps
