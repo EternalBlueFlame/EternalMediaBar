@@ -598,6 +598,7 @@ public class EternalMediaBar extends Activity {
                         Intent intent = new Intent();
                         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
+                        onEnter(0, 0, false, ".", ".");
                         startActivity(intent);
                         break;
                     }
