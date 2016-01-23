@@ -40,7 +40,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	auto app organizer using an XML parse of the google store's website (probably offload to an async task so the progress can be measured and a loading screen can be given to the user).
 -	custom wallpaper for selected app from file, if file exists (use an async task).
 -	listview scroll snapping.
--	menu sounds.
+-	List organizer, allow users to manually change positions of apps in the list, and sort them alphabetically (EMB apps stay topmost).
 -	extra settings:
 -	change font color //absolute white disables it.
 -	change icon color //hmenu only //absolute white disables it.
@@ -48,7 +48,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	enable/disable custom app backgrounds.
 -	download app backgrounds from google play (xml parse).
 -	un-hide hidden apps //selective menu.
--	enable google icons //uses icons from installed google services like play games, movies, web, settings, and music, if they are available.
 -	enable manufacturer icons //same as google icons, but instead uses the icons from HTC/Samgsung/Sony/etc apps.
 -	disable app boot animation.
 </hr>

@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,9 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.gc.android.market.api.MarketSession;
-import com.gc.android.market.api.model.Market;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -401,12 +399,40 @@ public class EternalMediaBar extends Activity {
         //empty hli first to be sure we dont accidentally make duplicate entries
         hli.clear();
         //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
-        hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
-        hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
-        hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
-        hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));
-        hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
+        //check if we are using google icons, if not use built-in icons.
+        if (!saveddata.useGoogleIcons) {
+            hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
+            hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
+            hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
+            hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
+            hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));
+            hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
+        }
+        else{
+            try{hli.add(createAppDetail(1, "Social", manager.getApplicationIcon("com.android.contacts")));}
+            catch (Exception e){hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));}
+            //For media we actually try and combine some icons, so this is more complicated
+            Drawable[] layers = new Drawable[2];
+            try{layers[0] = manager.getApplicationIcon("com.google.android.videos");}
+            catch (Exception e){}
+            try{layers[1] = manager.getApplicationIcon("com.google.android.music");}
+            catch (Exception e){}
+            if (layers != new Drawable[2]){
+                hli.add(createAppDetail(1, "Media", new LayerDrawable(layers)));
+            }
+            else{
+                hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
+            }
+            try{hli.add(createAppDetail(1, "Games", manager.getApplicationIcon("com.google.android.play.games")));}
+            catch (Exception e){hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));}
+            try{hli.add(createAppDetail(1, "Web", manager.getApplicationIcon("com.android.chrome")));}
+            catch (Exception e){hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));}
+            try{hli.add(createAppDetail(1, "Utility", manager.getApplicationIcon("com.google.android.apps.docs")));}
+            catch (Exception e){hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));}
+            try{hli.add(createAppDetail(1, "Settings", manager.getApplicationIcon("com.android.settings")));}
+            catch (Exception e){hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));}
+        }
+        //now draw the new apps icon if there are any new apps.
         if (saveddata.vLists.get(saveddata.vLists.size()-1).size() >0) {
             hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
         }
@@ -429,6 +455,13 @@ public class EternalMediaBar extends Activity {
         //copy category method but with a verticle list
         LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
         Vlayout.removeAllViews();
+
+        //Create entries for EMB specific apps
+        if (hitem == 5){
+            Vlayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 11, 0, false, ".", ".opt"));
+        }
+
+
         for (int ii=0; ii<saveddata.vLists.get(hitem).size();) {
             Vlayout.addView(createMenuEntry(R.layout.list_item, saveddata.vLists.get(hitem).get(ii).label, null, ii, 0, true, saveddata.vLists.get(hitem).get(ii).name, (String) saveddata.vLists.get(hitem).get(ii).label));
             ii++;
@@ -463,7 +496,7 @@ public class EternalMediaBar extends Activity {
                         optionsmenu = false;
                         optionVitem=1;
                         //animate menu closing
-                        TranslateAnimation anim = new TranslateAnimation(0,(144 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+                        TranslateAnimation anim = new TranslateAnimation(0,(146 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
                         anim.setDuration(200);
                         anim.setInterpolator(new LinearInterpolator());
                         anim.setFillEnabled(false);
@@ -491,36 +524,28 @@ public class EternalMediaBar extends Activity {
 						}
 					case 1: {
                         //Copy Item List
-                        View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, "");
-                        Llayout.addView(child);
-                        optii++;
+                        Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
 
-                        for (; optii <= saveddata.vLists.size(); ) {
-                            if (optii - 1 != hitem) {
-                                child = createMenuEntry(R.layout.options_item, "Copy to " + hli.get(optii - 1).label, svgLoad(R.drawable.blank), 3, optii - 1, false, ".", "3");
-                                Llayout.addView(child);
+                        for (; optii < saveddata.vLists.size()-1; ) {
+                            if (optii != hitem) {
+                                Llayout.addView(createMenuEntry(R.layout.options_item, "Copy to " + hli.get(optii).label, svgLoad(R.drawable.blank), 3, optii, false, ".", "3"));
                             }
                             optii++;
                         }
                         //return to first settings menu
-                        child = createMenuEntry(R.layout.options_item, "Go Back",svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname);
-                        Llayout.addView(child);
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back",svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
                         //close settings menu
-                        child = createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname);
-                        Llayout.addView(child);
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
                         optionVitem = 1;
                         break;
                     }
                     case 2: {
                         //move item list
-                        View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, "");
-                        Llayout.addView(child);
-                        optii++;
+                        Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
 
-                        for (; optii <= saveddata.vLists.size(); ) {
-                            if (optii - 1 != hitem) {
-                                child = createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii - 1).label, svgLoad(R.drawable.blank), 4, optii - 1, false, ".", "");
-                                Llayout.addView(child);
+                        for (; optii < saveddata.vLists.size()-1; ) {
+                            if (optii != hitem) {
+                                Llayout.addView(createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii).label, svgLoad(R.drawable.blank), 4, optii, false, ".", ""));
                             }
                             optii++;
                         }
@@ -540,11 +565,9 @@ public class EternalMediaBar extends Activity {
                             }
                         }
                         //return to first settings menu
-                        child = createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname);
-                        Llayout.addView(child);
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
                         //close settings menu
-                        child = createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname);
-                        Llayout.addView(child);
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
                         optionVitem = 1;
                         break;
                     }
@@ -576,6 +599,7 @@ public class EternalMediaBar extends Activity {
                         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
                         startActivity(intent);
+                        break;
                     }
                     case 7: {
                         //do nothing
@@ -583,105 +607,11 @@ public class EternalMediaBar extends Activity {
                     case 8: {
                         //go back to main options menu
                         onOptions(index, true, launchIntent, appname);
+                        break;
                     }
 
                     case 9:{
-                        //search for if the app is locally defined first
-                        //if (launchintent == com.google.googleplay || launchintent == com.aptoide.aptoide ||...){
-                        //Move it to store; foundapp = true;}
-                        //else if....{play music, play videos, play games, gallery, photos, }
-                        //else{//use below market search
 
-                        //search google play for the app and reorganize this app into the appropriate category
-
-
-                        //Replace with XML parse of the website, this plugin has proven unreliable.
-
-                        //first we make a search request
-                        Market.AppsRequest appsRequest = Market.AppsRequest.newBuilder()
-                                .setQuery(launchIntent)
-                                .setStartIndex(0).setEntriesCount(1)
-                                .setWithExtendedInfo(false)
-                                .build();
-
-                        //now we search the store for the app
-                        //!!! CAUSES MEMORY LEAK !!!
-                        MarketSession.Callback<Market.AppsResponse> callback = new MarketSession.Callback<Market.AppsResponse>() {
-
-                            @Override
-                            public void onResult(Market.ResponseContext context, Market.AppsResponse response) {
-
-                                //using the results, we organize the app as necessary
-                                String appCategory = response.getApp(0).getExtendedInfo().getCategory();
-                                //let's put the results to logcat just so we can be sure what the category results are actually supposed to be.
-                                Log.d("EternalMediaBar", "Searched GooglePlay for: " + appCategory);
-
-
-                                switch (appCategory) {
-
-                                    //WARNING: the case values may not be accurate, need the debug log output to find true values
-
-                                    case "TOOLS": {
-                                        //Move to settings
-                                        saveddata.vLists.get(0).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                    case "GAME":{
-                                        //Move to games
-                                        saveddata.vLists.get(4).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                    case "NEWS_AND_MAGAZINES": case "WEATHER":{
-                                        //Move to news & weather
-                                        saveddata.vLists.get(6).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                    case "COMMUNICATION":{
-                                        //Move to web
-                                        saveddata.vLists.get(5).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                    case "MEDIA_AND_VIDEO":case "MUSIC_AND_AUDIO":{
-                                        //Move to media
-                                        saveddata.vLists.get(3).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                    case "PHOTOGRAPHY":{
-                                        //Move to photo
-                                        saveddata.vLists.get(2).add(saveddata.vLists.get(hitem).get(vitem));
-                                        saveddata.vLists.get(hitem).remove(vitem);
-                                        foundApp = true;
-                                    }
-                                }
-
-                            }
-                        };
-                        //now append the results to a session
-                        MarketSession session = new MarketSession();
-                        session.append(appsRequest, callback);
-                        //!!! CAUSES CRASH (fixes memory leak) !!!!
-                        //session.flush();
-
-
-                        //do the below after all the organization attempts
-
-                        //if the app wasint found, display a warning error
-                        if (!foundApp){
-                            //go to the menu that will display the error warning
-                            onEnter(10,1,false,launchIntent,appname);
-                        }
-                        else{
-                            //reload the listview to see the changes.
-                            loadListView();
-                            //set foundApp to false so we can do this all again at some point
-                            foundApp = false;
-                            onEnter(0,0,false,".",".");
-                        }
                     }
                     case 10:{
                         switch (secondaryIndex){
@@ -698,7 +628,20 @@ public class EternalMediaBar extends Activity {
                                 Log.d("EternalMediaBar", "Couldn't organize app: " + launchIntent);
                                 onEnter(0,0,false,".",".");
                             }
+                            break;
                         }
+                    }
+                    case 11: {
+                        saveddata.useGoogleIcons = false;
+                        loadListView();
+                        onEnter(0, 0, false, ".", ".");
+                        break;
+                    }
+                    case 12:{
+                        saveddata.useGoogleIcons = true;
+                        loadListView();
+                        onEnter(0,0,false,".",".");
+                        break;
                     }
 				}
 			}
@@ -708,7 +651,6 @@ public class EternalMediaBar extends Activity {
 	
 	private void onOptions( final int index, final boolean islaunchable, final String launchIntent, final String appname){
         //first check to be sure its something that should be opening the menu
-		if (islaunchable) {
             //first, move the item highlight
             listmove(index, false);
             //set the variables for the menu
@@ -722,7 +664,7 @@ public class EternalMediaBar extends Activity {
             //reset the position
             Slayout.setX(getResources().getDisplayMetrics().widthPixels);
             //animate the menu opening
-            TranslateAnimation anim = new TranslateAnimation(0,-(144 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            TranslateAnimation anim = new TranslateAnimation(0,-(146 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
             anim.setDuration(200);
             anim.setInterpolator(new LinearInterpolator());
             anim.setFillEnabled(false);
@@ -730,7 +672,8 @@ public class EternalMediaBar extends Activity {
             //now move the menu itself
             Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {}
+                public void onAnimationStart(Animation animation) {
+                }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -738,28 +681,25 @@ public class EternalMediaBar extends Activity {
                     // clear animation to prevent flicker
                     Slayout.clearAnimation();
                     //manually set position of menu
-                    Slayout.setX(getResources().getDisplayMetrics().widthPixels-(144 * getResources().getDisplayMetrics().density + 0.5f));
+                    Slayout.setX(getResources().getDisplayMetrics().widthPixels - (146 * getResources().getDisplayMetrics().density + 0.5f));
                 }
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {}
             });
 
-
+        if (islaunchable) {
             //add the app thats selected so the user knows for sure what they are messing with.
-            View child = createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, "");
-            Llayout.addView(child);
+            Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
 
 
             //add all the extra options
 
             //copy the item to another category
-            child = createMenuEntry(R.layout.options_item, "Copy to...", svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appname);
-            Llayout.addView(child);
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Copy to...", svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appname));
 
             //move the item to another category
-            child = createMenuEntry(R.layout.options_item, "Move to...", svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appname);
-            Llayout.addView(child);
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Move to...", svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appname));
 
             //first option is to remove an item from the list.
             //in RC2 this will be modified to support hiding the icon even when it's only in one menu
@@ -774,18 +714,23 @@ public class EternalMediaBar extends Activity {
                 ii++;
             }
             if (i>1) {
-                child = createMenuEntry(R.layout.options_item, "Remove From This List", svgLoad(R.drawable.blank), 5, 0, false, launchIntent, "4");
-                Llayout.addView(child);
+                Llayout.addView(createMenuEntry(R.layout.options_item, "Remove From This List", svgLoad(R.drawable.blank), 5, 0, false, launchIntent, "4"));
             }
 
             //open the app's settings
-            child = createMenuEntry(R.layout.options_item, "Application Settings", svgLoad(R.drawable.blank), 6, 0, false, launchIntent, appname);
-            Llayout.addView(child);
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Application Settings", svgLoad(R.drawable.blank), 6, 0, false, launchIntent, appname));
 
             //close settings menu
-            child = createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname);
-            Llayout.addView(child);
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
 
+        }
+        else{
+            if (saveddata.useGoogleIcons){
+                Llayout.addView(createMenuEntry(R.layout.options_item, "Don't use Google Icons", svgLoad(R.drawable.blank), 11, 0, false, ".", "."));
+            }
+            else if (!saveddata.useGoogleIcons){
+                Llayout.addView(createMenuEntry(R.layout.options_item, "Use Google Icons", svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
+            }
         }
     }
 
@@ -837,7 +782,12 @@ public class EternalMediaBar extends Activity {
         btn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onEnter(index, secondaryIndex, isLaunchable, launchIntent, appname);
+                if (appname.equals(".opt")){
+                    onOptions(index, isLaunchable, launchIntent, appname);
+                }
+                else {
+                    onEnter(index, secondaryIndex, isLaunchable, launchIntent, appname);
+                }
             }
         });
 
