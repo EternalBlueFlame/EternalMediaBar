@@ -18,7 +18,8 @@
         android:layout_height="84dp"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/options_displayscroll"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="64dp">
 
         <LinearLayout
             android:id="@+id/categories"
@@ -35,8 +36,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="108dp"
-        android:layout_below="@+id/categoriesscroll">
+        android:layout_below="@+id/categoriesscroll"
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -53,7 +54,7 @@
         android:id="@+id/options_displayscroll"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="-144dp"
+        android:layout_marginRight="-145dp"
         android:layout_below="@+id/categoriesscroll"
         android:layout_height="match_parent"
         android:background="@drawable/menu_bg">

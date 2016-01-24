@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -44,11 +46,11 @@ public class EternalMediaBar extends Activity {
     private PackageManager manager;
     private List<AppDetail> oldApps = new ArrayList<>();
     private List<AppDetail> hli = new ArrayList<>();
-    private settingsClass saveddata = new settingsClass();
+    private settingsClass savedData = new settingsClass();
 
     public int hitem = 0;
     private boolean init = false;
-    private boolean optionsmenu = false;
+    private boolean optionsMenu = false;
     public int vitem = 0;
     public int optionVitem =1;
     public boolean[] warningtoggle;
@@ -66,42 +68,43 @@ public class EternalMediaBar extends Activity {
 
             //run once
             if (!init) {
-                if (saveddata.vLists.size()<=1) {
+                if (savedData.vLists.size()<=1) {
                     try {
                         //try load prefrences
-                        //for some off reason only one file can be loaded EVER, so all variables that ever need to be accessed have to be in the same serialieable class.
+                        //Load the value as a reference to the file instead of a cloned instance of it, just because it's easier, actual efficiency is yet to be determined.
                         FileInputStream fileStream = openFileInput("lists.dat");
                         ObjectInputStream objStream = new ObjectInputStream(fileStream);
-                        saveddata = (settingsClass) objStream.readObject();
+                        savedData = (settingsClass) objStream.readObject();
                         //close the stream to save RAM.
                         objStream.close();
                         fileStream.close();
-                        //for some odd reason savedata.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
-                        oldApps = saveddata.oldApps;
+                        //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
+                        oldApps = savedData.oldApps;
                     } catch (Exception e) {
                         //output to debug log just in case something went fully wrong
                         e.printStackTrace();
                         //catch with below by initializing vLists properly
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
-                        saveddata.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
                     }
                 }
                 //load in the apps
                 loadApps();
-                //render everything
-                loadListView();
 
                 //setup the warning variable
                 warningtoggle= new boolean[1];
                 warningtoggle[0] = false;
 
-                //make sure this doesnt happen again
+                //make sure this doesn't happen again
                 init = true;
+
+                //Lastly, activate the list move function to load the list view and attempt to highlight what menu we are on.
+                listmove(0, true);
             }
         }
 
@@ -112,8 +115,8 @@ public class EternalMediaBar extends Activity {
             //load in the apps
             loadApps();
             //make sure vitem isn't out of bounds
-            if (vitem >= saveddata.vLists.get(hitem).size()){
-                vitem = saveddata.vLists.get(hitem).size();
+            if (vitem >= savedData.vLists.get(hitem).size()){
+                vitem = savedData.vLists.get(hitem).size();
             }
             //render everything
             loadListView();
@@ -124,11 +127,11 @@ public class EternalMediaBar extends Activity {
     public void savefiles(){
         try{
             // apply the instanced value back to the savedata version so we can save it.
-            saveddata.oldApps = oldApps;
+            savedData.oldApps = oldApps;
             //create a file output stream with an object, to save a variable to a file, then close the stream.
             FileOutputStream fileStream = openFileOutput("lists.dat", Context.MODE_PRIVATE);
             ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
-            fileOutput.writeObject(saveddata);
+            fileOutput.writeObject(savedData);
             //close the stream to save RAM
             fileOutput.close();
             fileStream.close();
@@ -168,7 +171,7 @@ public class EternalMediaBar extends Activity {
             }
             //event for when enter/x/a is pressed
 			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_DPAD_CENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
-                if (!optionsmenu) {
+                if (!optionsMenu) {
                     //get the layout
                     LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
@@ -184,7 +187,7 @@ public class EternalMediaBar extends Activity {
 			}
             //event for when E/Y/Triangle is pressed
 			case KeyEvent.KEYCODE_BUTTON_4: case KeyEvent.KEYCODE_E: case KeyEvent.KEYCODE_TAB: case KeyEvent.KEYCODE_0: case KeyEvent.KEYCODE_NUMPAD_0: {
-                if (!optionsmenu) {
+                if (!optionsMenu) {
                     //get the layout
                     LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
@@ -208,17 +211,15 @@ public class EternalMediaBar extends Activity {
         //function to move the highlight selection based on which menu you are on.
         if (!isCategory) {
             //if you are not on the options menu
-            if (!optionsmenu) {
+            if (!optionsMenu) {
                 LinearLayout Vlayout = (LinearLayout) findViewById(R.id.apps_display);
                 boolean proceed = true;
                 //if you are trying to move too far down set proceed to false
-                if (vitem > move) {
-                    if (vitem == 0) {
-                        proceed = false;
-                    }
+                if (move < 0) {
+                    proceed = false;
                 }
                 //if you are trying to move too far up set proceed to false
-                else if ((vitem + 2) > Vlayout.getChildCount()) {
+                else if (move > Vlayout.getChildCount()-1) {
                     proceed = false;
                 }
 
@@ -226,8 +227,10 @@ public class EternalMediaBar extends Activity {
                     //change the old shadow
                     TextView appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
                     appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
+                    //change the font type and lines
                     appLabel.setLines(2);
                     appLabel.setTypeface(null, Typeface.NORMAL);
+                    //scale the icon back to normal
                     ImageView appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
@@ -236,8 +239,10 @@ public class EternalMediaBar extends Activity {
                     //change the new shadow
                     appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
                     appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
+                    //change the font type and lines
                     appLabel.setLines(2);
                     appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    //scale the icon larger
                     appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1.25f);
                     appIcon.setScaleY(1.25f);
@@ -254,13 +259,11 @@ public class EternalMediaBar extends Activity {
                 LinearLayout Vlayout = (LinearLayout) findViewById(R.id.optionslist);
                 boolean proceed = true;
                 //if you are trying to move too far down set proceed to false
-                if (optionVitem > move) {
-                    if (optionVitem == 1) {
-                        proceed = false;
-                    }
+                if (move < 0) {
+                    proceed = false;
                 }
                 //if you are trying to move too far up set proceed to false
-                else if ((optionVitem + 2) > Vlayout.getChildCount()) {
+                else if (move > Vlayout.getChildCount()-1) {
                     proceed = false;
                 }
 
@@ -268,8 +271,10 @@ public class EternalMediaBar extends Activity {
                     //change the old shadow
                     TextView appLabel = (TextView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
                     appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
+                    //change the font type and lines
                     appLabel.setLines(2);
                     appLabel.setTypeface(null, Typeface.NORMAL);
+                    //scale the icon back to normal
                     ImageView appIcon = (ImageView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
@@ -278,8 +283,10 @@ public class EternalMediaBar extends Activity {
                     //change the new shadow
                     appLabel = (TextView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
                     appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
+                    //change the font type and lines
                     appLabel.setLines(2);
                     appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    //scale the icon to be larger
                     appIcon = (ImageView) Vlayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1.25f);
                     appIcon.setScaleY(1.25f);
@@ -293,13 +300,11 @@ public class EternalMediaBar extends Activity {
             LinearLayout Hlayout = (LinearLayout) findViewById(R.id.categories);
             boolean proceed = true;
             //if you are trying to move too far down set proceed to false
-            if (hitem-1 > move) {
-                if (hitem == 1) {
-                    proceed = false;
-                }
+            if (move < 0) {
+                proceed = false;
             }
             //if you are trying to move too far up set proceed to false
-            else if ((hitem + 3) > Hlayout.getChildCount()) {
+            else if ((hitem + 1) > Hlayout.getChildCount()) {
                 proceed = false;
             }
 
@@ -309,15 +314,18 @@ public class EternalMediaBar extends Activity {
                 //reload the list
                 loadListView();
                 //change the new shadow, because we reload the list first, we don't have to manually reset the previous entry.
-                TextView appLabel = (TextView) Hlayout.getChildAt(move + 1).findViewById(R.id.item_app_label);
+                TextView appLabel = (TextView) Hlayout.getChildAt(hitem).findViewById(R.id.item_app_label);
                 appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
                 appLabel.setLines(2);
+                //change the font type
                 appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
-                ImageView appIcon = (ImageView) Hlayout.getChildAt(hitem+1).findViewById(R.id.item_app_icon);
+                //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
+                ImageView appIcon = (ImageView) Hlayout.getChildAt(hitem).findViewById(R.id.item_app_icon);
                 appIcon.setScaleX(1.25f);
                 appIcon.setScaleY(1.25f);
+                appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
                 //scroll to the new entry
-                Hlayout.scrollTo(0, (int) Hlayout.getChildAt(move).getY());
+                Hlayout.scrollTo(0, (int) Hlayout.getChildAt(hitem).getY());
             }
         }
     }
@@ -337,7 +345,7 @@ public class EternalMediaBar extends Activity {
             appri.name = ri.activityInfo.packageName;
             appri.isMenu = 0;
             appri.icon = null;
-            //add the app to the list of all new apps to compair against oldApps later.
+            //add the app to the list of all new apps to compare against oldApps later.
             newapps.add(ri.activityInfo.packageName);
             //check if the app has previously been found
             boolean fail = false;
@@ -353,7 +361,7 @@ public class EternalMediaBar extends Activity {
             }
             //if fail is false, add the app to the newly installed list where the user can organize it, and the old apps list.where we can keep track of it easier.
             if (!fail) {
-                saveddata.vLists.get(saveddata.vLists.size()-1).add(appri);
+                savedData.vLists.get(savedData.vLists.size()-1).add(appri);
                 oldApps.add(appri);
             }
         }
@@ -366,9 +374,9 @@ public class EternalMediaBar extends Activity {
                     //create an instance of the app
                     AppDetail toremove = oldApps.get(i);
                     //search all lists for it and remove each entry.
-                    for (int ii=0; ii< saveddata.vLists.size();){
-                        if (saveddata.vLists.get(ii).contains(toremove)){
-                            saveddata.vLists.get(ii).remove(toremove);
+                    for (int ii=0; ii< savedData.vLists.size();){
+                        if (savedData.vLists.get(ii).contains(toremove)){
+                            savedData.vLists.get(ii).remove(toremove);
                         }
                         ii++;
                     }
@@ -380,16 +388,11 @@ public class EternalMediaBar extends Activity {
         savefiles();
     }
 
-    //intended to later return a drawable from an SVG when support is better
-    //currently returns a normal drawable from PNG image.
+
+    //returns a normal drawable from PNG image.
     Drawable svgLoad(int imagetoload){
-        ImageView imageView = new ImageView(this);
-
-        imageView.setImageDrawable(ContextCompat.getDrawable(this, imagetoload));
-
-        //more SVG stuff that has to wait.
         //imageView.setImageDrawable(svg.createPictureDrawable());
-        return imageView.getDrawable();
+        return ContextCompat.getDrawable(this, imagetoload);
     }
 
     //draws the list of apps and categories to screen
@@ -400,7 +403,7 @@ public class EternalMediaBar extends Activity {
         hli.clear();
         //setup the horizontal bar, theres a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
         //check if we are using google icons, if not use built-in icons.
-        if (!saveddata.useGoogleIcons) {
+        if (!savedData.useGoogleIcons) {
             hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
             hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
             hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
@@ -415,7 +418,8 @@ public class EternalMediaBar extends Activity {
             Drawable[] layers = new Drawable[2];
             try{layers[0] = manager.getApplicationIcon("com.google.android.videos");}
             catch (Exception e){}
-            try{layers[1] = manager.getApplicationIcon("com.google.android.music");}
+            try{layers[1] = new ScaleDrawable(manager.getApplicationIcon("com.google.android.music"),Gravity.CENTER,1f,1f);
+                    layers[1].setLevel(7000);}
             catch (Exception e){}
             if (layers != new Drawable[2]){
                 hli.add(createAppDetail(1, "Media", new LayerDrawable(layers)));
@@ -433,23 +437,18 @@ public class EternalMediaBar extends Activity {
             catch (Exception e){hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));}
         }
         //now draw the new apps icon if there are any new apps.
-        if (saveddata.vLists.get(saveddata.vLists.size()-1).size() >0) {
+        if (savedData.vLists.get(savedData.vLists.size()-1).size() >0) {
             hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
         }
 
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         //empty the list
         layout.removeAllViews();
-        //add a blank view to the front
-        layout.addView(createMenuEntry(R.layout.category_item, "", svgLoad(R.drawable.blank), -1, 0, false, "", ""));
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
                 layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii ).label, hli.get(ii).icon, ii, 0, false, "", ""));
         ii++;
         }
-        //add an empty view to the end of the list
-        layout.addView(createMenuEntry(R.layout.category_item, "", svgLoad(R.drawable.blank), -1, 0, false, "", ""));
-
 
 
         //copy category method but with a verticle list
@@ -462,8 +461,8 @@ public class EternalMediaBar extends Activity {
         }
 
 
-        for (int ii=0; ii<saveddata.vLists.get(hitem).size();) {
-            Vlayout.addView(createMenuEntry(R.layout.list_item, saveddata.vLists.get(hitem).get(ii).label, null, ii, 0, true, saveddata.vLists.get(hitem).get(ii).name, (String) saveddata.vLists.get(hitem).get(ii).label));
+        for (int ii=0; ii< savedData.vLists.get(hitem).size();) {
+            Vlayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hitem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hitem).get(ii).name, (String) savedData.vLists.get(hitem).get(ii).label));
             ii++;
         }
     }
@@ -493,10 +492,10 @@ public class EternalMediaBar extends Activity {
 				switch (index) {
 					case 0: {
                         //do nothing/close and save settings
-                        optionsmenu = false;
+                        optionsMenu = false;
                         optionVitem=1;
                         //animate menu closing
-                        TranslateAnimation anim = new TranslateAnimation(0,(146 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+                        TranslateAnimation anim = new TranslateAnimation(0,(142 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
                         anim.setDuration(200);
                         anim.setInterpolator(new LinearInterpolator());
                         anim.setFillEnabled(false);
@@ -526,14 +525,14 @@ public class EternalMediaBar extends Activity {
                         //Copy Item List
                         Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
 
-                        for (; optii < saveddata.vLists.size()-1; ) {
+                        for (; optii < savedData.vLists.size()-1; ) {
                             if (optii != hitem) {
                                 Llayout.addView(createMenuEntry(R.layout.options_item, "Copy to " + hli.get(optii).label, svgLoad(R.drawable.blank), 3, optii, false, ".", "3"));
                             }
                             optii++;
                         }
                         //return to first settings menu
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back",svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
                         //close settings menu
                         Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
                         optionVitem = 1;
@@ -543,7 +542,7 @@ public class EternalMediaBar extends Activity {
                         //move item list
                         Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
 
-                        for (; optii < saveddata.vLists.size()-1; ) {
+                        for (; optii < savedData.vLists.size()-1; ) {
                             if (optii != hitem) {
                                 Llayout.addView(createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii).label, svgLoad(R.drawable.blank), 4, optii, false, ".", ""));
                             }
@@ -573,14 +572,14 @@ public class EternalMediaBar extends Activity {
                     }
                     case 3:{
                         //copy item
-                        saveddata.vLists.get(secondaryIndex).add(saveddata.vLists.get(hitem).get(vitem));
+                        savedData.vLists.get(secondaryIndex).add(savedData.vLists.get(hitem).get(vitem));
                         onEnter(0, 0, false, ".", ".");
                         break;
                     }
                     case 4:{
                         //move item
-                        saveddata.vLists.get(secondaryIndex).add(saveddata.vLists.get(hitem).get(vitem));
-                        saveddata.vLists.get(hitem).remove(vitem);
+                        savedData.vLists.get(secondaryIndex).add(savedData.vLists.get(hitem).get(vitem));
+                        savedData.vLists.get(hitem).remove(vitem);
                         onEnter(0,0,false,".",".");
                         loadListView();
                         break;
@@ -589,7 +588,7 @@ public class EternalMediaBar extends Activity {
                         //resize the layout and save, we have to hide the menu first because the layouts reload when an item is removed.
                         onEnter(0,0,false,".",".");
                         //remove/hide item(vitem);
-                        saveddata.vLists.get(hitem).remove(vitem);
+                        savedData.vLists.get(hitem).remove(vitem);
                         loadListView();
                         break;
                     }
@@ -633,13 +632,13 @@ public class EternalMediaBar extends Activity {
                         }
                     }
                     case 11: {
-                        saveddata.useGoogleIcons = false;
+                        savedData.useGoogleIcons = false;
                         loadListView();
                         onEnter(0, 0, false, ".", ".");
                         break;
                     }
                     case 12:{
-                        saveddata.useGoogleIcons = true;
+                        savedData.useGoogleIcons = true;
                         loadListView();
                         onEnter(0,0,false,".",".");
                         break;
@@ -655,7 +654,7 @@ public class EternalMediaBar extends Activity {
             //first, move the item highlight
             listmove(index, false);
             //set the variables for the menu
-			optionsmenu = true;
+			optionsMenu = true;
 			optionVitem = 1;
             //load the layout and make sure nothing is in it.
 			//loadListView();
@@ -665,7 +664,7 @@ public class EternalMediaBar extends Activity {
             //reset the position
             Slayout.setX(getResources().getDisplayMetrics().widthPixels);
             //animate the menu opening
-            TranslateAnimation anim = new TranslateAnimation(0,-(146 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            TranslateAnimation anim = new TranslateAnimation(0,-(142 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
             anim.setDuration(200);
             anim.setInterpolator(new LinearInterpolator());
             anim.setFillEnabled(false);
@@ -682,11 +681,12 @@ public class EternalMediaBar extends Activity {
                     // clear animation to prevent flicker
                     Slayout.clearAnimation();
                     //manually set position of menu
-                    Slayout.setX(getResources().getDisplayMetrics().widthPixels - (146 * getResources().getDisplayMetrics().density + 0.5f));
+                    Slayout.setX(getResources().getDisplayMetrics().widthPixels - (142 * getResources().getDisplayMetrics().density + 0.5f));
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {}
+                public void onAnimationRepeat(Animation animation) {
+                }
             });
 
         if (islaunchable) {
@@ -705,9 +705,9 @@ public class EternalMediaBar extends Activity {
             //first option is to remove an item from the list.
             //in RC2 this will be modified to support hiding the icon even when it's only in one menu
             int i=0;
-            for (int ii=0; ii<saveddata.vLists.size();){
-                for (int iii=0; iii<saveddata.vLists.get(ii).size();){
-                    if (saveddata.vLists.get(ii).get(iii).name.equals(saveddata.vLists.get(hitem).get(vitem).name)){
+            for (int ii=0; ii< savedData.vLists.size();){
+                for (int iii=0; iii< savedData.vLists.get(ii).size();){
+                    if (savedData.vLists.get(ii).get(iii).name.equals(savedData.vLists.get(hitem).get(vitem).name)){
                         i++;
                     }
                     iii++;
@@ -726,13 +726,17 @@ public class EternalMediaBar extends Activity {
 
         }
         else{
-            if (saveddata.useGoogleIcons){
+            //add the item for changing whether or not to use Google icons.
+            if (savedData.useGoogleIcons){
                 Llayout.addView(createMenuEntry(R.layout.options_item, "Don't use Google Icons", svgLoad(R.drawable.blank), 11, 0, false, ".", "."));
             }
-            else if (!saveddata.useGoogleIcons){
+            else if (!savedData.useGoogleIcons){
                 Llayout.addView(createMenuEntry(R.layout.options_item, "Use Google Icons", svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
             }
         }
+
+        //close settings menu
+        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
     }
 
     //call function for creating app detail entries, usually for menus
@@ -784,7 +788,12 @@ public class EternalMediaBar extends Activity {
             @Override
             public void onClick(View v) {
                 if (appname.equals(".opt")){
-                    onOptions(index, isLaunchable, launchIntent, appname);
+                    if (optionsMenu){
+                        onEnter(0,0,false,".",".");
+                    }
+                    else {
+                        onOptions(index, isLaunchable, launchIntent, appname);
+                    }
                 }
                 else {
                     onEnter(index, secondaryIndex, isLaunchable, launchIntent, appname);
@@ -795,7 +804,7 @@ public class EternalMediaBar extends Activity {
         btn.setOnLongClickListener(new Button.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (optionsmenu){
+                if (optionsMenu){
                     onEnter(0,0,false,".",".");
                 }
                 onOptions(index, isLaunchable, launchIntent, appname);
@@ -809,10 +818,8 @@ public class EternalMediaBar extends Activity {
 
 }
 
-class runRun extends AsyncTask<Void, Void, Void> {
+//class runRun extends AsyncTask<Void, Void, Void> {
 
-    @Override
-    protected Void doInBackground(Void... params) {
-        return null;
-    }
-}
+//    @Override
+//    protected Void doInBackground(Void... params) {return null;}
+//}
