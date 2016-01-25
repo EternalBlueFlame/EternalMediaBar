@@ -16,6 +16,7 @@ public class settingsClass implements Serializable {
     boolean gamingMode;
     boolean useGoogleIcons;
     boolean useManufacturerIcons;
+    boolean mirrorMode;
     List<AppDetail> oldApps;
     List<AppDetail> hiddenApps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();

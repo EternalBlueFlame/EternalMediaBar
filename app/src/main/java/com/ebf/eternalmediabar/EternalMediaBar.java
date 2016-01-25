@@ -13,7 +13,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -38,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//LAST KNOWN GOOD 1/14
+//LAST KNOWN GOOD 1/24
 
 
 public class EternalMediaBar extends Activity {
@@ -80,7 +79,8 @@ public class EternalMediaBar extends Activity {
                         fileStream.close();
                         //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
                         oldApps = savedData.oldApps;
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         //output to debug log just in case something went fully wrong
                         e.printStackTrace();
                         //catch with below by initializing vLists properly
@@ -91,6 +91,17 @@ public class EternalMediaBar extends Activity {
                         savedData.vLists.add(new ArrayList<AppDetail>());
                         savedData.vLists.add(new ArrayList<AppDetail>());
                         savedData.vLists.add(new ArrayList<AppDetail>());
+                        //we should initialize the other variables as well.
+                        savedData.useGoogleIcons = false;
+                        savedData.mirrorMode = false;
+                        savedData.cleanCacheOnStart = false;
+                        savedData.gamingMode = false;
+                        savedData.useManufacturerIcons = false;
+                        savedData.loadAppBG = true;
+                        savedData.fontCol = new Color();
+                        savedData.menuCol = new Color();
+                        savedData.iconCol = new Color();
+                        savedData.hiddenApps = new ArrayList<AppDetail>();
                     }
                 }
                 //load in the apps
@@ -397,6 +408,14 @@ public class EternalMediaBar extends Activity {
 
     //draws the list of apps and categories to screen
     public void loadListView(){
+
+        if (savedData.mirrorMode){
+            setContentView(R.layout.activity_eternal_media_bar_mirror);
+        }
+        else{
+            setContentView(R.layout.activity_eternal_media_bar);
+        }
+
         manager = getPackageManager();
 
         //empty hli first to be sure we dont accidentally make duplicate entries
@@ -453,8 +472,11 @@ public class EternalMediaBar extends Activity {
 
         //copy category method but with a verticle list
         LinearLayout Vlayout = (LinearLayout)findViewById(R.id.apps_display);
+        for(int i=0; i<Vlayout.getChildCount();){
+            Vlayout.getChildAt(i).invalidate();
+            i++;
+        }
         Vlayout.removeAllViews();
-
         //Create entries for EMB specific apps
         if (hitem == 5){
             Vlayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 11, 0, false, ".", ".opt"));
@@ -495,7 +517,13 @@ public class EternalMediaBar extends Activity {
                         optionsMenu = false;
                         optionVitem=1;
                         //animate menu closing
-                        TranslateAnimation anim = new TranslateAnimation(0,(142 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+                        TranslateAnimation anim = new TranslateAnimation(0,0,0,0);
+                        if (!savedData.mirrorMode) {
+                            anim = new TranslateAnimation(0, (145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+                        }
+                        else{
+                            anim = new TranslateAnimation(0, -(145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+                        }
                         anim.setDuration(200);
                         anim.setInterpolator(new LinearInterpolator());
                         anim.setFillEnabled(false);
@@ -511,7 +539,12 @@ public class EternalMediaBar extends Activity {
                                 // clear animation to prevent flicker
                                 Slayout.clearAnimation();
                                 //manually set position of menu off screen
-                                Slayout.setX(getResources().getDisplayMetrics().widthPixels);
+                                if (!savedData.mirrorMode) {
+                                    Slayout.setX(getResources().getDisplayMetrics().widthPixels);
+                                }
+                                else{
+                                    Slayout.setX(-145 * getResources().getDisplayMetrics().density + 0.5f);
+                                }
                             }
 
                             @Override
@@ -643,6 +676,20 @@ public class EternalMediaBar extends Activity {
                         onEnter(0,0,false,".",".");
                         break;
                     }
+                    case 13:{
+                        if (savedData.mirrorMode){
+                            savedData.mirrorMode=false;
+                            loadListView();
+                            onEnter(0,0,false,".",".");
+                            break;
+                        }
+                        else{
+                            savedData.mirrorMode=true;
+                            loadListView();
+                            onEnter(0,0,false,".",".");
+                            break;
+                        }
+                    }
 				}
 			}
 		}
@@ -661,10 +708,18 @@ public class EternalMediaBar extends Activity {
             ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
             LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
 			Llayout.removeAllViews();
-            //reset the position
-            Slayout.setX(getResources().getDisplayMetrics().widthPixels);
             //animate the menu opening
-            TranslateAnimation anim = new TranslateAnimation(0,-(142 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            TranslateAnimation anim = new TranslateAnimation(0,0,0,0);
+            if (!savedData.mirrorMode) {
+                //reset the position
+                Slayout.setX(getResources().getDisplayMetrics().widthPixels);
+                anim = new TranslateAnimation(0, -(145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            }
+            else{
+                //reset the position
+                Slayout.setX(-145 * getResources().getDisplayMetrics().density + 0.5f);
+                anim = new TranslateAnimation(0, (145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            }
             anim.setDuration(200);
             anim.setInterpolator(new LinearInterpolator());
             anim.setFillEnabled(false);
@@ -681,7 +736,12 @@ public class EternalMediaBar extends Activity {
                     // clear animation to prevent flicker
                     Slayout.clearAnimation();
                     //manually set position of menu
-                    Slayout.setX(getResources().getDisplayMetrics().widthPixels - (142 * getResources().getDisplayMetrics().density + 0.5f));
+                    if (!savedData.mirrorMode) {
+                        Slayout.setX(getResources().getDisplayMetrics().widthPixels - (145 * getResources().getDisplayMetrics().density + 0.5f));
+                    }
+                    else{
+                        Slayout.setX(0);
+                    }
                 }
 
                 @Override
@@ -730,10 +790,12 @@ public class EternalMediaBar extends Activity {
             if (savedData.useGoogleIcons){
                 Llayout.addView(createMenuEntry(R.layout.options_item, "Don't use Google Icons", svgLoad(R.drawable.blank), 11, 0, false, ".", "."));
             }
-            else if (!savedData.useGoogleIcons){
+            else{
                 Llayout.addView(createMenuEntry(R.layout.options_item, "Use Google Icons", svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
             }
         }
+        //add the item for mirroring the UI
+        Llayout.addView(createMenuEntry(R.layout.options_item, "Mirror Layout", svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
 
         //close settings menu
         Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
