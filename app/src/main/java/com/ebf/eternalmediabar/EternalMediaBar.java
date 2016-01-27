@@ -235,16 +235,21 @@ public class EternalMediaBar extends Activity {
                 }
 
                 if (proceed) {
-                    //change the old shadow
-                    TextView appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
-                    appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
-                    //change the font type and lines
-                    appLabel.setLines(2);
-                    appLabel.setTypeface(null, Typeface.NORMAL);
-                    //scale the icon back to normal
-                    ImageView appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
-                    appIcon.setScaleX(1f);
-                    appIcon.setScaleY(1f);
+                    //change the old shadow, assuming it exists.
+                    TextView appLabel;
+                    ImageView appIcon;
+                    try {
+                        appLabel = (TextView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_label);
+                        appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
+                        //change the font type and lines
+                        appLabel.setLines(2);
+                        appLabel.setTypeface(null, Typeface.NORMAL);
+                        //scale the icon back to normal
+                        appIcon = (ImageView) Vlayout.getChildAt(vitem).findViewById(R.id.item_app_icon);
+                        appIcon.setScaleX(1f);
+                        appIcon.setScaleY(1f);
+                    }
+                    catch(Exception e){}
                     //change vitem
                     vitem = move;
                     //change the new shadow
@@ -614,7 +619,13 @@ public class EternalMediaBar extends Activity {
                         savedData.vLists.get(secondaryIndex).add(savedData.vLists.get(hitem).get(vitem));
                         savedData.vLists.get(hitem).remove(vitem);
                         onEnter(0,0,false,".",".");
-                        loadListView();
+                        //make sure that if the new apps list disappears, we aren't on it.
+                        if (hitem == (savedData.vLists.size()-1) && savedData.vLists.get(savedData.vLists.size()-1).size()==0){
+                            listmove(0, true);
+                        }
+                        else{
+                            loadListView();
+                        }
                         break;
                     }
 					case 5: {
@@ -649,7 +660,7 @@ public class EternalMediaBar extends Activity {
                     case 10:{
                         switch (secondaryIndex){
                             case 0:{
-                                //Warn that this action will use #MB of the user's mobile data before searching google play
+                                //Warn that this action will use #MB of the user's mobile data, before searching google play
 
                                 //okay option
                                 //nevermind option
@@ -738,8 +749,7 @@ public class EternalMediaBar extends Activity {
                     //manually set position of menu
                     if (!savedData.mirrorMode) {
                         Slayout.setX(getResources().getDisplayMetrics().widthPixels - (145 * getResources().getDisplayMetrics().density + 0.5f));
-                    }
-                    else{
+                    } else {
                         Slayout.setX(0);
                     }
                 }
@@ -781,9 +791,6 @@ public class EternalMediaBar extends Activity {
             //open the app's settings
             Llayout.addView(createMenuEntry(R.layout.options_item, "Application Settings", svgLoad(R.drawable.blank), 6, 0, false, launchIntent, appname));
 
-            //close settings menu
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
-
         }
         else{
             //add the item for changing whether or not to use Google icons.
@@ -793,9 +800,11 @@ public class EternalMediaBar extends Activity {
             else{
                 Llayout.addView(createMenuEntry(R.layout.options_item, "Use Google Icons", svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
             }
+
+            //add the item for mirroring the UI
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Mirror Layout", svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
+
         }
-        //add the item for mirroring the UI
-        Llayout.addView(createMenuEntry(R.layout.options_item, "Mirror Layout", svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
 
         //close settings menu
         Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
