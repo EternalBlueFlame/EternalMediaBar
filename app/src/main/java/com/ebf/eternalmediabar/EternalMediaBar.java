@@ -342,6 +342,7 @@ public class EternalMediaBar extends Activity {
                 appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
                 //scroll to the new entry
                 Hlayout.scrollTo(0, (int) Hlayout.getChildAt(hitem).getY());
+                listmove(0, false);
             }
         }
     }
