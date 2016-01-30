@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
@@ -28,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -98,9 +101,9 @@ public class EternalMediaBar extends Activity {
                         savedData.gamingMode = false;
                         savedData.useManufacturerIcons = false;
                         savedData.loadAppBG = true;
-                        savedData.fontCol = new Color();
-                        savedData.menuCol = new Color();
-                        savedData.iconCol = new Color();
+                        savedData.fontCol = Color.WHITE;
+                        savedData.menuCol = Color.WHITE;
+                        savedData.iconCol = Color.WHITE;
                         savedData.hiddenApps = new ArrayList<AppDetail>();
                     }
                 }
@@ -129,8 +132,15 @@ public class EternalMediaBar extends Activity {
             if (vitem >= savedData.vLists.get(hitem).size()){
                 vitem = savedData.vLists.get(hitem).size();
             }
-            //render everything
-            loadListView();
+
+            //make sure that if the new apps list disappears, we aren't on it.
+            if (hitem == (savedData.vLists.size()-1) && savedData.vLists.get(savedData.vLists.size()-1).size()==0){
+                listmove(0, true);
+            }
+            //otherwise just load normally
+            else{
+                loadListView();
+            }
 
         }
     }
@@ -702,6 +712,86 @@ public class EternalMediaBar extends Activity {
                             break;
                         }
                     }
+                    case 14:{
+                        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
+                        if (secondaryIndex!=0){
+                            savedData.fontCol = secondaryIndex;
+                            onEnter(0,0,false,".",".");
+                            break;
+                        }
+                        Llayout = (LinearLayout) findViewById(R.id.optionslist);
+                        Llayout.removeAllViews();
+                        //load the header that contains the current color
+                        Llayout.addView(createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(savedData.fontCol), 0, 0, false, ".", "."));
+                        //create the inflater for the seeker bars
+                        View child = getLayoutInflater().inflate(R.layout.color_select, null);
+                        //get the red seeker bar, then set it's progress
+                        SeekBar seekerRed = (SeekBar) child.findViewById(R.id.redSeek);
+                        seekerRed.setProgress(Color.red(savedData.fontCol));
+                        //lastly change the listener
+                        seekerRed.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                                savedData.fontCol = Color.argb(255, progress, Color.green(savedData.fontCol), Color.blue(savedData.fontCol));
+                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
+                            }
+
+                            //these are useless, but we need them to exist
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+                            }
+                        });
+                        //Now we do it again for green
+                        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
+                        seekerGreen.setProgress(Color.green(savedData.fontCol));
+                        //lastly change the listener
+                        seekerGreen.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                                savedData.fontCol = Color.argb(255, Color.red(savedData.fontCol), progress, Color.blue(savedData.fontCol));
+                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
+                            }
+
+                            //these are useless, but we need them to exist
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+                            }
+                        });
+                        //Now we do it one more time for blue
+                        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
+                        seekerBlue.setProgress(Color.blue(savedData.fontCol));
+                        //lastly change the listener
+                        seekerBlue.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                                savedData.fontCol = Color.argb(255,  Color.red(savedData.fontCol), Color.green(savedData.fontCol), progress);
+                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
+                            }
+                            //these are useless, but we need them to exist
+                            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+                        });
+                        //and finally add the view
+                        Llayout.addView(child);
+                        //add the item for save and quit
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Save and close", svgLoad(R.drawable.blank), 0, 0, false, ".", "."));
+
+                        //add the item for cancel changes
+                        Llayout.addView(createMenuEntry(R.layout.options_item, "Close without saving", svgLoad(R.drawable.blank), 14, savedData.fontCol, false, ".", "."));
+                        break;
+                    }
+
 				}
 			}
 		}
@@ -804,6 +894,9 @@ public class EternalMediaBar extends Activity {
 
             //add the item for mirroring the UI
             Llayout.addView(createMenuEntry(R.layout.options_item, "Mirror Layout", svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
+
+            //add the item for changing the font color
+            Llayout.addView(createMenuEntry(R.layout.options_item, "Change Font Color" , svgLoad(R.drawable.blank), 14, 0, false, ".", "."));
 
         }
 
