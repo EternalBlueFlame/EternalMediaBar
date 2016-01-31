@@ -21,9 +21,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,14 +42,14 @@ import java.util.List;
 
 public class EternalMediaBar extends Activity {
 
-    private PackageManager manager;
+    public PackageManager manager;
     private List<AppDetail> oldApps = new ArrayList<>();
-    private List<AppDetail> hli = new ArrayList<>();
-    private settingsClass savedData = new settingsClass();
+    public List<AppDetail> hli = new ArrayList<>();
+    public settingsClass savedData = new settingsClass();
 
     public int hitem = 0;
     private boolean init = false;
-    private boolean optionsMenu = false;
+    public boolean optionsMenu = false;
     public int vitem = 0;
     public int optionVitem =1;
     public boolean[] warningtoggle;
@@ -530,60 +527,12 @@ public class EternalMediaBar extends Activity {
 				switch (index) {
 					case 0: {
                         //do nothing/close and save settings
-                        optionsMenu = false;
-                        optionVitem=1;
-                        //animate menu closing
-                        TranslateAnimation anim = new TranslateAnimation(0,0,0,0);
-                        if (!savedData.mirrorMode) {
-                            anim = new TranslateAnimation(0, (145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-                        }
-                        else{
-                            anim = new TranslateAnimation(0, -(145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-                        }
-                        anim.setDuration(200);
-                        anim.setInterpolator(new LinearInterpolator());
-                        anim.setFillEnabled(false);
-                        Slayout.setAnimation(anim);
-                        //now move the menu itself
-                        Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {}
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
-                                // clear animation to prevent flicker
-                                Slayout.clearAnimation();
-                                //manually set position of menu off screen
-                                if (!savedData.mirrorMode) {
-                                    Slayout.setX(getResources().getDisplayMetrics().widthPixels);
-                                }
-                                else{
-                                    Slayout.setX(-145 * getResources().getDisplayMetrics().density + 0.5f);
-                                }
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {}
-                        });
-                        //save just to be sure.
-                        savefiles();
-							break;
-						}
+                        new onItemSelected().menuClose(this, Llayout);
+                        break;
+                    }
 					case 1: {
                         //Copy Item List
-                        Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
-
-                        for (; optii < savedData.vLists.size()-1; ) {
-                            if (optii != hitem) {
-                                Llayout.addView(createMenuEntry(R.layout.options_item, "Copy to " + hli.get(optii).label, svgLoad(R.drawable.blank), 3, optii, false, ".", "3"));
-                            }
-                            optii++;
-                        }
-                        //return to first settings menu
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
-                        //close settings menu
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
+                        new onItemSelected().createCopyList(this, Llayout, launchIntent, appname);
                         optionVitem = 1;
                         break;
                     }
@@ -598,7 +547,7 @@ public class EternalMediaBar extends Activity {
                             optii++;
                         }
                         // !!! ENABLE AFTER FIXED !!!
-                        //Automatically get the category for this item from google play
+                        /*/Automatically get the category for this item from google play
                         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                         if (cm.getActiveNetworkInfo() != null) {
                             //if there is Wifi, go ahead and try.
@@ -611,7 +560,7 @@ public class EternalMediaBar extends Activity {
                                 //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, optii - 1, false, launchIntent, appname);
                                //Llayout.addView(child);
                             }
-                        }
+                        }/*/
                         //return to first settings menu
                         Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
                         //close settings menu
@@ -797,111 +746,12 @@ public class EternalMediaBar extends Activity {
 		}
 	}
 
-	
-	private void onOptions( final int index, final boolean islaunchable, final String launchIntent, final String appname){
-        //first check to be sure its something that should be opening the menu
+
+	public void onOptions(final int index, final boolean islaunchable, final String launchIntent, final String appname){
             //first, move the item highlight
             listmove(index, false);
-            //set the variables for the menu
-			optionsMenu = true;
-			optionVitem = 1;
             //load the layout and make sure nothing is in it.
-			//loadListView();
-            ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
-            LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
-			Llayout.removeAllViews();
-            //animate the menu opening
-            TranslateAnimation anim = new TranslateAnimation(0,0,0,0);
-            if (!savedData.mirrorMode) {
-                //reset the position
-                Slayout.setX(getResources().getDisplayMetrics().widthPixels);
-                anim = new TranslateAnimation(0, -(145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-            }
-            else{
-                //reset the position
-                Slayout.setX(-145 * getResources().getDisplayMetrics().density + 0.5f);
-                anim = new TranslateAnimation(0, (145 * getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-            }
-            anim.setDuration(200);
-            anim.setInterpolator(new LinearInterpolator());
-            anim.setFillEnabled(false);
-            Slayout.setAnimation(anim);
-            //now move the menu itself
-            Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
-                    // clear animation to prevent flicker
-                    Slayout.clearAnimation();
-                    //manually set position of menu
-                    if (!savedData.mirrorMode) {
-                        Slayout.setX(getResources().getDisplayMetrics().widthPixels - (145 * getResources().getDisplayMetrics().density + 0.5f));
-                    } else {
-                        Slayout.setX(0);
-                    }
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-
-        if (islaunchable) {
-            //add the app thats selected so the user knows for sure what they are messing with.
-            Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
-
-
-            //add all the extra options
-
-            //copy the item to another category
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Copy to...", svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appname));
-
-            //move the item to another category
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Move to...", svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appname));
-
-            //first option is to remove an item from the list.
-            //in RC2 this will be modified to support hiding the icon even when it's only in one menu
-            int i=0;
-            for (int ii=0; ii< savedData.vLists.size();){
-                for (int iii=0; iii< savedData.vLists.get(ii).size();){
-                    if (savedData.vLists.get(ii).get(iii).name.equals(savedData.vLists.get(hitem).get(vitem).name)){
-                        i++;
-                    }
-                    iii++;
-                }
-                ii++;
-            }
-            if (i>1) {
-                Llayout.addView(createMenuEntry(R.layout.options_item, "Remove From This List", svgLoad(R.drawable.blank), 5, 0, false, launchIntent, "4"));
-            }
-
-            //open the app's settings
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Application Settings", svgLoad(R.drawable.blank), 6, 0, false, launchIntent, appname));
-
-        }
-        else{
-            //add the item for changing whether or not to use Google icons.
-            if (savedData.useGoogleIcons){
-                Llayout.addView(createMenuEntry(R.layout.options_item, "Don't use Google Icons", svgLoad(R.drawable.blank), 11, 0, false, ".", "."));
-            }
-            else{
-                Llayout.addView(createMenuEntry(R.layout.options_item, "Use Google Icons", svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
-            }
-
-            //add the item for mirroring the UI
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Mirror Layout", svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
-
-            //add the item for changing the font color
-            Llayout.addView(createMenuEntry(R.layout.options_item, "Change Font Color" , svgLoad(R.drawable.blank), 14, 0, false, ".", "."));
-
-        }
-
-        //close settings menu
-        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
+            new onItemSelected().menuOpen(this, index, islaunchable, launchIntent, appname, (LinearLayout) findViewById(R.id.optionslist));
     }
 
     //call function for creating app detail entries, usually for menus
@@ -954,7 +804,7 @@ public class EternalMediaBar extends Activity {
             public void onClick(View v) {
                 if (appname.equals(".opt")){
                     if (optionsMenu){
-                        onEnter(0,0,false,".",".");
+                        onEnter(0, 0, false, ".", ".");
                     }
                     else {
                         onOptions(index, isLaunchable, launchIntent, appname);
@@ -970,7 +820,7 @@ public class EternalMediaBar extends Activity {
             @Override
             public boolean onLongClick(View v) {
                 if (optionsMenu){
-                    onEnter(0,0,false,".",".");
+                    onEnter(0, 0, false, ".", ".");
                 }
                 onOptions(index, isLaunchable, launchIntent, appname);
                 return true;
