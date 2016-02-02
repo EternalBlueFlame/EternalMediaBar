@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,6 +53,8 @@ public class EternalMediaBar extends Activity {
     public int optionVitem =1;
     public boolean[] warningtoggle;
     private boolean foundApp = false;
+
+    private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
 
 
 
@@ -519,225 +520,52 @@ public class EternalMediaBar extends Activity {
 			}
             else {
                 //initialize the variables for the list ahead of time
-                ScrollView Slayout = (ScrollView) findViewById(R.id.options_displayscroll);
                 LinearLayout Llayout = (LinearLayout) findViewById(R.id.optionslist);
                 Llayout.removeAllViews();
-                int optii = 0;
                 //choose which list to make dependant on the values given for the call.
 				switch (index) {
 					case 0: {
-                        //do nothing/close and save settings
-                        new onItemSelected().menuClose(this, Llayout);
+                        changeOptionsMenu.menuClose(this, Llayout);
                         break;
                     }
 					case 1: {
-                        //Copy Item List
-                        new onItemSelected().createCopyList(this, Llayout, launchIntent, appname);
-                        optionVitem = 1;
+                        changeOptionsMenu.createCopyList(this, Llayout, launchIntent, appname);
                         break;
                     }
                     case 2: {
-                        //move item list
-                        Llayout.addView(createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
-
-                        for (; optii < savedData.vLists.size()-1; ) {
-                            if (optii != hitem) {
-                                Llayout.addView(createMenuEntry(R.layout.options_item, "Move to " + hli.get(optii).label, svgLoad(R.drawable.blank), 4, optii, false, ".", ""));
-                            }
-                            optii++;
-                        }
-                        // !!! ENABLE AFTER FIXED !!!
-                        /*/Automatically get the category for this item from google play
-                        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                        if (cm.getActiveNetworkInfo() != null) {
-                            //if there is Wifi, go ahead and try.
-                            if (cm.getActiveNetworkInfo() == cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)) {
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, optii - 1, false, launchIntent, appname);
-                                //Llayout.addView(child);
-                            }
-                            //if there is no wifi but there is still internet
-                            else{
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, optii - 1, false, launchIntent, appname);
-                               //Llayout.addView(child);
-                            }
-                        }/*/
-                        //return to first settings menu
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Go Back", svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
-                        //close settings menu
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Exit Options", svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
-                        optionVitem = 1;
+                        changeOptionsMenu.createMoveList(this, Llayout, launchIntent, appname);
                         break;
                     }
                     case 3:{
-                        //copy item
-                        savedData.vLists.get(secondaryIndex).add(savedData.vLists.get(hitem).get(vitem));
-                        onEnter(0, 0, false, ".", ".");
+                        changeOptionsMenu.copyItem(this, secondaryIndex, Llayout);
                         break;
                     }
                     case 4:{
-                        //move item
-                        savedData.vLists.get(secondaryIndex).add(savedData.vLists.get(hitem).get(vitem));
-                        savedData.vLists.get(hitem).remove(vitem);
-                        onEnter(0,0,false,".",".");
-                        //make sure that if the new apps list disappears, we aren't on it.
-                        if (hitem == (savedData.vLists.size()-1) && savedData.vLists.get(savedData.vLists.size()-1).size()==0){
-                            listmove(0, true);
-                        }
-                        else{
-                            loadListView();
-                        }
+                        changeOptionsMenu.moveItem(this, secondaryIndex, Llayout);
                         break;
                     }
 					case 5: {
-                        //resize the layout and save, we have to hide the menu first because the layouts reload when an item is removed.
-                        onEnter(0,0,false,".",".");
-                        //remove/hide item(vitem);
-                        savedData.vLists.get(hitem).remove(vitem);
-                        loadListView();
+                        changeOptionsMenu.hideApp(this, Llayout);
                         break;
                     }
 					case 6: {
-                        //open application settings
-                        Intent intent = new Intent();
-                        intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
-                        onEnter(0, 0, false, ".", ".");
-                        startActivity(intent);
+                        startActivity(changeOptionsMenu.openAppSettings(this, Llayout, launchIntent));
                         break;
-                    }
-                    case 7: {
-                        //do nothing
                     }
                     case 8: {
-                        //go back to main options menu
-                        onOptions(index, true, launchIntent, appname);
-                        break;
-                    }
-
-                    case 9:{
-
-                    }
-                    case 10:{
-                        switch (secondaryIndex){
-                            case 0:{
-                                //Warn that this action will use #MB of the user's mobile data, before searching google play
-
-                                //okay option
-                                //nevermind option
-                                //okay and don't remind me again option; Will set warningtoggle[1] to true;
-                            }
-                            case 1:{
-                                //warning that the app wasint found during search
-                                //for now since the app is still in early beta of RC1, let's just send it to the logcat
-                                Log.d("EternalMediaBar", "Couldn't organize app: " + launchIntent);
-                                onEnter(0,0,false,".",".");
-                            }
-                            break;
-                        }
-                    }
-                    case 11: {
-                        savedData.useGoogleIcons = false;
-                        loadListView();
-                        onEnter(0, 0, false, ".", ".");
+                        changeOptionsMenu.menuOpen(this, index, islaunchable, launchIntent, appname, Llayout);
                         break;
                     }
                     case 12:{
-                        savedData.useGoogleIcons = true;
-                        loadListView();
-                        onEnter(0,0,false,".",".");
+                        changeOptionsMenu.toggleGoogleIcons(this, Llayout);
                         break;
                     }
                     case 13:{
-                        if (savedData.mirrorMode){
-                            savedData.mirrorMode=false;
-                            loadListView();
-                            onEnter(0,0,false,".",".");
-                            break;
-                        }
-                        else{
-                            savedData.mirrorMode=true;
-                            loadListView();
-                            onEnter(0,0,false,".",".");
-                            break;
-                        }
+                        changeOptionsMenu.mirrorUI(this, Llayout);
+                        break;
                     }
                     case 14:{
-                        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
-                        if (secondaryIndex!=0){
-                            savedData.fontCol = secondaryIndex;
-                            onEnter(0,0,false,".",".");
-                            break;
-                        }
-                        Llayout = (LinearLayout) findViewById(R.id.optionslist);
-                        Llayout.removeAllViews();
-                        //load the header that contains the current color
-                        Llayout.addView(createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(savedData.fontCol), 0, 0, false, ".", "."));
-                        //create the inflater for the seeker bars
-                        View child = getLayoutInflater().inflate(R.layout.color_select, null);
-                        //get the red seeker bar, then set it's progress
-                        SeekBar seekerRed = (SeekBar) child.findViewById(R.id.redSeek);
-                        seekerRed.setProgress(Color.red(savedData.fontCol));
-                        //lastly change the listener
-                        seekerRed.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                                savedData.fontCol = Color.argb(255, progress, Color.green(savedData.fontCol), Color.blue(savedData.fontCol));
-                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
-                            }
-
-                            //these are useless, but we need them to exist
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-                            }
-                        });
-                        //Now we do it again for green
-                        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
-                        seekerGreen.setProgress(Color.green(savedData.fontCol));
-                        //lastly change the listener
-                        seekerGreen.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                                savedData.fontCol = Color.argb(255, Color.red(savedData.fontCol), progress, Color.blue(savedData.fontCol));
-                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
-                            }
-
-                            //these are useless, but we need them to exist
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-                            }
-                        });
-                        //Now we do it one more time for blue
-                        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
-                        seekerBlue.setProgress(Color.blue(savedData.fontCol));
-                        //lastly change the listener
-                        seekerBlue.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                                savedData.fontCol = Color.argb(255,  Color.red(savedData.fontCol), Color.green(savedData.fontCol), progress);
-                                ((ImageView) ((LinearLayout) findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(savedData.fontCol));
-                            }
-                            //these are useless, but we need them to exist
-                            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-                            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-                        });
-                        //and finally add the view
-                        Llayout.addView(child);
-                        //add the item for save and quit
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Save and close", svgLoad(R.drawable.blank), 0, 0, false, ".", "."));
-
-                        //add the item for cancel changes
-                        Llayout.addView(createMenuEntry(R.layout.options_item, "Close without saving", svgLoad(R.drawable.blank), 14, savedData.fontCol, false, ".", "."));
+                        changeOptionsMenu.colorSelect(this, Llayout, secondaryIndex);
                         break;
                     }
 
@@ -751,7 +579,7 @@ public class EternalMediaBar extends Activity {
             //first, move the item highlight
             listmove(index, false);
             //load the layout and make sure nothing is in it.
-            new onItemSelected().menuOpen(this, index, islaunchable, launchIntent, appname, (LinearLayout) findViewById(R.id.optionslist));
+        changeOptionsMenu.menuOpen(this, index, islaunchable, launchIntent, appname, (LinearLayout) findViewById(R.id.optionslist));
     }
 
     //call function for creating app detail entries, usually for menus
