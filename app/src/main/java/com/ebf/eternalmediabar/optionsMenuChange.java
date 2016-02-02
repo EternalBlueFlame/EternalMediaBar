@@ -20,45 +20,45 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     /////////////////Open the menu////////////////////
     //////////////////////////////////////////////////
-    public void menuOpen(final EternalMediaBar eternalMediaBar, final int index, final boolean islaunchable, final String launchIntent, final String appname, LinearLayout Llayout){
+    public void menuOpen(final EternalMediaBar eternalMediaBar, final boolean isLaunchable, final String launchIntent, final String appName, LinearLayout lLayout){
         //set the variables for the menu
         eternalMediaBar.optionsMenu = true;
         eternalMediaBar.optionVitem = 1;
         //load the layout and make sure nothing is in it.
-        ScrollView Slayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
-        Llayout.removeAllViews();
+        ScrollView sLayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
+        lLayout.removeAllViews();
         //animate the menu opening
         TranslateAnimation anim;
         if (!eternalMediaBar.savedData.mirrorMode) {
             //reset the position
-            Slayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels);
+            sLayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels);
             anim = new TranslateAnimation(0, -(145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         else{
             //reset the position
-            Slayout.setX(-145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f);
+            sLayout.setX(-145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f);
             anim = new TranslateAnimation(0, (145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         anim.setDuration(200);
         anim.setInterpolator(new LinearInterpolator());
         anim.setFillEnabled(false);
-        Slayout.setAnimation(anim);
+        sLayout.setAnimation(anim);
         //now move the menu itself
-        Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+        sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                ScrollView Slayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
+                ScrollView sLayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
                 // clear animation to prevent flicker
-                Slayout.clearAnimation();
+                sLayout.clearAnimation();
                 //manually set position of menu
                 if (!eternalMediaBar.savedData.mirrorMode) {
-                    Slayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels - (145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f));
+                    sLayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels - (145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f));
                 } else {
-                    Slayout.setX(0);
+                    sLayout.setX(0);
                 }
             }
 
@@ -68,28 +68,29 @@ public class optionsMenuChange {
         });
 
 
-        if (islaunchable) {
-            loadAppOptionsMenu(eternalMediaBar, index, launchIntent, appname, Llayout);
+        if (isLaunchable) {
+            loadAppOptionsMenu(eternalMediaBar, launchIntent, appName, lLayout);
             eternalMediaBar.optionVitem=1;
         }
         else{
-            loadMainOptionsItems(eternalMediaBar, Llayout);
+            loadMainOptionsItems(eternalMediaBar, lLayout);
             eternalMediaBar.optionVitem=1;
         }
 
 
         //close settings menu, we put this here since it's on the menu without exception.
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), -1, 0, false, launchIntent, appName));
     }
+
 
     //////////////////////////////////////////////////
     /////////////////Close the menu///////////////////
     //////////////////////////////////////////////////
-    public void menuClose(final EternalMediaBar eternalMediaBar, LinearLayout Llayout) {
+    public void menuClose(final EternalMediaBar eternalMediaBar, LinearLayout lLayout) {
         //load the layouts
-        ScrollView Slayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
+        ScrollView sLayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
         //empty the one that has content
-        Llayout.removeAllViews();
+        lLayout.removeAllViews();
         //set the variables in the main activity
         eternalMediaBar.optionsMenu = false;
         eternalMediaBar.optionVitem=1;
@@ -104,23 +105,23 @@ public class optionsMenuChange {
         anim.setDuration(200);
         anim.setInterpolator(new LinearInterpolator());
         anim.setFillEnabled(false);
-        Slayout.setAnimation(anim);
+        sLayout.setAnimation(anim);
         //now move the menu itself
-        Slayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+        sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                ScrollView Slayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
+                ScrollView sLayout = (ScrollView) eternalMediaBar.findViewById(R.id.options_displayscroll);
                 // clear animation to prevent flicker
-                Slayout.clearAnimation();
+                sLayout.clearAnimation();
                 //manually set position of menu off screen
                 if (!eternalMediaBar.savedData.mirrorMode) {
-                    Slayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels);
+                    sLayout.setX(eternalMediaBar.getResources().getDisplayMetrics().widthPixels);
                 }
                 else{
-                    Slayout.setX(-145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f);
+                    sLayout.setX(-145 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f);
                 }
             }
 
@@ -128,33 +129,34 @@ public class optionsMenuChange {
             public void onAnimationRepeat(Animation animation) {}
         });
         //save any changes
-        eternalMediaBar.savefiles();
+        eternalMediaBar.saveFiles();
     }
+
 
     //////////////////////////////////////////////////
     /////Load the settings menu for a selected app////
     //////////////////////////////////////////////////
-    public void loadAppOptionsMenu(EternalMediaBar eternalMediaBar, int index, String launchIntent, String appname, LinearLayout Llayout){
+    public void loadAppOptionsMenu(EternalMediaBar eternalMediaBar, String launchIntent, String appName, LinearLayout lLayout){
         eternalMediaBar.optionVitem = 1;
 
         //add the app that's selected so the user knows for sure what they are messing with.
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
 
 
         //add all the extra options
 
         //copy the item to another category
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to...", eternalMediaBar.svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to...", eternalMediaBar.svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appName));
 
         //move the item to another category
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to...", eternalMediaBar.svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to...", eternalMediaBar.svgLoad(R.drawable.blank), 3, 0, false, launchIntent, appName));
 
         //first option is to remove an item from the list.
         //in RC2 this will be modified to support hiding the icon even when it's only in one menu
         int i=0;
         for (int ii=0; ii< eternalMediaBar.savedData.vLists.size();){
             for (int iii=0; iii< eternalMediaBar.savedData.vLists.get(ii).size();){
-                if (eternalMediaBar.savedData.vLists.get(ii).get(iii).name.equals(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).get(eternalMediaBar.vitem).name)){
+                if (eternalMediaBar.savedData.vLists.get(ii).get(iii).name.equals(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem).name)){
                     i++;
                 }
                 iii++;
@@ -162,63 +164,66 @@ public class optionsMenuChange {
             ii++;
         }
         if (i>1) {
-            Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Remove From This List", eternalMediaBar.svgLoad(R.drawable.blank), 5, 0, false, launchIntent, "4"));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Remove From This List", eternalMediaBar.svgLoad(R.drawable.blank), 6, 0, false, launchIntent, "4"));
         }
 
         //open the app's settings
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Application Settings", eternalMediaBar.svgLoad(R.drawable.blank), 6, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Application Settings", eternalMediaBar.svgLoad(R.drawable.blank), 7, 0, false, launchIntent, appName));
 
     }
+
 
     //////////////////////////////////////////////////
     /////Load the settings menu for customization/////
     //////////////////////////////////////////////////
-    public void loadMainOptionsItems(EternalMediaBar eternalMediaBar, LinearLayout Llayout){
+    public void loadMainOptionsItems(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
         //add the item for changing whether or not to use Google icons.
         eternalMediaBar.optionVitem = 0;
         if (eternalMediaBar.savedData.useGoogleIcons){
-            Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 11, 0, false, ".", "."));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
         }
         else{
-            Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 12, 0, false, ".", "."));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
         }
 
         //add the item for mirroring the UI
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", eternalMediaBar.svgLoad(R.drawable.blank), 13, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", eternalMediaBar.svgLoad(R.drawable.blank), 9, 0, false, ".", "."));
 
         //add the item for changing the font color
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", eternalMediaBar.svgLoad(R.drawable.blank), 14, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", eternalMediaBar.svgLoad(R.drawable.blank), 10, 0, false, ".", "."));
     }
+
 
     //////////////////////////////////////////////////
     //////////////Copy an app menu item///////////////
     //////////////////////////////////////////////////
-    public void createCopyList(EternalMediaBar eternalMediaBar, LinearLayout Llayout, String launchIntent, String appname){
+    public void createCopyList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, String launchIntent, String appName){
         eternalMediaBar.optionVitem=0;
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
-            if (i != eternalMediaBar.hitem) {
-                Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 3, i, false, ".", "3"));
+            if (i != eternalMediaBar.hItem) {
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
             }
             i++;
         }
         //return to first settings menu
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appName));
         //close settings menu
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
     }
+
 
     //////////////////////////////////////////////////
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
-    public void createMoveList(EternalMediaBar eternalMediaBar, LinearLayout Llayout, String launchIntent, String appname){
+    public void createMoveList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, String launchIntent, String appName){
         eternalMediaBar.optionVitem = 0;
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appname, null, 7, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
-            if (i != eternalMediaBar.hitem) {
-                Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", ""));
+            if (i != eternalMediaBar.hItem) {
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
             }
             i++;
         }
@@ -228,35 +233,36 @@ public class optionsMenuChange {
                         if (cm.getActiveNetworkInfo() != null) {
                             //if there is Wifi, go ahead and try.
                             if (cm.getActiveNetworkInfo() == cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)) {
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, optii - 1, false, launchIntent, appname);
-                                //Llayout.addView(child);
+                                //child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, i - 1, false, launchIntent, appName);
+                                //lLayout.addView(child);
                             }
                             //if there is no wifi but there is still internet
                             else{
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, optii - 1, false, launchIntent, appname);
-                               //Llayout.addView(child);
+                                //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, i - 1, false, launchIntent, appName);
+                               //lLayout.addView(child);
                             }
                         }/*/
         //return to first settings menu
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appName));
         //close settings menu
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appname));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
     }
+
 
     //////////////////////////////////////////////////
     ////////////////Color select menu/////////////////
     //////////////////////////////////////////////////
-    public void colorSelect(final EternalMediaBar eternalMediaBar, LinearLayout Llayout, int secondaryIndex){
+    public void colorSelect(final EternalMediaBar eternalMediaBar, LinearLayout lLayout, int secondaryIndex){
         //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
         if (secondaryIndex!=0){
             eternalMediaBar.savedData.fontCol = secondaryIndex;
-            menuClose(eternalMediaBar, Llayout);
+            menuClose(eternalMediaBar, lLayout);
             return;
         }
-        Llayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
-        Llayout.removeAllViews();
+        lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
+        lLayout.removeAllViews();
         //load the header that contains the current color
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(eternalMediaBar.savedData.fontCol), 0, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
         //create the inflater for the seeker bars
         View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
@@ -317,13 +323,14 @@ public class optionsMenuChange {
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
         //and finally add the view
-        Llayout.addView(child);
+        lLayout.addView(child);
         //add the item for save and quit
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, ".", "."));
 
         //add the item for cancel changes
-        Llayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", eternalMediaBar.svgLoad(R.drawable.blank), 14, eternalMediaBar.savedData.fontCol, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", eternalMediaBar.svgLoad(R.drawable.blank), 10, eternalMediaBar.savedData.fontCol, false, ".", "."));
     }
+
 
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
@@ -335,74 +342,78 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     //////////////Copy an app menu item///////////////
     //////////////////////////////////////////////////
-    public void copyItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout Llayout){
-        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).get(eternalMediaBar.vitem));
-        menuClose(eternalMediaBar, Llayout);
+    public void copyItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout lLayout){
+        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
+        menuClose(eternalMediaBar, lLayout);
     }
+
 
     //////////////////////////////////////////////////
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
-    public void moveItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout Llayout){
-        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).get(eternalMediaBar.vitem));
-        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).remove(eternalMediaBar.vitem);
-        menuClose(eternalMediaBar, Llayout);
+    public void moveItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout lLayout){
+        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
+        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).remove(eternalMediaBar.vItem);
+        menuClose(eternalMediaBar, lLayout);
         //make sure that if the new apps list disappears, we aren't on it.
-        if (eternalMediaBar.hitem == (eternalMediaBar.savedData.vLists.size()-1) && eternalMediaBar.savedData.vLists.get(eternalMediaBar.savedData.vLists.size()-1).size()==0){
-            eternalMediaBar.listmove(0, true);
+        if (eternalMediaBar.hItem == (eternalMediaBar.savedData.vLists.size()-1) && eternalMediaBar.savedData.vLists.get(eternalMediaBar.savedData.vLists.size()-1).size()==0){
+            eternalMediaBar.listMove(0, true);
         }
         else{
             eternalMediaBar.loadListView();
         }
     }
 
-    /////////////////NOT IMPLEMENTED//////////////////
+
     //////////////////////////////////////////////////
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
-    public void hideApp(EternalMediaBar eternalMediaBar, LinearLayout Llayout){
-        menuClose(eternalMediaBar, Llayout);
-        eternalMediaBar.savedData.hiddenApps.add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).get(eternalMediaBar.vitem));
-        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hitem).remove(eternalMediaBar.vitem);
+    public void hideApp(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
+        menuClose(eternalMediaBar, lLayout);
+        eternalMediaBar.savedData.hiddenApps.add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
+        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).remove(eternalMediaBar.vItem);
         eternalMediaBar.loadListView();
     }
+
 
     //////////////////////////////////////////////////
     ////////////Open application Settings/////////////
     //////////////////////////////////////////////////
-    public Intent openAppSettings(EternalMediaBar eternalMediaBar, LinearLayout Llayout, String launchIntent){
+    public Intent openAppSettings(EternalMediaBar eternalMediaBar, LinearLayout lLayout, String launchIntent){
 
         //open application settings
         Intent intent = new Intent();
         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
-        menuClose(eternalMediaBar, Llayout);
+        menuClose(eternalMediaBar, lLayout);
         return intent;
     }
+
 
     //////////////////////////////////////////////////
     ////////////////////Mirror UI/////////////////////
     //////////////////////////////////////////////////
-    public void mirrorUI(EternalMediaBar eternalMediaBar, LinearLayout Llayout){
+    public void mirrorUI(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
         if (eternalMediaBar.savedData.mirrorMode){
             eternalMediaBar.savedData.mirrorMode=false;
         }
         else{
             eternalMediaBar.savedData.mirrorMode=true;
         }
-        menuClose(eternalMediaBar, Llayout);
+        menuClose(eternalMediaBar, lLayout);
     }
+
 
     //////////////////////////////////////////////////
     ///////////Enable/Disable Google Icons////////////
     //////////////////////////////////////////////////
-    public void toggleGoogleIcons(EternalMediaBar eternalMediaBar, LinearLayout Llayout){
+    public void toggleGoogleIcons(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
         if (eternalMediaBar.savedData.useGoogleIcons){
             eternalMediaBar.savedData.useGoogleIcons=false;
         }
         else{
             eternalMediaBar.savedData.useGoogleIcons=true;
         }
-        menuClose(eternalMediaBar, Llayout);
+        menuClose(eternalMediaBar, lLayout);
     }
 }
