@@ -7,13 +7,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,7 +35,7 @@ public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
     private List<AppDetail> oldApps = new ArrayList<>();
-    public List<AppDetail> hli = new ArrayList<>();
+    public List<View> hli = new ArrayList<>();
     public settingsClass savedData = new settingsClass();
 
     public int hItem = 0;
@@ -242,15 +244,12 @@ public class EternalMediaBar extends Activity {
                 }
 
                 if (proceed) {
-                    //change the old shadow, assuming it exists.
+                    //change the old item, if it exists
                     TextView appLabel;
                     ImageView appIcon;
                     try {
-                        appLabel = (TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label);
-                        appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
-                        //change the font type and lines
-                        appLabel.setLines(2);
-                        appLabel.setTypeface(null, Typeface.NORMAL);
+                        //change the old font face
+                        ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                         //scale the icon back to normal
                         appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
                         appIcon.setScaleX(1f);
@@ -259,12 +258,8 @@ public class EternalMediaBar extends Activity {
                     catch(Exception e){}
                     //change vItem
                     vItem = move;
-                    //change the new shadow
-                    appLabel = (TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label);
-                    appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
-                    //change the font type and lines
-                    appLabel.setLines(2);
-                    appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    //change the font face
+                    ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon larger
                     appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1.25f);
@@ -291,24 +286,15 @@ public class EternalMediaBar extends Activity {
                 }
 
                 if (proceed) {
-                    //change the old shadow
-                    TextView appLabel = (TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
-                    appLabel.setShadowLayer(0f, 0f, 0f, Color.argb(150, 0, 0, 0));
-                    //change the font type and lines
-                    appLabel.setLines(2);
-                    appLabel.setTypeface(null, Typeface.NORMAL);
+                    //set the font face.
+                    ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                     //scale the icon back to normal
                     ImageView appIcon = (ImageView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
                     //change OptionsVItem
                     optionVitem = move;
-                    //change the new shadow
-                    appLabel = (TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label);
-                    appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
-                    //change the font type and lines
-                    appLabel.setLines(2);
-                    appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
+                    ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon to be larger
                     appIcon = (ImageView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1.25f);
@@ -319,7 +305,6 @@ public class EternalMediaBar extends Activity {
             }
         }
         else{
-
             LinearLayout hLayout = (LinearLayout) findViewById(R.id.categories);
             boolean proceed = true;
             //if you are trying to move too far down set proceed to false
@@ -327,7 +312,7 @@ public class EternalMediaBar extends Activity {
                 proceed = false;
             }
             //if you are trying to move too far up set proceed to false
-            else if ((hItem + 1) > hLayout.getChildCount()) {
+            else if (move > hLayout.getChildCount()) {
                 proceed = false;
             }
 
@@ -336,20 +321,6 @@ public class EternalMediaBar extends Activity {
                 hItem = move;
                 //reload the list
                 loadListView();
-                //change the new shadow, because we reload the list first, we don't have to manually reset the previous entry.
-                TextView appLabel = (TextView) hLayout.getChildAt(hItem).findViewById(R.id.item_app_label);
-                appLabel.setShadowLayer(25f, 1f, 1f, Color.argb(255, 0, 0, 0));
-                appLabel.setLines(2);
-                //change the font type
-                appLabel.setTypeface(null, Typeface.BOLD_ITALIC);
-                //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
-                ImageView appIcon = (ImageView) hLayout.getChildAt(hItem).findViewById(R.id.item_app_icon);
-                appIcon.setScaleX(1.25f);
-                appIcon.setScaleY(1.25f);
-                appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
-                //scroll to the new entry
-                hLayout.scrollTo(0, (int) hLayout.getChildAt(hItem).getY());
-                listMove(0, false);
             }
         }
     }
@@ -445,16 +416,16 @@ public class EternalMediaBar extends Activity {
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
         //check if we are using google icons, if not use built-in icons.
         if (!savedData.useGoogleIcons) {
-            hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
-            hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
-            hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
-            hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
-            hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));
-            hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Social", svgLoad(R.drawable.social_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Media", svgLoad(R.drawable.media_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Games", svgLoad(R.drawable.games_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Web", svgLoad(R.drawable.web_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Utility", svgLoad(R.drawable.extras_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "Settings", svgLoad(R.drawable.settings_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));
         }
         else{
-            try{hli.add(createAppDetail(1, "Social", manager.getApplicationIcon("com.android.contacts")));}
-            catch (Exception e){hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));}
+            try{hli.add(createMenuEntry(R.layout.category_item, "Social", manager.getApplicationIcon("com.android.contacts"),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Social", manager.getApplicationIcon("com.android.contacts")));}
+            catch (Exception e){hli.add(createMenuEntry(R.layout.category_item, "Social", svgLoad(R.drawable.social_144px),hli.size() , 0, false, ".", "hItem"));}//hli.add(createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));}
             //For media we actually try and combine some icons, so this is more complicated
             Drawable[] layers = new Drawable[2];
             try{layers[0] = manager.getApplicationIcon("com.google.android.videos");}
@@ -462,24 +433,21 @@ public class EternalMediaBar extends Activity {
             try{layers[1] = new ScaleDrawable(manager.getApplicationIcon("com.google.android.music"),Gravity.CENTER,1f,1f);
                     layers[1].setLevel(7000);}
             catch (Exception e){}
-            if (layers != new Drawable[2]){
-                hli.add(createAppDetail(1, "Media", new LayerDrawable(layers)));
-            }
-            else{
-                hli.add(createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));
-            }
-            try{hli.add(createAppDetail(1, "Games", manager.getApplicationIcon("com.google.android.play.games")));}
-            catch (Exception e){hli.add(createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));}
-            try{hli.add(createAppDetail(1, "Web", manager.getApplicationIcon("com.android.chrome")));}
-            catch (Exception e){hli.add(createAppDetail(1, "Web", svgLoad(R.drawable.web_144px)));}
-            try{hli.add(createAppDetail(1, "Utility", manager.getApplicationIcon("com.google.android.apps.docs")));}
-            catch (Exception e){hli.add(createAppDetail(1, "Utility", svgLoad(R.drawable.extras_144px)));}
-            try{hli.add(createAppDetail(1, "Settings", manager.getApplicationIcon("com.android.settings")));}
-            catch (Exception e){hli.add(createAppDetail(1, "Settings", svgLoad(R.drawable.settings_144px)));}
+            if (layers != new Drawable[2]){hli.add(createMenuEntry(R.layout.category_item, "Media", new LayerDrawable(layers),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Media", new LayerDrawable(layers)));}
+            else{hli.add(createMenuEntry(R.layout.category_item, "Media", svgLoad(R.drawable.media_144px) ,hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Media", svgLoad(R.drawable.media_144px)));}
+
+            try{hli.add(createMenuEntry(R.layout.category_item, "Games", manager.getApplicationIcon("com.google.android.play.games"),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Games", manager.getApplicationIcon("com.google.android.play.games")));}
+            catch (Exception e){hli.add(createMenuEntry(R.layout.category_item, "Games", svgLoad(R.drawable.games_144px),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Games", svgLoad(R.drawable.games_144px)));}
+            try{hli.add(createMenuEntry(R.layout.category_item, "Web", manager.getApplicationIcon("com.android.chrome"),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Web", manager.getApplicationIcon("com.android.chrome")));}
+            catch (Exception e){hli.add(createMenuEntry(R.layout.category_item, "Web", svgLoad(R.drawable.web_144px),hli.size() , 0, false, ".", "hItem"));}
+            try{hli.add(createMenuEntry(R.layout.category_item, "Utility", manager.getApplicationIcon("com.google.android.apps.docs"),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Utility", manager.getApplicationIcon("com.google.android.apps.docs")));}
+            catch (Exception e){hli.add(createMenuEntry(R.layout.category_item, "Utility", svgLoad(R.drawable.extras_144px),hli.size() , 0, false, ".", "hItem"));}
+            try{hli.add(createMenuEntry(R.layout.category_item, "Settings", manager.getApplicationIcon("com.android.settings"),hli.size() , 0, false, ".", "hItem"));}//createAppDetail(1, "Settings", manager.getApplicationIcon("com.android.settings")));}
+            catch (Exception e){hli.add(createMenuEntry(R.layout.category_item, "Settings", svgLoad(R.drawable.settings_144px),hli.size() , 0, false, ".", "hItem"));}
         }
         //now draw the new apps icon if there are any new apps.
         if (savedData.vLists.get(savedData.vLists.size()-1).size() >0) {
-            hli.add(createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
+            hli.add(createMenuEntry(R.layout.category_item, "New Apps", svgLoad(R.drawable.new_install_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
         }
 
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
@@ -487,9 +455,21 @@ public class EternalMediaBar extends Activity {
         layout.removeAllViews();
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii ).label, hli.get(ii).icon, ii, 0, false, "", ""));
+                layout.addView(hli.get(ii));
         ii++;
         }
+        //change the display for the appropriate icon
+        //change the font type
+        ((TextView) layout.getChildAt(hItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+        //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
+        ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.item_app_icon);
+        appIcon.setScaleX(1.25f);
+        appIcon.setScaleY(1.25f);
+        appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
+        //scroll to the new entry
+        layout.scrollTo(0, (int) layout.getChildAt(hItem).getY());
+        Log.d("EternalMediaBar: ", "resize attempted");
+        listMove(0, false);
 
 
         //copy category method but with the vList
@@ -503,31 +483,13 @@ public class EternalMediaBar extends Activity {
         if (hItem == 5){
             vLayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 1, 0, false, ".", ".opt"));
         }
-
-
         for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
             vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
             ii++;
         }
+        //make sure the vList item is selected
+        listMove(0, false);
     }
-
-
-    //////////////////////////////////////////////////
-    ///////Function for creating an App Detail////////
-    //////////////////////////////////////////////////
-    public AppDetail createAppDetail (int isMenu, String name, @Nullable Drawable icon){
-        AppDetail app = new AppDetail();
-        app.isMenu = isMenu;
-        app.label = name;
-        if (icon!=null) {
-            app.icon = icon;
-        }
-        else{
-            svgLoad(R.drawable.error_144px);
-        }
-        return app;
-    }
-
 
     //////////////////////////////////////////////////
     /////////Function for creating list items/////////
@@ -577,7 +539,15 @@ public class EternalMediaBar extends Activity {
                 }
                 else {
                     if (isLaunchable) {
-                    EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
+                        if (secondaryIndex==1){
+                            changeOptionsMenu.menuOpen(EternalMediaBar.this, true, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
+                        }
+                        else {
+                            EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
+                        }
+                    }
+                    else if(appName.equals("hItem")){
+                        listMove(index, true);
                     }
                     else {
                         //initialize the variables for the list ahead of time

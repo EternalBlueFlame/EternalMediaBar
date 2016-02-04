@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 
 //This class is intended to manage a large number of functions related to menu interactions,
@@ -79,7 +80,7 @@ public class optionsMenuChange {
 
 
         //close settings menu, we put this here since it's on the menu without exception.
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), -1, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
     }
 
 
@@ -203,12 +204,12 @@ public class optionsMenuChange {
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText(), eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
             }
             i++;
         }
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 1, false, launchIntent, appName));
         //close settings menu
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
     }
@@ -223,7 +224,7 @@ public class optionsMenuChange {
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText(), eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
             }
             i++;
         }
@@ -243,7 +244,7 @@ public class optionsMenuChange {
                             }
                         }/*/
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 1, false, launchIntent, appName));
         //close settings menu
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
     }
@@ -262,7 +263,7 @@ public class optionsMenuChange {
         lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         //load the header that contains the current color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color TEST", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
         //create the inflater for the seeker bars
         View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
