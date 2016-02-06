@@ -14,6 +14,9 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 
 //This class is intended to manage a large number of functions related to menu interactions,
 public class optionsMenuChange {
@@ -417,4 +420,39 @@ public class optionsMenuChange {
         }
         menuClose(eternalMediaBar, lLayout);
     }
+
+
+    //////////////////////////////////////////////////
+    //////////////////Organize List///////////////////
+    //////////////////////////////////////////////////
+    public void organizeList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, int secondaryIndex, int method){
+        switch(method){
+            //no organization
+            case 0:{}
+            //alphabetical
+            case 1:{
+                Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
+                    @Override
+                    public int compare(AppDetail lhs, AppDetail rhs) {
+                        return lhs.label.toString().compareTo(rhs.label.toString());
+                    }
+                });
+            }
+            //reverse alphabetical
+            case 2:{
+                Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
+                    @Override
+                    public int compare(AppDetail lhs, AppDetail rhs) {
+                        return rhs.label.toString().compareTo(lhs.label.toString());
+                    }
+                });
+            }
+            //Most used
+            case 3:{
+
+            }
+
+        }
+    }
+
 }

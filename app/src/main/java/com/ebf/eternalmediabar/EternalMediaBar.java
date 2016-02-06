@@ -479,6 +479,10 @@ public class EternalMediaBar extends Activity {
             i++;
         }
         vLayout.removeAllViews();
+
+
+        changeOptionsMenu.organizeList(this, vLayout, hItem, 1);
+
         //Create entries for EMB specific apps
         if (hItem == 5){
             vLayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 1, 0, false, ".", ".opt"));
@@ -499,6 +503,7 @@ public class EternalMediaBar extends Activity {
         View child = getLayoutInflater().inflate(inflater, null);
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
         appLabel.setText(text);
+        appLabel.setTextColor(savedData.fontCol);
         //if the launch intent exists try and add an icon from it
         if (launchIntent.length()>1) {
             //if it's an options menu item the image view will fail and skip this
