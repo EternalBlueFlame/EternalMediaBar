@@ -261,6 +261,7 @@ public class optionsMenuChange {
         if (secondaryIndex!=0){
             eternalMediaBar.savedData.fontCol = secondaryIndex;
             menuClose(eternalMediaBar, lLayout);
+            eternalMediaBar.loadListView();
             return;
         }
         lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
@@ -334,6 +335,27 @@ public class optionsMenuChange {
         //add the item for cancel changes
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", eternalMediaBar.svgLoad(R.drawable.blank), 10, eternalMediaBar.savedData.fontCol, false, ".", "."));
     }
+
+    //////////////////////////////////////////////////
+    /////Load the settings menu for customization/////
+    //////////////////////////////////////////////////
+    public void listOrganizeSelect(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
+        //add the item for changing whether or not to use Google icons.
+        eternalMediaBar.optionVitem = 0;
+        if (eternalMediaBar.savedData.useGoogleIcons){
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+        }
+        else{
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+        }
+
+        //add the item for mirroring the UI
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", eternalMediaBar.svgLoad(R.drawable.blank), 9, 0, false, ".", "."));
+
+        //add the item for changing the font color
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", eternalMediaBar.svgLoad(R.drawable.blank), 10, 0, false, ".", "."));
+    }
+
 
 
     //////////////////////////////////////////////////
@@ -434,7 +456,7 @@ public class optionsMenuChange {
                 Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
                     @Override
                     public int compare(AppDetail lhs, AppDetail rhs) {
-                        return lhs.label.toString().compareTo(rhs.label.toString());
+                        return rhs.label.toString().compareTo(lhs.label.toString());
                     }
                 });
             }
@@ -443,7 +465,7 @@ public class optionsMenuChange {
                 Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
                     @Override
                     public int compare(AppDetail lhs, AppDetail rhs) {
-                        return rhs.label.toString().compareTo(lhs.label.toString());
+                        return lhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });
             }
