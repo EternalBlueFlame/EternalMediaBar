@@ -35,6 +35,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
+-	if you plugin headphones or a controller it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
 -	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background).
 -	auto app organizer using an XML parse of the google store's website (probably offload to an async task so the progress can be measured and a loading screen can be given to the user).
@@ -42,14 +43,16 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	listview scroll snapping.
 -	List organizer, allow users to manually change positions of apps in the list, and sort them alphabetically (EMB apps stay topmost).
 -	extra settings:
--	change font color //absolute white disables it.
--	change icon color //hmenu only //absolute white disables it.
+-	change icon color //hmenu only
 -	change menu background color //effects icon background and slide out menu color.
 -	enable/disable custom app backgrounds.
 -	download app backgrounds from google play (xml parse).
 -	un-hide hidden apps //selective menu.
 -	enable manufacturer icons //same as google icons, but instead uses the icons from HTC/Samgsung/Sony/etc apps.
 -	disable app boot animation.
+-	expanded manual organization of lists.
+-	organization grouping dependant on developer //combines with other organization methods
+-	organize by date installed/updated //highly dependant on how the OS handles this sort of thing
 </hr>
 <hr>
 <strong>RC3 plans:</strong>

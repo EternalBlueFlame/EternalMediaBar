@@ -9,7 +9,7 @@ public class AppDetail implements Serializable {
     CharSequence label;
     String name;
     Drawable icon;
-    int isMenu; //use 0 for false, 1 for menu, 2 is null, and >2 for actual settings entries
+    boolean isPersistent;
 }
 
 

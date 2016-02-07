@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -95,6 +94,8 @@ public class EternalMediaBar extends Activity {
                         savedData.menuCol = Color.WHITE;
                         savedData.iconCol = Color.WHITE;
                         savedData.hiddenApps = new ArrayList<>();
+                        int[] tempInt = new int[]{0,1,1};
+                        savedData.organizeMode= new int[][]{tempInt, tempInt, tempInt, tempInt, tempInt, tempInt, tempInt};
                     }
                 }
                 //load in the apps
@@ -341,7 +342,7 @@ public class EternalMediaBar extends Activity {
             AppDetail appRI = new AppDetail();
             appRI.label = ri.loadLabel(manager);
             appRI.name = ri.activityInfo.packageName;
-            appRI.isMenu = 0;
+            appRI.isPersistent = false;
             appRI.icon = null;
             //add the app to the list of all new apps to compare against oldApps later.
             newApps.add(ri.activityInfo.packageName);
@@ -368,7 +369,7 @@ public class EternalMediaBar extends Activity {
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
             for (int i = 0; i < oldApps.size(); ) {
-                if (!newApps.contains(oldApps.get(i).name)){
+                if (!newApps.contains(oldApps.get(i).name) && !oldApps.get(i).isPersistent){
                     //create an instance of the app
                     AppDetail toRemove = oldApps.get(i);
                     //search all lists for it and remove each entry.
@@ -468,7 +469,6 @@ public class EternalMediaBar extends Activity {
         appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
         //scroll to the new entry
         layout.scrollTo(0, (int) layout.getChildAt(hItem).getY());
-        Log.d("EternalMediaBar: ", "resize attempted");
         listMove(0, false);
 
 
@@ -481,15 +481,27 @@ public class EternalMediaBar extends Activity {
         vLayout.removeAllViews();
 
 
-        changeOptionsMenu.organizeList(this, vLayout, hItem, 1);
-
-        //Create entries for EMB specific apps
-        if (hItem == 5){
-            vLayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 1, 0, false, ".", ".opt"));
+        if (savedData.organizeMode[hItem][1] == 1 && savedData.vLists.get(hItem).size() >1) {
+            changeOptionsMenu.organizeList(this, null, 0);
         }
-        for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
-            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
-            ii++;
+
+        //////////////////////////////////////////////////
+        ///////Create entries for EMB specific apps///////
+        //////////////////////////////////////////////////
+        //the settings menu loader
+        if (hItem == 5){
+            vLayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 0, 0, false, ".", ".opt"));
+            for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
+                vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
+                ii++;
+            }
+        }
+        //the loader for every other menu
+        else{
+            for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
+                vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
+                ii++;
+            }
         }
         //make sure the vList item is selected
         listMove(0, false);
@@ -505,7 +517,7 @@ public class EternalMediaBar extends Activity {
         appLabel.setText(text);
         appLabel.setTextColor(savedData.fontCol);
         //if the launch intent exists try and add an icon from it
-        if (launchIntent.length()>1) {
+        if (launchIntent.length()>1 && icon ==null) {
             //if it's an options menu item the image view will fail and skip this
             ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
             //attempt to add the icon from the launchIntent
@@ -517,13 +529,15 @@ public class EternalMediaBar extends Activity {
                     svgLoad(R.drawable.error_144px);
                 }
             }
-
         }
         else{
             try {
                 //try to load pre-designated icon, only for bundled icons.
                 ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
                 appIcon.setImageDrawable(icon);
+                if (icon == svgLoad(R.drawable.blank)){
+                    appLabel.setX(appLabel.getX() - (40 * getResources().getDisplayMetrics().density + 0.5f));
+                }
             } catch (Exception e) {}
         }
 
@@ -561,17 +575,19 @@ public class EternalMediaBar extends Activity {
                         //choose which list to make dependant on the values given for the call.
                         switch (index) {
                             case -1:{/*/ Null Case /*/}
-                            case 0: {changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout); break;}
-                            case 1: {changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, lLayout);break;}
-                            case 2: {changeOptionsMenu.createCopyList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
-                            case 3: {changeOptionsMenu.createMoveList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
+                            case 0:{changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout); break;}
+                            case 1:{changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, lLayout);break;}
+                            case 2:{changeOptionsMenu.createCopyList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
+                            case 3:{changeOptionsMenu.createMoveList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
                             case 4:{changeOptionsMenu.copyItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
                             case 5:{changeOptionsMenu.moveItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
-                            case 6: {changeOptionsMenu.hideApp(EternalMediaBar.this, lLayout);break;}
-                            case 7: {startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, lLayout, launchIntent));break;}
+                            case 6:{changeOptionsMenu.hideApp(EternalMediaBar.this, lLayout);break;}
+                            case 7:{startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, lLayout, launchIntent));break;}
                             case 8:{changeOptionsMenu.toggleGoogleIcons(EternalMediaBar.this, lLayout);break;}
                             case 9:{changeOptionsMenu.mirrorUI(EternalMediaBar.this, lLayout);break;}
                             case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, lLayout, secondaryIndex);break;}
+                            case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this, lLayout, secondaryIndex, launchIntent, appName);break;}
+                            case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, lLayout, secondaryIndex);break;}
 
                         }
                     }
@@ -585,7 +601,9 @@ public class EternalMediaBar extends Activity {
                 if (optionsMenu){
                     changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
                 }
-                listMove(index, false);
+                else {
+                    listMove(index, false);
+                }
                 changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
                 return true;
             }

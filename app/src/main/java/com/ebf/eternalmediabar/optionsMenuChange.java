@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -72,10 +73,12 @@ public class optionsMenuChange {
         });
 
 
+        //if the program can be launched open the app options menu
         if (isLaunchable) {
             loadAppOptionsMenu(eternalMediaBar, launchIntent, appName, lLayout);
             eternalMediaBar.optionVitem=1;
         }
+        //otherwise load the normal options menu
         else{
             loadMainOptionsItems(eternalMediaBar, lLayout);
             eternalMediaBar.optionVitem=1;
@@ -132,8 +135,9 @@ public class optionsMenuChange {
             @Override
             public void onAnimationRepeat(Animation animation) {}
         });
-        //save any changes
+        //save any changes and reload the view
         eternalMediaBar.saveFiles();
+        eternalMediaBar.loadListView();
     }
 
 
@@ -173,6 +177,9 @@ public class optionsMenuChange {
 
         //open the app's settings
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Application Settings", eternalMediaBar.svgLoad(R.drawable.blank), 7, 0, false, launchIntent, appName));
+
+        //open the organization menu
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Reorganize This Category", eternalMediaBar.svgLoad(R.drawable.blank), 11, 0, false, launchIntent, appName));
 
     }
 
@@ -261,13 +268,12 @@ public class optionsMenuChange {
         if (secondaryIndex!=0){
             eternalMediaBar.savedData.fontCol = secondaryIndex;
             menuClose(eternalMediaBar, lLayout);
-            eternalMediaBar.loadListView();
             return;
         }
         lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         //load the header that contains the current color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color TEST", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
         //create the inflater for the seeker bars
         View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
@@ -339,21 +345,48 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     /////Load the settings menu for customization/////
     //////////////////////////////////////////////////
-    public void listOrganizeSelect(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
-        //add the item for changing whether or not to use Google icons.
+    public void listOrganizeSelect(EternalMediaBar eternalMediaBar, LinearLayout lLayout, int secondaryIndex, String launchIntent, String appName){
+
+        //we have to reload this menu every time we change it because we're using a radio button system, so we might as well make use of that by changing the variable from its own function.
+        if(secondaryIndex!=0){
+            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2] = secondaryIndex;
+        }
+        //add the item for changing the organization method
         eternalMediaBar.optionVitem = 0;
-        if (eternalMediaBar.savedData.useGoogleIcons){
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+        lLayout.removeAllViews();
+        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==1){
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 1, false, launchIntent, appName));
         }
         else{
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 1, false, launchIntent, appName));
+        }
+        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==2){
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 2, false, launchIntent, appName));
+        }
+        else{
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 2, false, launchIntent, appName));
+        }
+        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==3){
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 3, false, launchIntent, appName));
+        }
+        else{
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 3, false, launchIntent, appName));
         }
 
-        //add the item for mirroring the UI
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", eternalMediaBar.svgLoad(R.drawable.blank), 9, 0, false, ".", "."));
 
-        //add the item for changing the font color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", eternalMediaBar.svgLoad(R.drawable.blank), 10, 0, false, ".", "."));
+        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] ==0) {
+            //add the item for only applying this once
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 12, -1, false, launchIntent, appName));
+            //add the item for always applying this
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 12, 1, false, launchIntent, appName));
+        }
+        else{
+            //add the item for only applying this once
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 12, -1, false, launchIntent, appName));
+            //add the item for always applying this
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 12, 1, false, launchIntent, appName));
+
+        }
     }
 
 
@@ -369,6 +402,7 @@ public class optionsMenuChange {
     //////////////Copy an app menu item///////////////
     //////////////////////////////////////////////////
     public void copyItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout lLayout){
+        //create a copy of the selected item in another list
         eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
         menuClose(eternalMediaBar, lLayout);
     }
@@ -395,10 +429,9 @@ public class optionsMenuChange {
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
     public void hideApp(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
-        menuClose(eternalMediaBar, lLayout);
         eternalMediaBar.savedData.hiddenApps.add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
         eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).remove(eternalMediaBar.vItem);
-        eternalMediaBar.loadListView();
+        menuClose(eternalMediaBar, lLayout);
     }
 
 
@@ -424,7 +457,7 @@ public class optionsMenuChange {
             eternalMediaBar.savedData.mirrorMode=false;
         }
         else{
-            eternalMediaBar.savedData.mirrorMode=true;
+            eternalMediaBar.savedData.mirrorMode = true;
         }
         menuClose(eternalMediaBar, lLayout);
     }
@@ -438,7 +471,7 @@ public class optionsMenuChange {
             eternalMediaBar.savedData.useGoogleIcons=false;
         }
         else{
-            eternalMediaBar.savedData.useGoogleIcons=true;
+            eternalMediaBar.savedData.useGoogleIcons = true;
         }
         menuClose(eternalMediaBar, lLayout);
     }
@@ -447,33 +480,50 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     //////////////////Organize List///////////////////
     //////////////////////////////////////////////////
-    public void organizeList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, int secondaryIndex, int method){
-        switch(method){
+    public void organizeList(EternalMediaBar eternalMediaBar, @Nullable LinearLayout lLayout, int secondaryIndex){
+        //we want to define the organization method when we load this menu.
+        if (secondaryIndex ==1){
+            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] =1;
+        }
+        else if (secondaryIndex ==-1){
+            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] =0;
+        }
+
+        switch(eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]){
             //no organization
-            case 0:{}
+            case 0:case 3:{
+                break;
+            }
             //alphabetical
             case 1:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
-                    @Override
-                    public int compare(AppDetail lhs, AppDetail rhs) {
-                        return rhs.label.toString().compareTo(lhs.label.toString());
-                    }
-                });
-            }
-            //reverse alphabetical
-            case 2:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(secondaryIndex), new Comparator<AppDetail>() {
+                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<AppDetail>() {
                     @Override
                     public int compare(AppDetail lhs, AppDetail rhs) {
                         return lhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });
+                if (lLayout != null) {
+                    menuClose(eternalMediaBar, lLayout);
+                }
+                break;
+            }
+            //reverse alphabetical
+            case 2:{
+                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<AppDetail>() {
+                    @Override
+                    public int compare(AppDetail lhs, AppDetail rhs) {
+                        return rhs.label.toString().compareTo(rhs.label.toString());
+                    }
+                });
+                if (lLayout != null) {
+                    menuClose(eternalMediaBar, lLayout);
+                }
+                break;
             }
             //Most used
-            case 3:{
+            case 4:{
 
             }
-
         }
     }
 
