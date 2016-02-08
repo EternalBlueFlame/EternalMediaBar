@@ -12,9 +12,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -368,22 +368,42 @@ public class EternalMediaBar extends Activity {
 
 
         //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
-            for (int i = 0; i < oldApps.size(); ) {
-                if (!newApps.contains(oldApps.get(i).name) && !oldApps.get(i).isPersistent){
-                    //create an instance of the app
-                    AppDetail toRemove = oldApps.get(i);
-                    //search all lists for it and remove each entry.
-                    for (int ii=0; ii< savedData.vLists.size();){
-                        if (savedData.vLists.get(ii).contains(toRemove)){
-                            savedData.vLists.get(ii).remove(toRemove);
-                        }
-                        ii++;
+        for (int i = 0; i < oldApps.size(); ) {
+            if (!newApps.contains(oldApps.get(i).name) && !oldApps.get(i).isPersistent){
+                //create an instance of the app
+                AppDetail toRemove = oldApps.get(i);
+                //search all lists for it and remove each entry.
+                for (int ii=0; ii< savedData.vLists.size();){
+                    if (savedData.vLists.get(ii).contains(toRemove)){
+                        savedData.vLists.get(ii).remove(toRemove);
                     }
-                    oldApps.remove(toRemove);
+                    ii++;
                 }
-                i++;
+                oldApps.remove(toRemove);
             }
-
+            i++;
+        }
+        //check for inbuilt launcher apps, and be sure they are there
+        boolean fail = true;
+        AppDetail eternalSettings = new AppDetail();
+        eternalSettings.isPersistent = true;
+        eternalSettings.label = "Eternal Media Bar - Settings";
+        eternalSettings.name = ".options";
+        for (int i=0;i<savedData.vLists.size();){
+            for (int ii=0; ii<savedData.vLists.get(i).size();){
+                if (savedData.vLists.get(i).get(ii).name.equals(".options")){
+                    Log.d("Eternal Media Bar", "found one");
+                    fail = false;
+                    break;
+                }
+                ii++;
+            }
+            i++;
+        }
+        if (fail){
+            Log.d("Eternal Media Bar", "added the item");
+            savedData.vLists.get(5).add(eternalSettings);
+        }
         saveFiles();
     }
 
@@ -461,14 +481,17 @@ public class EternalMediaBar extends Activity {
         }
         //change the display for the appropriate icon
         //change the font type
-        ((TextView) layout.getChildAt(hItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-        //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
-        ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.item_app_icon);
-        appIcon.setScaleX(1.25f);
-        appIcon.setScaleY(1.25f);
-        appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
-        //scroll to the new entry
-        layout.scrollTo(0, (int) layout.getChildAt(hItem).getY());
+        try {
+            ((TextView) layout.getChildAt(hItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+            //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
+            ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.item_app_icon);
+            appIcon.setScaleX(1.25f);
+            appIcon.setScaleY(1.25f);
+            appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
+            //scroll to the new entry
+            layout.scrollTo(0, (int) layout.getChildAt(hItem).getY());
+        }
+        catch(Exception e){}
         listMove(0, false);
 
 
@@ -485,24 +508,12 @@ public class EternalMediaBar extends Activity {
             changeOptionsMenu.organizeList(this, null, 0);
         }
 
-        //////////////////////////////////////////////////
-        ///////Create entries for EMB specific apps///////
-        //////////////////////////////////////////////////
-        //the settings menu loader
-        if (hItem == 5){
-            vLayout.addView(createMenuEntry(R.layout.list_item, "Eternal Media Bar - Settings", svgLoad(R.drawable.sub_settings_144px), 0, 0, false, ".", ".opt"));
-            for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
-                vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
-                ii++;
-            }
+
+        for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
+            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
+            ii++;
         }
-        //the loader for every other menu
-        else{
-            for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
-                vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
-                ii++;
-            }
-        }
+
         //make sure the vList item is selected
         listMove(0, false);
     }
@@ -525,8 +536,11 @@ public class EternalMediaBar extends Activity {
             try {
                 appIcon.setImageDrawable(manager.getApplicationIcon(launchIntent));
             } catch (Exception e) {
-                if (icon == null) {
-                    svgLoad(R.drawable.error_144px);
+                if (launchIntent.equals(".options")){
+                    appIcon.setImageDrawable(svgLoad(R.drawable.sub_settings_144px));
+                }
+                else if (icon == null) {
+                    appIcon.setImageDrawable(svgLoad(R.drawable.error_144px));
                 }
             }
         }
@@ -546,14 +560,14 @@ public class EternalMediaBar extends Activity {
         btn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (appName.equals(".opt")){
+                if (launchIntent.equals(".options")){
                     if (optionsMenu){
                         changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
                     }
                     else {
                         listMove(index, false);
                         //load the layout and make sure nothing is in it.
-                        changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
+                        changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
                     }
                 }
                 else {
