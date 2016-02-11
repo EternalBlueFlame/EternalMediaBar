@@ -51,67 +51,68 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     ////////////When the app first starts/////////////
     //////////////////////////////////////////////////
-        @Override
-        protected void onCreate (Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            //set the current layout value
-            setContentView(R.layout.activity_eternal_media_bar);
+    @Override
+    protected void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //set the current layout value
+        setContentView(R.layout.activity_eternal_media_bar);
 
-            //run once
-            if (!init) {
-                if (savedData.vLists.size()<=1) {
-                    try {
-                        //try load preferences
-                        //Load the value as a reference to the file instead of a cloned instance of it, just because it's easier, actual efficiency is yet to be determined.
-                        FileInputStream fileStream = openFileInput("lists.dat");
-                        ObjectInputStream objStream = new ObjectInputStream(fileStream);
-                        savedData = (settingsClass) objStream.readObject();
-                        //close the stream to save RAM.
-                        objStream.close();
-                        fileStream.close();
-                        //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
-                        oldApps = savedData.oldApps;
-                    }
-                    catch (Exception e) {
-                        //output to debug log just in case something went fully wrong
-                        e.printStackTrace();
-                        //catch with below by initializing vLists properly
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        //we should initialize the other variables as well.
-                        savedData.useGoogleIcons = false;
-                        savedData.mirrorMode = false;
-                        savedData.cleanCacheOnStart = false;
-                        savedData.gamingMode = false;
-                        savedData.useManufacturerIcons = false;
-                        savedData.loadAppBG = true;
-                        savedData.fontCol = Color.WHITE;
-                        savedData.menuCol = Color.WHITE;
-                        savedData.iconCol = Color.WHITE;
-                        savedData.hiddenApps = new ArrayList<>();
-                        int[] tempInt = new int[]{0,1,1};
-                        savedData.organizeMode= new int[][]{tempInt, tempInt, tempInt, tempInt, tempInt, tempInt, tempInt};
-                    }
+        //run once
+        if (!init) {
+            if (savedData.vLists.size()<=1) {
+                try {
+                    //try load preferences
+                    //Load the value as a reference to the file instead of a cloned instance of it, just because it's easier, actual efficiency is yet to be determined.
+                    FileInputStream fileStream = openFileInput("lists.dat");
+                    ObjectInputStream objStream = new ObjectInputStream(fileStream);
+                    savedData = (settingsClass) objStream.readObject();
+                    //close the stream to save RAM.
+                    objStream.close();
+                    fileStream.close();
+                    //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
+                    oldApps = savedData.oldApps;
                 }
-                //load in the apps
-                loadApps();
-
-                //setup the warning variable
-                warningToggle = new boolean[1];
-                warningToggle[0] = false;
-
-                //make sure this doesn't happen again
-                init = true;
-
-                //Lastly, activate the list move function to load the list view and attempt to highlight what menu we are on.
-                listMove(0, true);
+                catch (Exception e) {
+                    //output to debug log just in case something went fully wrong
+                    e.printStackTrace();
+                    //catch with below by initializing vLists properly
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+                    //we should initialize the other variables as well.
+                    savedData.useGoogleIcons = false;
+                    savedData.mirrorMode = false;
+                    savedData.cleanCacheOnStart = false;
+                    savedData.gamingMode = false;
+                    savedData.useManufacturerIcons = false;
+                    savedData.loadAppBG = true;
+                    savedData.fontCol = Color.WHITE;
+                    savedData.menuCol = Color.WHITE;
+                    savedData.iconCol = Color.WHITE;
+                    savedData.hiddenApps = new ArrayList<>();
+                    int[] tempInt = new int[]{0,1,1};
+                    savedData.organizeMode= new int[][]{tempInt, tempInt, tempInt, tempInt, tempInt, tempInt, tempInt};
+                }
             }
+            //load in the apps
+            loadApps();
+
+            //setup the warning variable
+            warningToggle = new boolean[1];
+            warningToggle[0] = false;
+
+            //make sure this doesn't happen again
+            init = true;
+
+            //Lastly, activate the list move function to load the list view and attempt to highlight what menu we are on.
+            listMove(0, true);
         }
+    }
+
 
     //////////////////////////////////////////////////
     ///////When the app comes back from being/////////
@@ -246,13 +247,11 @@ public class EternalMediaBar extends Activity {
 
                 if (proceed) {
                     //change the old item, if it exists
-                    TextView appLabel;
-                    ImageView appIcon;
                     try {
                         //change the old font face
                         ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                         //scale the icon back to normal
-                        appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                        ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
                         appIcon.setScaleX(1f);
                         appIcon.setScaleY(1f);
                     }
@@ -262,7 +261,7 @@ public class EternalMediaBar extends Activity {
                     //change the font face
                     ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon larger
-                    appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                    ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
                     appIcon.setScaleX(1.25f);
                     appIcon.setScaleY(1.25f);
 
@@ -539,7 +538,7 @@ public class EternalMediaBar extends Activity {
                 if (launchIntent.equals(".options")){
                     appIcon.setImageDrawable(svgLoad(R.drawable.sub_settings_144px));
                 }
-                else if (icon == null) {
+                else {
                     appIcon.setImageDrawable(svgLoad(R.drawable.error_144px));
                 }
             }
@@ -560,66 +559,66 @@ public class EternalMediaBar extends Activity {
         btn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (launchIntent.equals(".options")){
-                    if (optionsMenu){
-                        changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
-                    }
-                    else {
-                        listMove(index, false);
-                        //load the layout and make sure nothing is in it.
-                        changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
-                    }
+            if (launchIntent.equals(".options")){
+                if (optionsMenu){
+                    changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
                 }
                 else {
-                    if (isLaunchable) {
-                        if (secondaryIndex==1){
-                            changeOptionsMenu.menuOpen(EternalMediaBar.this, true, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
-                        }
-                        else {
-                            EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
-                        }
-                    }
-                    else if(appName.equals("hItem")){
-                        listMove(index, true);
+                    listMove(index, false);
+                    //load the layout and make sure nothing is in it.
+                    changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
+                }
+            }
+            else {
+                if (isLaunchable) {
+                    if (secondaryIndex==1){
+                        changeOptionsMenu.menuOpen(EternalMediaBar.this, true, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
                     }
                     else {
-                        //initialize the variables for the list ahead of time
-                        LinearLayout lLayout = (LinearLayout) findViewById(R.id.optionslist);
-                        lLayout.removeAllViews();
-                        //choose which list to make dependant on the values given for the call.
-                        switch (index) {
-                            case -1:{/*/ Null Case /*/}
-                            case 0:{changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout); break;}
-                            case 1:{changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, lLayout);break;}
-                            case 2:{changeOptionsMenu.createCopyList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
-                            case 3:{changeOptionsMenu.createMoveList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
-                            case 4:{changeOptionsMenu.copyItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
-                            case 5:{changeOptionsMenu.moveItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
-                            case 6:{changeOptionsMenu.hideApp(EternalMediaBar.this, lLayout);break;}
-                            case 7:{startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, lLayout, launchIntent));break;}
-                            case 8:{changeOptionsMenu.toggleGoogleIcons(EternalMediaBar.this, lLayout);break;}
-                            case 9:{changeOptionsMenu.mirrorUI(EternalMediaBar.this, lLayout);break;}
-                            case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, lLayout, secondaryIndex);break;}
-                            case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this, lLayout, secondaryIndex, launchIntent, appName);break;}
-                            case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, lLayout, secondaryIndex);break;}
-
-                        }
+                        EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
                     }
                 }
+                else if(appName.equals("hItem")){
+                    listMove(index, true);
+                }
+                else {
+                    //initialize the variables for the list ahead of time
+                    LinearLayout lLayout = (LinearLayout) findViewById(R.id.optionslist);
+                    lLayout.removeAllViews();
+                    //choose which list to make dependant on the values given for the call.
+                    switch (index) {
+                        case -1:{/*/ Null Case /*/}
+                        case 0:{changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout); break;}
+                        case 1:{changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, lLayout);break;}
+                        case 2:{changeOptionsMenu.createCopyList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
+                        case 3:{changeOptionsMenu.createMoveList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
+                        case 4:{changeOptionsMenu.copyItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
+                        case 5:{changeOptionsMenu.moveItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
+                        case 6:{changeOptionsMenu.hideApp(EternalMediaBar.this, lLayout);break;}
+                        case 7:{startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, lLayout, launchIntent));break;}
+                        case 8:{changeOptionsMenu.toggleGoogleIcons(EternalMediaBar.this, lLayout);break;}
+                        case 9:{changeOptionsMenu.mirrorUI(EternalMediaBar.this, lLayout);break;}
+                        case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, lLayout, secondaryIndex);break;}
+                        case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this, lLayout, secondaryIndex, launchIntent, appName);break;}
+                        case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, lLayout, secondaryIndex);break;}
+
+                    }
+                }
+            }
             }
         });
 
         btn.setOnLongClickListener(new Button.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (optionsMenu){
-                    changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
-                }
-                else {
-                    listMove(index, false);
-                }
-                changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
-                return true;
+            if (optionsMenu){
+                changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
+            }
+            else {
+                listMove(index, false);
+            }
+            changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
+            return true;
             }
         });
 

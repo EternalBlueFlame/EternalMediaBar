@@ -3,9 +3,10 @@ This source is intended for development of Eternal Media Bar so that users may o
 <strong>This project requires Android Studio 1.5 or later<br/>
 The application is intended for all android devices 4.0.3 and later, however currently has only been tested on 5.0, 6.0 and 4.0.3 in x86, ARMv7, and ARMv9</strong>
 
-<strong><h3>WARNING: save files have changed between every build of RC1. If you are upgrading from a previous build, please clear the data of the app.</h3></strong>
+<strong><h3>WARNING: save files for RC1 through RC2.5 are incompatable with eachother. If you are upgrading from a previous build, please clear the data of the app.</h3></strong>
 This can be done in your settings menu, under the apps category.
-Failing to do so will lead to crashing, instability, and/or missing shortcuts.
+Failing to do so may lead to crashing, instability, and/or missing shortcuts.
+Version 2.5 will have XML based save files implemented from the start, which will fix any future compatibility problems after and during version 2.5.
 
 <strong>APK builds will be generated after each new feature is added, assuming it appears stable.</strong>
 
@@ -35,12 +36,17 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2 Plans:</strong>
+-	create an XML read and write function.
+-	change the save data over to XML.
+</hr>
+<hr>
+<strong>RC2.5 Plans:</strong>
 -	if you plugin headphones or a controller it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
 -	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background).
--	auto app organizer using an XML parse of the google store's website (probably offload to an async task so the progress can be measured and a loading screen can be given to the user).
 -	custom wallpaper for selected app from file, if file exists (use an async task).
 -	listview scroll snapping.
+-	use the XML read to parse play.google.com for app categories.
 -	List organizer, allow users to manually change positions of apps in the list, and sort them alphabetically (EMB apps stay topmost).
 -	extra settings:
 -	change icon color //hmenu only

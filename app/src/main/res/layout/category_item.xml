@@ -17,13 +17,14 @@
         android:layout_width="96dp"
         android:layout_height="wrap_content"
         android:textColor="#ffffffff"
+        android:textSize="16sp"
         android:layout_marginTop="44dp"
         android:gravity="center_horizontal"
         android:layout_marginLeft="0dp"
         android:shadowColor="#ff000000"
-        android:shadowRadius="24"
-        android:shadowDx="0"
-        android:shadowDy="0"/>
+        android:shadowDx="3.5"
+        android:shadowDy="3.5"
+        android:shadowRadius="2" />
 
     <Button
         android:id="@+id/item_app_button"
