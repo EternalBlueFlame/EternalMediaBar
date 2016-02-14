@@ -13,8 +13,10 @@ Version 2.5 will have XML based save files implemented from the start, which wil
 <h2>Contact us</h2>
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
 You may contact us through GitHub via message, Issue report, or by placing an ask on one of our blogs.
+Alternatively, you may contact Eternal Blue Flame through Steam.
 
-Eternal Blue Flame: http://eternal-blue-flame.tumblr.com/ 
+Eternal Blue Flame's Blog: http://eternal-blue-flame.tumblr.com/ 
+Eternal Blue Flame's Steam: http://steamcommunity.com/id/eternal-blue-flame/
 
 Lunar Tales: No link available at this time. Just use Eternal as a mediator.
 <hr/>
