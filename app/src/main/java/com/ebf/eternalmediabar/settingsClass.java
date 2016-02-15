@@ -21,10 +21,34 @@ public class settingsClass implements Serializable {
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();
 
 
-    public void writeXML(settingsClass saveData){
-        //writing the XML, it is saved as a readable XML file, so we have to write it as if we are making one REALLY long string then save it to a file.
+    //we can't manage files from this class due to permissions, but we can handle processing the variables
+    public String writeXML(settingsClass saveData){
+
         String xml = "";
-        //first add the vLists
+
+        //lets list all the variables that the system needs to use
+        xml = xml+"<iconCol>"+saveData.iconCol+"</iconCol>\n";
+        xml = xml+"<menuCol>"+saveData.menuCol+"</menuCol>\n";
+        xml = xml+"<fontCol>"+saveData.fontCol+"</fontCol>\n";
+        xml = xml+"<cleanCacheOnStart>"+saveData.cleanCacheOnStart+"</cleanCacheOnStart>\n";
+        xml = xml+"<loadAppBG>"+saveData.loadAppBG+"</loadAppBG>\n";
+        xml = xml+"<gamingMode>"+saveData.gamingMode+"</gamingMode>\n";
+        xml = xml+"<useGoogleIcons>"+saveData.useGoogleIcons+"</useGoogleIcons>\n";
+        xml = xml+"<useManufacturerIcons>"+saveData.useManufacturerIcons+"</useManufacturerIcons>\n";
+        xml = xml+"<mirrorMode>"+saveData.mirrorMode+"</mirrorMode>\n\n";
+
+        //do a loop for all the items in the organize mode
+        xml = xml+ "<organizeMode>\n";
+        for (int i=0; i<8;){
+            xml = xml+ "<1>"+saveData.organizeMode[i][0]+"</1>\n";
+            xml = xml+ "<2>"+saveData.organizeMode[i][1]+"</2>\n";
+            xml = xml+ "<3>"+saveData.organizeMode[i][2]+"</3>\n";
+            i++;
+        }
+        xml = xml+ "</organizeMode>\n\n";
+
+
+        //create a loop for the vLists, and the lists in them, and each appData in them
         for (int i=0; i< saveData.vLists.size();){
             xml = xml+"<vList>";
             for (int ii=0; ii<saveData.vLists.get(i).size();){
@@ -33,15 +57,42 @@ public class settingsClass implements Serializable {
                 xml = xml+"\n     <AppData>";
                 xml = xml+"\n          <label>"+saveData.vLists.get(i).get(ii).label.toString()+"</label>";
                 xml = xml+"\n          <name>"+saveData.vLists.get(i).get(ii).name+"</name>";
-                xml = xml+"\n          <icon>"+saveData.vLists.get(i).get(ii).icon.toString()+"</icon>";
+                //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
                 xml = xml+"\n          <persistent>"+saveData.vLists.get(i).get(ii).isPersistent+"</persistent>";
                 xml = xml+"\n     </AppData>";
                 ii++;
             }
-            xml = xml+"\n</vList>\n\n";
+            xml = xml+"</vList>\n\n";
             i++;
         }
 
+        //same to how we did it for each vList, we do again for the old apps.
+        xml = xml+"<oldApps>";
+        for (int i=0; i<saveData.oldApps.size();){
+            xml = xml+"\n     <AppData>";
+            xml = xml+"\n          <label>"+saveData.oldApps.get(i).label.toString()+"</label>";
+            xml = xml+"\n          <name>"+saveData.oldApps.get(i).name+"</name>";
+            //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
+            xml = xml+"\n          <persistent>"+saveData.oldApps.get(i).isPersistent+"</persistent>";
+            xml = xml+"\n     </AppData>\n";
+            i++;
+        }
+        xml = xml+"</oldApps>\n\n";
+
+        //and one more list of appData for the hidden apps
+        xml = xml+"<hiddenApps>\n";
+        for (int i=0; i<saveData.oldApps.size();){
+            xml = xml+"\n     <AppData>";
+            xml = xml+"\n          <label>"+saveData.oldApps.get(i).label.toString()+"</label>";
+            xml = xml+"\n          <name>"+saveData.oldApps.get(i).name+"</name>";
+            //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
+            xml = xml+"\n          <persistent>"+saveData.oldApps.get(i).isPersistent+"</persistent>";
+            xml = xml+"\n     </AppData>";
+            i++;
+        }
+        xml = xml+"</hiddenApps>\n\n";
+
+        return xml;
     }
 
 

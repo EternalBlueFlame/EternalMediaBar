@@ -160,6 +160,20 @@ public class EternalMediaBar extends Activity {
             e.printStackTrace();
             //can't get read/write permissions, or something unforeseen has gone horribly wrong
         }
+        //now lets try and save using the new save file format
+        try{
+            //create a file output stream with an object, to save a variable to a file, then close the stream.
+            FileOutputStream fileStream = openFileOutput("data.xml", Context.MODE_PRIVATE);
+            ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
+            fileOutput.writeObject(new settingsClass().writeXML(savedData));
+            //close the stream to save RAM
+            fileStream.close();
+            fileOutput.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            //can't get read/write permissions, or something unforeseen has gone horribly wrong
+        }
     }
 
 
