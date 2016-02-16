@@ -1,6 +1,7 @@
 package com.ebf.eternalmediabar;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -113,6 +117,14 @@ public class EternalMediaBar extends Activity {
         }
     }
 
+    //////////////////////////////////////////////////
+    ///////this function is for requesting any////////
+    ////////needed permissions in android 6+//////////
+    //////////////////////////////////////////////////
+    @TargetApi(Build.VERSION_CODES.M)
+            public void getPerms(){
+        requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
+    }
 
     //////////////////////////////////////////////////
     ///////When the app comes back from being/////////
@@ -162,18 +174,28 @@ public class EternalMediaBar extends Activity {
         }
         //now lets try and save using the new save file format
         try{
-            //create a file output stream with an object, to save a variable to a file, then close the stream.
-            FileOutputStream fileStream = openFileOutput("data.xml", Context.MODE_PRIVATE);
-            ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
-            fileOutput.writeObject(new settingsClass().writeXML(savedData));
-            //close the stream to save RAM
-            fileStream.close();
-            fileOutput.close();
+            FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
+            data.write(new settingsClass().writeXML(savedData));
+            data.flush();
+            data.close();
+
         }
         catch(Exception e){
-            e.printStackTrace();
-            //can't get read/write permissions, or something unforeseen has gone horribly wrong
+            //first fail, ask for write permissions
+            getPerms();
+            try{
+                FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
+                data.write(new settingsClass().writeXML(savedData));
+                data.flush();
+                data.close();
+
+            }
+            catch(Exception ee) {
+                ee.printStackTrace();
+                //can't get read/write permissions, or something unforeseen has gone horribly wrong
+            }
         }
+
     }
 
 
@@ -405,7 +427,6 @@ public class EternalMediaBar extends Activity {
         for (int i=0;i<savedData.vLists.size();){
             for (int ii=0; ii<savedData.vLists.get(i).size();){
                 if (savedData.vLists.get(i).get(ii).name.equals(".options")){
-                    Log.d("Eternal Media Bar", "found one");
                     fail = false;
                     break;
                 }
@@ -414,7 +435,6 @@ public class EternalMediaBar extends Activity {
             i++;
         }
         if (fail){
-            Log.d("Eternal Media Bar", "added the item");
             savedData.vLists.get(5).add(eternalSettings);
         }
         saveFiles();

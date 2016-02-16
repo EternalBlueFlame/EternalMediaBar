@@ -39,10 +39,12 @@ public class settingsClass implements Serializable {
 
         //do a loop for all the items in the organize mode
         xml = xml+ "<organizeMode>\n";
-        for (int i=0; i<8;){
-            xml = xml+ "<1>"+saveData.organizeMode[i][0]+"</1>\n";
-            xml = xml+ "<2>"+saveData.organizeMode[i][1]+"</2>\n";
-            xml = xml+ "<3>"+saveData.organizeMode[i][2]+"</3>\n";
+        for (int i=0; i<7;){
+            xml = xml+ "     <modeSet>\n";
+            xml = xml+ "          <1>"+saveData.organizeMode[i][0]+"</1>\n";
+            xml = xml+ "          <2>"+saveData.organizeMode[i][1]+"</2>\n";
+            xml = xml+ "          <3>"+saveData.organizeMode[i][2]+"</3>\n";
+            xml = xml+ "     </modeSet>\n";
             i++;
         }
         xml = xml+ "</organizeMode>\n\n";
@@ -90,7 +92,8 @@ public class settingsClass implements Serializable {
             xml = xml+"\n     </AppData>";
             i++;
         }
-        xml = xml+"</hiddenApps>\n\n";
+        xml = xml+"\n</hiddenApps>\n\n";
+
 
         return xml;
     }
