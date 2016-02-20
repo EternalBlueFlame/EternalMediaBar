@@ -173,9 +173,10 @@ public class EternalMediaBar extends Activity {
             //can't get read/write permissions, or something unforeseen has gone horribly wrong
         }
         //now lets try and save using the new save file format
+
         try{
             FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
-            data.write(new settingsClass().writeXML(savedData));
+            data.write(new settingsClass().writeXML(savedData, this));
             data.flush();
             data.close();
 
@@ -185,7 +186,7 @@ public class EternalMediaBar extends Activity {
             getPerms();
             try{
                 FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
-                data.write(new settingsClass().writeXML(savedData));
+                data.write(new settingsClass().writeXML(savedData, this));
                 data.flush();
                 data.close();
 
@@ -194,6 +195,13 @@ public class EternalMediaBar extends Activity {
                 ee.printStackTrace();
                 //can't get read/write permissions, or something unforeseen has gone horribly wrong
             }
+        }
+
+        try {
+            Log.d("EternalMediaBar", new settingsClass().returnSettings(new settingsClass().writeXML(savedData, this)));
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
     }

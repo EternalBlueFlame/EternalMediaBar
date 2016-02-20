@@ -24,9 +24,9 @@
         android:textSize="16sp"
         android:lines="2"
         android:shadowColor="#ff000000"
-        android:shadowDx="3.5"
+        android:shadowDx="4"
         android:shadowDy="3.5"
-        android:shadowRadius="2"  />
+        android:shadowRadius="5"  />
 
     <Button
         android:id="@+id/item_app_button"
