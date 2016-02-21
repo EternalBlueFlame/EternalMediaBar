@@ -101,12 +101,12 @@ public class settingsClass implements Serializable {
 
         //and one more list of appData for the hidden apps
         xml = xml+"<hiddenApps>\n";
-        for (int i=0; i<saveData.oldApps.size();){
+        for (int i=0; i<saveData.hiddenApps.size();){
             xml = xml+"\n     <AppData>";
-            xml = xml+"\n          <label>"+saveData.oldApps.get(i).label.toString().replace("&", "andabcd")+"</label>";
-            xml = xml+"\n          <name>"+saveData.oldApps.get(i).name+"</name>";
+            xml = xml+"\n          <label>"+saveData.hiddenApps.get(i).label.toString().replace("&", "andabcd")+"</label>";
+            xml = xml+"\n          <name>"+saveData.hiddenApps.get(i).name+"</name>";
             //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
-            xml = xml+"\n          <persistent>"+saveData.oldApps.get(i).isPersistent+"</persistent>";
+            xml = xml+"\n          <persistent>"+saveData.hiddenApps.get(i).isPersistent+"</persistent>";
             xml = xml+"\n     </AppData>";
             i++;
         }
@@ -135,6 +135,58 @@ public class settingsClass implements Serializable {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+            //get the variable for the icon color
+            NodeList SingularNode = doc.getElementsByTagName("iconCol");
+            savedData.iconCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            //re-use that variable to setup the rest of the singular items.
+            SingularNode = doc.getElementsByTagName("menuCol");
+            savedData.menuCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            SingularNode = doc.getElementsByTagName("fontCol");
+            savedData.fontCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            SingularNode = doc.getElementsByTagName("cleanCacheOnStart");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.cleanCacheOnStart = false;
+            }
+            else{
+                savedData.cleanCacheOnStart = true;
+            }
+            SingularNode = doc.getElementsByTagName("loadAppBG");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.loadAppBG = false;
+            }
+            else{
+                savedData.loadAppBG = true;
+            }
+            SingularNode = doc.getElementsByTagName("gamingMode");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.gamingMode = false;
+            }
+            else{
+                savedData.gamingMode = true;
+            }
+            SingularNode = doc.getElementsByTagName("useGoogleIcons");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.useGoogleIcons = false;
+            }
+            else{
+                savedData.useGoogleIcons = true;
+            }
+            SingularNode = doc.getElementsByTagName("useManufacturerIcons");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.useManufacturerIcons = false;
+            }
+            else{
+                savedData.useManufacturerIcons = true;
+            }
+            SingularNode = doc.getElementsByTagName("mirrorMode");
+            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+                savedData.mirrorMode = false;
+            }
+            else{
+                savedData.mirrorMode = true;
+            }
+
 
             // grab the vLists tag
             NodeList categoryList = doc.getElementsByTagName("vLists");
