@@ -34,6 +34,9 @@ public class settingsClass implements Serializable {
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();
 
 
+    //////////////////////////////////////////////////
+    //////Create the string for saving to a file//////
+    //////////////////////////////////////////////////
     //we can't manage files from this class due to permissions, but we can handle processing the variables
     public String writeXML(settingsClass saveData, EternalMediaBar eternalMediaBar){
 
@@ -121,92 +124,163 @@ public class settingsClass implements Serializable {
 
 
 
+    //////////////////////////////////////////////////
+    //////////Create Boolean from a String////////////
+    //////////////////////////////////////////////////
+    private Boolean boolFromString(String s){
+        if (s.equals("false")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-
-
-
-
-
+    //////////////////////////////////////////////////
+    /////////////////Load a save file/////////////////
+    //////////////////////////////////////////////////
     public String returnSettings(String xml) {
+        settingsClass savedData= new settingsClass();
 
+        //try to make the HTML document from XML. This should have no reason to fail, but we have to compensate for just in case it does or the compiler gets mad..
         try {
-            settingsClass savedData= new settingsClass();
             //build a document file
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-
-            //get the variable for the icon color
-            NodeList SingularNode = doc.getElementsByTagName("iconCol");
-            savedData.iconCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
-            //re-use that variable to setup the rest of the singular items.
-            SingularNode = doc.getElementsByTagName("menuCol");
-            savedData.menuCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
-            SingularNode = doc.getElementsByTagName("fontCol");
-            savedData.fontCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
-            SingularNode = doc.getElementsByTagName("cleanCacheOnStart");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            //try to load the individual elements, it is possible one or more could be missing, so we have to compensate for that.
+            //make a node list to re-use.
+            NodeList SingularNode;
+            //try to get the iconCol
+            try {
+                //get the variable for the icon color
+                SingularNode = doc.getElementsByTagName("iconCol");
+                savedData.iconCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            }
+            catch (Exception e) {
+                //if it fails to load, set the value to -1
+                savedData.iconCol = -1;
+            }
+            //we repeat this for every variable
+            try {
+                //get the menuCol
+                SingularNode = doc.getElementsByTagName("menuCol");
+                savedData.menuCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            }
+            catch (Exception e){
+                savedData.menuCol = -1;
+            }
+            try {
+                //get the fontCol
+                SingularNode = doc.getElementsByTagName("fontCol");
+                savedData.fontCol = Integer.parseInt(((Element) SingularNode.item(0)).getTextContent());
+            }
+            catch (Exception e){
+                savedData.fontCol = -1;
+            }
+            try {
+                //get the bool for cleanCacheOnStart
+                SingularNode = doc.getElementsByTagName("cleanCacheOnStart");
+                savedData.cleanCacheOnStart = boolFromString(((Element) SingularNode.item(0)).getTextContent());
+            }
+            catch (Exception e){
                 savedData.cleanCacheOnStart = false;
             }
-            else{
-                savedData.cleanCacheOnStart = true;
+            try {
+                //get the bool for loadAppBG
+                SingularNode = doc.getElementsByTagName("loadAppBG");
+                savedData.loadAppBG = boolFromString(((Element) SingularNode.item(0)).getTextContent());
             }
-            SingularNode = doc.getElementsByTagName("loadAppBG");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            catch (Exception e){
                 savedData.loadAppBG = false;
             }
-            else{
-                savedData.loadAppBG = true;
+            try{
+                //get the bool for gamingMode
+                SingularNode = doc.getElementsByTagName("gamingMode");
+                savedData.gamingMode = boolFromString(((Element) SingularNode.item(0)).getTextContent());
             }
-            SingularNode = doc.getElementsByTagName("gamingMode");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            catch(Exception e){
                 savedData.gamingMode = false;
             }
-            else{
-                savedData.gamingMode = true;
+            try {
+                //get the bool for useGoogleIcons
+                SingularNode = doc.getElementsByTagName("useGoogleIcons");
+                savedData.useGoogleIcons = boolFromString(((Element) SingularNode.item(0)).getTextContent());
             }
-            SingularNode = doc.getElementsByTagName("useGoogleIcons");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            catch (Exception e){
                 savedData.useGoogleIcons = false;
             }
-            else{
-                savedData.useGoogleIcons = true;
+            try {
+                //get the bool for useManufacturerIcons
+                SingularNode = doc.getElementsByTagName("useManufacturerIcons");
+                savedData.useManufacturerIcons = boolFromString(((Element) SingularNode.item(0)).getTextContent());
             }
-            SingularNode = doc.getElementsByTagName("useManufacturerIcons");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            catch (Exception e){
                 savedData.useManufacturerIcons = false;
             }
-            else{
-                savedData.useManufacturerIcons = true;
+            try {
+                //get the bool for mirrorMode
+                SingularNode = doc.getElementsByTagName("mirrorMode");
+                savedData.mirrorMode = boolFromString(((Element) SingularNode.item(0)).getTextContent());
             }
-            SingularNode = doc.getElementsByTagName("mirrorMode");
-            if (((Element)SingularNode.item(0)).getTextContent().equals("false")){
+            catch (Exception e){
                 savedData.mirrorMode = false;
             }
-            else{
-                savedData.mirrorMode = true;
+            try {
+                // grab the vLists tag
+                NodeList categoryList = doc.getElementsByTagName("vLists");
+                Element categoryNode = (Element) categoryList.item(0);
+                //debug log that we got it
+                System.out.println("vLists");
+
+                //iterate through  VList tags
+                NodeList vListList = categoryNode.getElementsByTagName("vList");
+                for (int vListNodes = 0; vListNodes < vListList.getLength(); vListNodes++) {
+                    Element appElements = (Element) vListList.item(vListNodes);
+                    savedData.vLists.add(new ArrayList<AppDetail>());
+
+                    // iterate through AppData tags
+                    NodeList appsList = appElements.getElementsByTagName("AppData");
+                    for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
+                        try {
+                            Element appElement = (Element) appsList.item(currentApp);
+                            AppDetail tempApp = new AppDetail();
+                            if (appElement.getElementsByTagName("persistent").item(0).getTextContent().equals("false")) {
+                                tempApp.isPersistent = false;
+                            } else {
+                                tempApp.isPersistent = true;
+                            }
+                            tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
+                            tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
+                            savedData.vLists.get(savedData.vLists.size() - 1).add(tempApp);
+                            Log.d("EternalMediaBar", "added " + tempApp.label + " ; " + tempApp.name + " to " + (savedData.vLists.size() - 1));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            catch (Exception e){
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                savedData.vLists.add(new ArrayList<AppDetail>());
+                //create the horizontal list
+                //...
             }
 
-
-            // grab the vLists tag
-            NodeList categoryList = doc.getElementsByTagName("vLists");
-            Element categoryNode = (Element) categoryList.item(0);
-            //debug log that we got it
-            System.out.println("vLists");
-
-            //iterate through  VList tags
-            NodeList vListList = categoryNode.getElementsByTagName("vList");
-            for (int vListNodes = 0; vListNodes < vListList.getLength(); vListNodes++) {
-                Element appElements = (Element) vListList.item(vListNodes);
-                savedData.vLists.add(new ArrayList<AppDetail>());
+            try{
+                //enter the oldApps list
+                NodeList oldAppsList = doc.getElementsByTagName("oldApps");
+                Element appElements = (Element) oldAppsList.item(0);
 
                 // iterate through AppData tags
                 NodeList appsList = appElements.getElementsByTagName("AppData");
                 for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
                     try {
                         Element appElement = (Element) appsList.item(currentApp);
-                        //appDetail app = new appDetail;//app.label=appElement.getElementsByTagName("label").item(0).getTextContent();//etc...
-                        //settingsClassOutput.vLists.get(vListNodes).add(new appDetail);
                         AppDetail tempApp = new AppDetail();
                         if (appElement.getElementsByTagName("persistent").item(0).getTextContent().equals("false")) {
                             tempApp.isPersistent = false;
@@ -224,11 +298,21 @@ public class settingsClass implements Serializable {
                     }
                 }
             }
+            catch (Exception e){
+                e.printStackTrace();
+            }
 
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+
+            /////////////////////////
+            //get hidden apps and organize mode
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
         return "";
     }
 

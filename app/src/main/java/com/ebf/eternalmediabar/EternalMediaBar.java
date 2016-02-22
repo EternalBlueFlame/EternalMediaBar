@@ -294,7 +294,7 @@ public class EternalMediaBar extends Activity {
                     appIcon.setScaleY(1.25f);
 
                     //scroll to the new entry
-                    vLayout.scrollTo((int) vLayout.getChildAt(vItem).getX(), 0);
+                    vLayout.scrollTo((int) vLayout.getChildAt(vItem).getY(), 0);
 
                 }
             }
@@ -328,7 +328,7 @@ public class EternalMediaBar extends Activity {
                     appIcon.setScaleX(1.25f);
                     appIcon.setScaleY(1.25f);
                     //scroll to the new entry
-                    vLayout.scrollTo((int) vLayout.getChildAt(optionVitem).getX(), 0);
+                    vLayout.scrollTo((int) vLayout.getChildAt(optionVitem).getY(), 0);
                 }
             }
         }
@@ -349,6 +349,7 @@ public class EternalMediaBar extends Activity {
                 hItem = move;
                 //reload the list
                 loadListView();
+                hLayout.scrollTo((int) hLayout.getChildAt(hItem).getX(), 0);
             }
         }
     }
