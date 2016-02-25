@@ -40,6 +40,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <strong>RC2 Plans:</strong>
 -	create an XML read and write function.
 -	change the save data over to XML.
+-	fix double save on load glitch.
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>

@@ -38,7 +38,7 @@ public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
     private List<AppDetail> oldApps = new ArrayList<>();
-    public List<View> hli = new ArrayList<>();
+    public List<AppDetail> hli = new ArrayList<>();
     public settingsClass savedData = new settingsClass();
 
     public int hItem = 0;
@@ -461,6 +461,106 @@ public class EternalMediaBar extends Activity {
         //empty hli first to be sure we don't accidentally make duplicate entries
         hli.clear();
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
+        //for now, because we need this to work before we convert fully to the new save format, we will set this up here. We can just move it later.
+        //later we will also have to promote icon loading to it's own class due to the complexity of supporting custom icons and material design.
+        AppDetail hMenuItem = new AppDetail();
+        hMenuItem.name = "hItem";
+        hMenuItem.isPersistent=true;
+        if (!savedData.useGoogleIcons) {
+            hMenuItem.label = "Social";
+            hMenuItem.icon = svgLoad(R.drawable.social_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Media";
+            hMenuItem.icon = svgLoad(R.drawable.media_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Games";
+            hMenuItem.icon = svgLoad(R.drawable.games_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Web";
+            hMenuItem.icon = svgLoad(R.drawable.web_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Utility";
+            hMenuItem.icon = svgLoad(R.drawable.extras_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Settings";
+            hMenuItem.icon = svgLoad(R.drawable.settings_144px);
+            hli.add(hMenuItem);
+        }
+        //Now we have to do it again since we don't have the custom icon loader class to handle this stuff yet
+        else{
+            hMenuItem.label = "Social";
+            try{
+                hMenuItem.icon = manager.getApplicationIcon("com.android.contacts");
+            }
+            catch (Exception e) {
+                hMenuItem.icon = svgLoad(R.drawable.social_144px);
+            }
+            hli.add(hMenuItem);
+            hMenuItem.label = "Media";
+            //this icon is composed of two different icons, so we make them as a list of drawables.
+            Drawable[] layers = new Drawable[2];
+            //load the base icon
+            try{layers[0] = manager.getApplicationIcon("com.google.android.videos");}
+            catch (Exception e){}
+            //load the other icon,
+            try{layers[1] = new ScaleDrawable(manager.getApplicationIcon("com.google.android.music"),Gravity.CENTER,1f,1f);
+                //now change the scale of it by changing the level
+                layers[1].setLevel(7000);}
+            catch (Exception e){}
+            //if the process didn't fail, load the list of icons and draw them as a Layered Drawable.
+            if (layers != new Drawable[2]){
+                hMenuItem.icon = new LayerDrawable(layers);
+            }
+            //otherwise, fallback to the built-in icon.
+            else{
+                hMenuItem.icon = svgLoad(R.drawable.media_144px);
+            }
+
+            hMenuItem.icon = svgLoad(R.drawable.media_144px);
+            hli.add(hMenuItem);
+            hMenuItem.label = "Games";
+            try{
+                hMenuItem.icon = manager.getApplicationIcon("com.google.android.play.games");
+            }
+            catch (Exception e) {
+                hMenuItem.icon = svgLoad(R.drawable.games_144px);
+            }
+            hli.add(hMenuItem);
+            hMenuItem.label = "Web";
+            try{
+                hMenuItem.icon = manager.getApplicationIcon("com.android.chrome");
+            }
+            catch (Exception e) {
+                hMenuItem.icon = svgLoad(R.drawable.web_144px);
+            }
+            hli.add(hMenuItem);
+            hMenuItem.label = "Utility";
+            try{
+                hMenuItem.icon = manager.getApplicationIcon("com.google.android.apps.docs");
+            }
+            catch (Exception e) {
+                hMenuItem.icon = svgLoad(R.drawable.extras_144px);
+            }
+            hli.add(hMenuItem);
+            hMenuItem.label = "Settings";
+            try{
+                hMenuItem.icon = manager.getApplicationIcon("com.android.settings");
+            }
+            catch (Exception e) {
+                hMenuItem.icon = svgLoad(R.drawable.settings_144px);
+            }
+            hli.add(hMenuItem);
+        }
+
+
+        //this last one has to stay here, even after the save format has been fully converted, because this menu will never be optional.
+
+        if (savedData.vLists.get(savedData.vLists.size() - 1).size() > 0) {
+            hMenuItem.label = "New Apps";
+            hMenuItem.icon = svgLoad(R.drawable.new_install_144px);
+            hli.add(hMenuItem);
+        }
+        /* This is the old code for defining the hList, this should be tossed when it is confirmed the new method works.
         //check if we are using google icons, if not use built-in icons.
         if (!savedData.useGoogleIcons) {
             hli.add(createMenuEntry(R.layout.category_item, "Social", svgLoad(R.drawable.social_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "Social", svgLoad(R.drawable.social_144px)));
@@ -496,13 +596,13 @@ public class EternalMediaBar extends Activity {
         if (savedData.vLists.get(savedData.vLists.size()-1).size() >0) {
             hli.add(createMenuEntry(R.layout.category_item, "New Apps", svgLoad(R.drawable.new_install_144px),hli.size() , 0, false, ".", "hItem"));//createAppDetail(1, "New Apps", svgLoad(R.drawable.new_install_144px)));
         }
-
+        */
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         //empty the list
         layout.removeAllViews();
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
-                layout.addView(hli.get(ii));
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, hli.get(ii).icon, -1, 0, false, ".", hli.get(ii).name));
         ii++;
         }
         //change the display for the appropriate icon
@@ -574,10 +674,9 @@ public class EternalMediaBar extends Activity {
             try {
                 //try to load pre-designated icon, only for bundled icons.
                 ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
+
+                //we'll have to offload this somewhere else for figuring out icons.
                 appIcon.setImageDrawable(icon);
-                if (icon == svgLoad(R.drawable.blank)){
-                    appLabel.setX(appLabel.getX() - (40 * getResources().getDisplayMetrics().density + 0.5f));
-                }
             } catch (Exception e) {}
         }
 

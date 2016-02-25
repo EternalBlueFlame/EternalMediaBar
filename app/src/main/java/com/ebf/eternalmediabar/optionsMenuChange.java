@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -214,7 +213,7 @@ public class optionsMenuChange {
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText(), eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
             }
             i++;
         }
@@ -234,7 +233,7 @@ public class optionsMenuChange {
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText(), eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
             }
             i++;
         }

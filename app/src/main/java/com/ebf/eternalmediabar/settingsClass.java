@@ -71,8 +71,11 @@ public class settingsClass implements Serializable {
         for (int i=0; i< saveData.vLists.size();){
             xml = xml+"\n     <vList>";
             //in 2.5 include this list of names as part of the save file. Also use a string to define icon.
-            xml = xml+"\n          <listName>" + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText() + "</listName>";
-            xml = xml+"\n          <listIcon>" + ((TextView) eternalMediaBar.hli.get(i).findViewById(R.id.item_app_label)).getText() + "</listIcon>\n\n";
+            xml = xml+"\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
+            //we will define it as a number string for now, with an index of 1, later we can use the numbers to define internal icons and launch intent/image file strings to define custom icons.
+            xml = xml+"\n          <listIcon>" + (i+1) + "</listIcon>\n\n";
+            //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
+            //now load the actual apps in the list
             for (int ii=0; ii<saveData.vLists.get(i).size();){
                 //Similar to HTML we will use the same syntax to declare the variables, this makes it easy to parse later on.
                 //we will add the whitespace as well, just in case for some odd reason we actually need to be able to read the save file for debugging purposes.
@@ -138,6 +141,7 @@ public class settingsClass implements Serializable {
     //////////////////////////////////////////////////
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
+    // this function is so huge I have to seperate it as if it's multiple functions or we'll all be lost.
     public String returnSettings(String xml) {
         settingsClass savedData= new settingsClass();
 
@@ -225,6 +229,11 @@ public class settingsClass implements Serializable {
             catch (Exception e){
                 savedData.mirrorMode = false;
             }
+
+
+            //////////////////////////////////////////////////
+            //////////////////Load a vLists///////////////////
+            //////////////////////////////////////////////////
             try {
                 // grab the vLists tag
                 NodeList categoryList = doc.getElementsByTagName("vLists");
@@ -271,6 +280,9 @@ public class settingsClass implements Serializable {
                 //...
             }
 
+            //////////////////////////////////////////////////
+            /////////////////Load a save file/////////////////
+            //////////////////////////////////////////////////
             try{
                 //enter the oldApps list
                 NodeList oldAppsList = doc.getElementsByTagName("oldApps");
