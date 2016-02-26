@@ -57,13 +57,17 @@ public class settingsClass implements Serializable {
         xml = xml+"<vLists>";
         for (int i=0; i< saveData.vLists.size();){
             xml = xml+"\n     <vList>";
-            //in 2.5 include this list of names as part of the save file. Also use a string to define icon.
-            xml = xml+"\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
-            //we will define it as a number string for now, with an index of 1, later we can use the numbers to define internal icons and launch intent/image file strings to define custom icons.
-            xml = xml+"\n          <listIcon>" + (i+1) + "</listIcon>";
-            xml = xml+"\n          <listGoogleIcon>" + (i+1) + "</listGoogleIcon>";
-            //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
-
+            //this will fail if the New Apps category is empty
+            try {
+                //in 2.5 include this list of names as part of the save file. Also use a string to define icon.
+                xml = xml + "\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
+                //we will define it as a number string for now, with an index of 1, later we can use the numbers to define internal icons and launch intent/image file strings to define custom icons.
+                xml = xml + "\n          <listIcon>" + (i + 1) + "</listIcon>";
+                xml = xml + "\n          <listGoogleIcon>" + (i + 1) + "</listGoogleIcon>";
+                Log.d("EternalMediaBar", "" + i);
+                //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
+            }
+            catch (Exception e){}
             //in revision 2, due to the way the variable is managed, this may fail, so we need to compensate for that.
             try {
                 //while we do this we can also define the organize mode to save some time and effort.
@@ -72,15 +76,13 @@ public class settingsClass implements Serializable {
                 xml = xml + "          <repeat>" + saveData.organizeMode[i][1] + "</repeat>\n";
                 xml = xml + "          <main>" + saveData.organizeMode[i][2] + "</main>\n";
                 xml = xml + "     </organizeMode>\n";
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 xml = xml + "     <organizeMode>\n";
                 xml = xml + "          <sub>" + 0 + "</sub>\n";
                 xml = xml + "          <repeat>" + 1 + "</repeat>\n";
                 xml = xml + "          <main>" + 1 + "</main>\n";
                 xml = xml + "     </organizeMode>\n";
             }
-
             //now load the actual apps in the list
             for (int ii=0; ii<saveData.vLists.get(i).size();){
                 //Similar to HTML we will use the same syntax to declare the variables, this makes it easy to parse later on.

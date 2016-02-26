@@ -31,6 +31,9 @@
         android:layout_width="96dp"
         android:layout_height="64dp"
         android:alpha="0"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
         android:clickable="true" />
 
 

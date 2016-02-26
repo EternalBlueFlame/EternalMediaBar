@@ -32,7 +32,7 @@
 
     <ScrollView
         android:orientation="vertical"
-        android:layout_width="160dp"
+        android:layout_width="192dp"
         android:id="@+id/apps_displayscroll"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
@@ -41,7 +41,7 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="160dp"
+            android:layout_width="192dp"
             android:id="@+id/apps_display"
             android:layout_height="wrap_content"/>
     </ScrollView>

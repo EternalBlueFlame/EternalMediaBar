@@ -7,6 +7,8 @@ The application is intended for all android devices 4.0.3 and later, however cur
 This can be done in your settings menu, under the apps category.
 Failing to do so may lead to crashing, instability, and/or missing shortcuts.
 The final Version of RC2, and all later revisions will have XML based save files implemented from the start, which will fix any future compatibility problems after and during RC2 final.
+<strong>If you previously ran RC2 please run the RC2 Final before upgrading to RC2.5 or later, if you wish to keep your configuration</strong>
+
 
 <strong>APK builds will be generated after each new feature is added, assuming it appears stable.</strong>
 
