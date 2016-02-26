@@ -65,6 +65,8 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	expanded manual organization of lists.
 -	organization grouping dependant on developer //combines with other organization methods
 -	organize by date installed/updated //highly dependant on how the OS handles this sort of thing
+-	option to backup the save file to external storage.
+-	option to make backups manual or automatic.
 </hr>
 <hr>
 <strong>RC3 plans:</strong>

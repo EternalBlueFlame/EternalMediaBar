@@ -73,8 +73,6 @@ public class EternalMediaBar extends Activity {
                     //close the stream to save RAM.
                     objStream.close();
                     fileStream.close();
-                    //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
-                    oldApps = savedData.oldApps;
                 }
                 catch (Exception e) {
                     //output to debug log just in case something went fully wrong
@@ -158,8 +156,10 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     public void saveFiles(){
         try{
-            // apply the instanced value back to the savedData version so we can save it.
-            savedData.oldApps = oldApps;
+            // if we actually used oldApps, apply the instanced value back to the savedData version so we can save it.
+            if (oldApps.size()>1) {
+                savedData.oldApps = oldApps;
+            }
             //create a file output stream with an object, to save a variable to a file, then close the stream.
             FileOutputStream fileStream = openFileOutput("lists.dat", Context.MODE_PRIVATE);
             ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
@@ -175,11 +175,10 @@ public class EternalMediaBar extends Activity {
 
         //now lets try and save using the new save file format
         try{
-            FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
+            FileWriter data = new FileWriter(Environment.getDataDirectory() +"/data.xml");
             data.write(savedData.writeXML(savedData, this));
             data.flush();
             data.close();
-
         }
         catch(Exception e){
             //first fail, ask for write permissions so it won't fail the next time
@@ -360,6 +359,9 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     private void loadApps(){
         manager = getPackageManager();
+
+        //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
+        oldApps = savedData.oldApps;
         List<String> newApps = new ArrayList<>();
         //get the apps from the intent activity list of resolve info in the host OS.
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -431,6 +433,8 @@ public class EternalMediaBar extends Activity {
             savedData.vLists.get(5).add(eternalSettings);
         }
         saveFiles();
+        //since we no longer need this variable, let's empty it.
+        oldApps = new ArrayList<>();
     }
 
 

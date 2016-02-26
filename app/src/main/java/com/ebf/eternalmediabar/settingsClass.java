@@ -53,19 +53,6 @@ public class settingsClass implements Serializable {
         xml = xml+"<useManufacturerIcons>"+saveData.useManufacturerIcons+"</useManufacturerIcons>\n";
         xml = xml+"<mirrorMode>"+saveData.mirrorMode+"</mirrorMode>\n\n";
 
-        //do a loop for all the items in the organize mode
-        xml = xml+ "<organizeMode>\n";
-        for (int i=0; i<7;){
-            xml = xml+ "     <modeSet>\n";
-            xml = xml+ "          <sub>"+saveData.organizeMode[i][0]+"</sub>\n";
-            xml = xml+ "          <repeat>"+saveData.organizeMode[i][1]+"</repeat>\n";
-            xml = xml+ "          <main>"+saveData.organizeMode[i][2]+"</main>\n";
-            xml = xml+ "     </modeSet>\n";
-            i++;
-        }
-        xml = xml+ "</organizeMode>\n\n";
-
-
         //create a loop for the vLists, and the lists in them, and each appData in them
         xml = xml+"<vLists>";
         for (int i=0; i< saveData.vLists.size();){
@@ -73,8 +60,27 @@ public class settingsClass implements Serializable {
             //in 2.5 include this list of names as part of the save file. Also use a string to define icon.
             xml = xml+"\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
             //we will define it as a number string for now, with an index of 1, later we can use the numbers to define internal icons and launch intent/image file strings to define custom icons.
-            xml = xml+"\n          <listIcon>" + (i+1) + "</listIcon>\n\n";
+            xml = xml+"\n          <listIcon>" + (i+1) + "</listIcon>";
+            xml = xml+"\n          <listGoogleIcon>" + (i+1) + "</listGoogleIcon>";
             //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
+
+            //in revision 2, due to the way the variable is managed, this may fail, so we need to compensate for that.
+            try {
+                //while we do this we can also define the organize mode to save some time and effort.
+                xml = xml + "     <organizeMode>\n";
+                xml = xml + "          <sub>" + saveData.organizeMode[i][0] + "</sub>\n";
+                xml = xml + "          <repeat>" + saveData.organizeMode[i][1] + "</repeat>\n";
+                xml = xml + "          <main>" + saveData.organizeMode[i][2] + "</main>\n";
+                xml = xml + "     </organizeMode>\n";
+            }
+            catch (Exception e){
+                xml = xml + "     <organizeMode>\n";
+                xml = xml + "          <sub>" + 0 + "</sub>\n";
+                xml = xml + "          <repeat>" + 1 + "</repeat>\n";
+                xml = xml + "          <main>" + 1 + "</main>\n";
+                xml = xml + "     </organizeMode>\n";
+            }
+
             //now load the actual apps in the list
             for (int ii=0; ii<saveData.vLists.get(i).size();){
                 //Similar to HTML we will use the same syntax to declare the variables, this makes it easy to parse later on.
@@ -247,6 +253,8 @@ public class settingsClass implements Serializable {
                     Element appElements = (Element) vListList.item(vListNodes);
                     savedData.vLists.add(new ArrayList<AppDetail>());
 
+                    //try and grab the variables for the list name, list icon, list google icon and list organization mode.
+
                     // iterate through AppData tags
                     NodeList appsList = appElements.getElementsByTagName("AppData");
                     for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
@@ -302,8 +310,8 @@ public class settingsClass implements Serializable {
                         }
                         tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
                         tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
-                        savedData.vLists.get(savedData.vLists.size()-1).add(tempApp);
-                        Log.d("EternalMediaBar", "added " + tempApp.label +" ; " + tempApp.name + " to " + (savedData.vLists.size()-1) );
+                        savedData.oldApps.add(tempApp);
+                        Log.d("EternalMediaBar", "added " + tempApp.label +" ; " + tempApp.name + " to " + "oldApps" );
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -314,9 +322,36 @@ public class settingsClass implements Serializable {
                 e.printStackTrace();
             }
 
+            try{
+                //enter the hiddenApps list
+                NodeList oldAppsList = doc.getElementsByTagName("hiddenApps");
+                Element appElements = (Element) oldAppsList.item(0);
 
-            /////////////////////////
-            //get hidden apps and organize mode
+                // iterate through AppData tags
+                NodeList appsList = appElements.getElementsByTagName("AppData");
+                for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
+                    try {
+                        Element appElement = (Element) appsList.item(currentApp);
+                        AppDetail tempApp = new AppDetail();
+                        if (appElement.getElementsByTagName("persistent").item(0).getTextContent().equals("false")) {
+                            tempApp.isPersistent = false;
+                        }
+                        else{
+                            tempApp.isPersistent=true;
+                        }
+                        tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
+                        tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
+                        savedData.hiddenApps.add(tempApp);
+                        Log.d("EternalMediaBar", "added " + tempApp.label +" ; " + tempApp.name + " to " + "hiddenApps" );
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
 
             }
             catch (Exception e){
