@@ -39,14 +39,9 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	Security of user information takes priority.
 </hr>
 <hr>
-<strong>RC2 Plans:</strong>
--	create an XML read and write function.
--	change the save data over to XML.
--	fix double save on load glitch.
-</hr>
-<hr>
 <strong>RC2.5 Plans:</strong>
--	Change the organize mode to a List<int[3]>
+-	Finish cleaning up the code from the transfer of the save format
+-	fix double save on load glitch.
 -	redefine the horizontal list as appData entries so they can be modified and expanded upon later
 -	if you plugin headphones or a controller it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.

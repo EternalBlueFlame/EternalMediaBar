@@ -348,24 +348,24 @@ public class optionsMenuChange {
 
         //we have to reload this menu every time we change it because we're using a radio button system, so we might as well make use of that by changing the variable from its own function.
         if(secondaryIndex!=0){
-            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2] = secondaryIndex;
+            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2] = secondaryIndex;
         }
         //add the item for changing the organization method
         eternalMediaBar.optionVitem = 0;
         lLayout.removeAllViews();
-        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==1){
+        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==1){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 1, false, launchIntent, appName));
         }
         else{
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 1, false, launchIntent, appName));
         }
-        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==2){
+        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==2){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 2, false, launchIntent, appName));
         }
         else{
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 2, false, launchIntent, appName));
         }
-        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]==3){
+        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==3){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 3, false, launchIntent, appName));
         }
         else{
@@ -373,7 +373,7 @@ public class optionsMenuChange {
         }
 
 
-        if (eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] ==0) {
+        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] ==0) {
             //add the item for only applying this once
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 12, -1, false, launchIntent, appName));
             //add the item for always applying this
@@ -482,13 +482,13 @@ public class optionsMenuChange {
     public void organizeList(EternalMediaBar eternalMediaBar, @Nullable LinearLayout lLayout, int secondaryIndex){
         //we want to define the organization method when we load this menu.
         if (secondaryIndex ==1){
-            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] =1;
+            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] =1;
         }
         else if (secondaryIndex ==-1){
-            eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][1] =0;
+            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] =0;
         }
 
-        switch(eternalMediaBar.savedData.organizeMode[eternalMediaBar.hItem][2]){
+        switch(eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]){
             //no organization
             case 0:case 3:{
                 break;

@@ -1,13 +1,11 @@
 package com.ebf.eternalmediabar;
 
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.StringReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,10 +26,13 @@ public class settingsClass implements Serializable {
     boolean useGoogleIcons;
     boolean useManufacturerIcons;
     boolean mirrorMode;
-    int[][] organizeMode;
+    List<int[]> organizeMode;
     List<AppDetail> oldApps;
     List<AppDetail> hiddenApps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();
+    List<String> categoryNames = new ArrayList<>();
+    List<String> categoryIcons = new ArrayList<>();
+    List<String> categoryGoogleIcons = new ArrayList<>();
 
 
     //////////////////////////////////////////////////
@@ -41,7 +42,7 @@ public class settingsClass implements Serializable {
     public String writeXML(settingsClass saveData, EternalMediaBar eternalMediaBar){
 
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
-        xml = xml+"<xmlRoot>";
+        xml = xml+"<xmlRoot>\n";
         //lets list all the variables that the system needs to use
         xml = xml+"<iconCol>"+saveData.iconCol+"</iconCol>\n";
         xml = xml+"<menuCol>"+saveData.menuCol+"</menuCol>\n";
@@ -72,9 +73,9 @@ public class settingsClass implements Serializable {
             try {
                 //while we do this we can also define the organize mode to save some time and effort.
                 xml = xml + "     <organizeMode>\n";
-                xml = xml + "          <sub>" + saveData.organizeMode[i][0] + "</sub>\n";
-                xml = xml + "          <repeat>" + saveData.organizeMode[i][1] + "</repeat>\n";
-                xml = xml + "          <main>" + saveData.organizeMode[i][2] + "</main>\n";
+                xml = xml + "          <sub>" + saveData.organizeMode.get(i)[0] + "</sub>\n";
+                xml = xml + "          <repeat>" + saveData.organizeMode.get(i)[1] + "</repeat>\n";
+                xml = xml + "          <main>" + saveData.organizeMode.get(i)[2] + "</main>\n";
                 xml = xml + "     </organizeMode>\n";
             } catch (Exception e) {
                 xml = xml + "     <organizeMode>\n";
@@ -150,8 +151,22 @@ public class settingsClass implements Serializable {
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
     // this function is so huge I have to seperate it as if it's multiple functions or we'll all be lost.
-    public String returnSettings(String xml) {
+    public settingsClass returnSettings(String xml) {
         settingsClass savedData= new settingsClass();
+        //catch with below by initializing vLists properly
+        //we should initialize the other variables as well.
+        savedData.useGoogleIcons = false;
+        savedData.mirrorMode = false;
+        savedData.cleanCacheOnStart = false;
+        savedData.gamingMode = false;
+        savedData.useManufacturerIcons = false;
+        savedData.loadAppBG = true;
+        savedData.fontCol = -1;
+        savedData.menuCol = -1;
+        savedData.iconCol = -1;
+        savedData.hiddenApps = new ArrayList<>();
+        savedData.organizeMode = new ArrayList<>();
+        savedData.oldApps = new ArrayList<>();
 
         //try to make the HTML document from XML. This should have no reason to fail, but we have to compensate for just in case it does or the compiler gets mad..
         try {
@@ -256,7 +271,7 @@ public class settingsClass implements Serializable {
                     savedData.vLists.add(new ArrayList<AppDetail>());
 
                     //try and grab the variables for the list name, list icon, list google icon and list organization mode.
-
+                    savedData.organizeMode.add(new int[]{0,1,1});
                     // iterate through AppData tags
                     NodeList appsList = appElements.getElementsByTagName("AppData");
                     for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
@@ -291,7 +306,7 @@ public class settingsClass implements Serializable {
             }
 
             //////////////////////////////////////////////////
-            /////////////////Load a save file/////////////////
+            /////////////////Load the old apps////////////////
             //////////////////////////////////////////////////
             try{
                 //enter the oldApps list
@@ -362,7 +377,7 @@ public class settingsClass implements Serializable {
 
 
 
-        return "";
+        return savedData;
     }
 
 }

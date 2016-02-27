@@ -3,7 +3,6 @@ package com.ebf.eternalmediabar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -26,14 +25,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
@@ -66,38 +63,67 @@ public class EternalMediaBar extends Activity {
             if (savedData.vLists.size()<=1) {
                 try {
                     //try load preferences
-                    //Load the value as a reference to the file instead of a cloned instance of it, just because it's easier, actual efficiency is yet to be determined.
-                    FileInputStream fileStream = openFileInput("lists.dat");
-                    ObjectInputStream objStream = new ObjectInputStream(fileStream);
-                    savedData = (settingsClass) objStream.readObject();
-                    //close the stream to save RAM.
-                    objStream.close();
-                    fileStream.close();
+                    FileInputStream fs = new FileInputStream(new File("data.xml"));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    reader.close();
+                    fs.close();
+                    savedData = savedData.returnSettings(sb.toString());
+
+
+
                 }
                 catch (Exception e) {
-                    //output to debug log just in case something went fully wrong
-                    e.printStackTrace();
-                    //catch with below by initializing vLists properly
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    savedData.vLists.add(new ArrayList<AppDetail>());
-                    //we should initialize the other variables as well.
-                    savedData.useGoogleIcons = false;
-                    savedData.mirrorMode = false;
-                    savedData.cleanCacheOnStart = false;
-                    savedData.gamingMode = false;
-                    savedData.useManufacturerIcons = false;
-                    savedData.loadAppBG = true;
-                    savedData.fontCol = Color.WHITE;
-                    savedData.menuCol = Color.WHITE;
-                    savedData.iconCol = Color.WHITE;
-                    savedData.hiddenApps = new ArrayList<>();
-                    int[] tempInt = new int[]{0,1,1};
-                    savedData.organizeMode= new int[][]{tempInt, tempInt, tempInt, tempInt, tempInt, tempInt, tempInt};
+                    //e.printStackTrace();
+                    try{
+                        FileInputStream fs = new FileInputStream(Environment.getExternalStorageDirectory() + "/data.xml");
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
+                        StringBuilder sb = new StringBuilder();
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line).append("\n");
+                        }
+                        reader.close();
+                        fs.close();
+                        savedData = savedData.returnSettings(sb.toString());
+                    }
+                    catch (Exception ee) {
+                        //output to debug log just in case something went fully wrong
+                        ee.printStackTrace();
+                        //catch with below by initializing vLists properly
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        savedData.vLists.add(new ArrayList<AppDetail>());
+                        //we should initialize the other variables as well.
+                        savedData.useGoogleIcons = false;
+                        savedData.mirrorMode = false;
+                        savedData.cleanCacheOnStart = false;
+                        savedData.gamingMode = false;
+                        savedData.useManufacturerIcons = false;
+                        savedData.loadAppBG = true;
+                        savedData.fontCol = Color.WHITE;
+                        savedData.menuCol = Color.WHITE;
+                        savedData.iconCol = Color.WHITE;
+                        savedData.hiddenApps = new ArrayList<>();
+                        int[] tempInt = new int[]{0, 1, 1};
+                        savedData.organizeMode = new ArrayList<>();
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.organizeMode.add(tempInt);
+                        savedData.oldApps = new ArrayList<>();
+                    }
                 }
             }
             createHMenu();
@@ -156,29 +182,16 @@ public class EternalMediaBar extends Activity {
     ///////////Save a settingsClass to file///////////
     //////////////////////////////////////////////////
     public void saveFiles(){
+        //!!!!DISABLED DURING TESTING OF READING A SAVE FILE
+        /*
+        //save using the new save file format
         try{
-            // if we actually used oldApps, apply the instanced value back to the savedData version so we can save it.
-            if (oldApps.size()>1) {
-                savedData.oldApps = oldApps;
-            }
-            //create a file output stream with an object, to save a variable to a file, then close the stream.
-            FileOutputStream fileStream = openFileOutput("lists.dat", Context.MODE_PRIVATE);
-            ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
-            fileOutput.writeObject(savedData);
-            //close the stream to save RAM
-            fileOutput.close();
-            fileStream.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            //can't get read/write permissions, or something unforeseen has gone horribly wrong
-        }
-
-        //now lets try and save using the new save file format
-        try{
+            //create a file Output Stream, this lets us write to the internal memory
             FileOutputStream fileStream = openFileOutput("data.xml", Context.MODE_PRIVATE);
             ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
+            //write a string to the stream
             fileOutput.writeChars(savedData.writeXML(savedData, this));
+            //close the stream to save some RAM.
             fileOutput.close();
             fileStream.close();
             //FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
@@ -192,7 +205,7 @@ public class EternalMediaBar extends Activity {
             //and print the stack just in case.
             e.printStackTrace();
         }
-
+*/
     }
 
 
@@ -201,6 +214,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("Key Pressed: ", "" + keyCode);
         switch (keyCode) {
             //case event for down
             case KeyEvent.KEYCODE_S: case KeyEvent.KEYCODE_DPAD_DOWN: case KeyEvent.KEYCODE_4: case KeyEvent.KEYCODE_NUMPAD_4: {
@@ -388,7 +402,7 @@ public class EternalMediaBar extends Activity {
             //check if the app has previously been found
             boolean fail = false;
             //check each entry in oldApps
-            for (int i=0; i<oldApps.size();){
+            for (int i=0; i<oldApps.size() && oldApps.size() >0;){
                 //in each entry check to see if the app launch intent is the same
                 if (oldApps.get(i).name.equals(appRI.name)){
                     //if one entry is the same set fail to true and break the search
@@ -588,7 +602,7 @@ public class EternalMediaBar extends Activity {
 
         //this last one has to stay here, even after the save format has been fully converted, because this menu will never be optional.
 
-        if (savedData.vLists.get(savedData.vLists.size() - 1).size() > 0) {
+        if (savedData.vLists.size() >1 && savedData.vLists.get(savedData.vLists.size() - 1).size() > 0) {
             hli.add(new AppDetail());
             hli.get(6).label = "New Apps";
             hli.get(6).icon = svgLoad(R.drawable.new_install_144px);
@@ -649,7 +663,7 @@ public class EternalMediaBar extends Activity {
         vLayout.removeAllViews();
 
 
-        if (savedData.organizeMode[hItem][1] == 1 && savedData.vLists.get(hItem).size() >1) {
+        if (savedData.organizeMode.get(hItem)[1] == 1 && savedData.vLists.get(hItem).size() >1) {
             changeOptionsMenu.organizeList(this, null, 0);
         }
 
