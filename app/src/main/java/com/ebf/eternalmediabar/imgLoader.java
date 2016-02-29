@@ -2,7 +2,10 @@ package com.ebf.eternalmediabar;
 
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 
 /**
  * Created by JakeD on 2/25/2016.
@@ -10,35 +13,110 @@ import android.support.v4.content.ContextCompat;
 public class imgLoader {
 
 
-    public Drawable load(EternalMediaBar eternalMediaBar,String ico, PackageManager manager){
+    public Drawable loadInternal(EternalMediaBar eternalMediaBar,String ico, PackageManager manager){
 
-        //run it on a switch
+        //run a switch to load an icon dependant on it's value.
         switch (ico){
-            //case 0 for no icon.
             case "0":{
                 return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
             }
-            //case 1 for the Social icon
             case "1":{
-                //if we aren't using google icons, use the built-in one
-                if (!eternalMediaBar.savedData.useGoogleIcons){
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);
-                }
-                //otherwise try to load the icon from the Contacts app
-                else{
-                    try{
-                        return manager.getApplicationIcon("com.android.contacts");
-                    }
-                    //if it fails, fallback to the built-in Social icon.
-                    catch (Exception e){
-                        return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);
-                    }
-                }
+                return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);
+            }
+            case "2":{
+                return ContextCompat.getDrawable(eternalMediaBar, R.drawable.media_144px);
+            }
+            case "3": {
+                return eternalMediaBar.svgLoad(R.drawable.games_144px);
+            }
+            case "4":{
+                return eternalMediaBar.svgLoad(R.drawable.web_144px);
+            }
+            case "5": {
+                return eternalMediaBar.svgLoad(R.drawable.extras_144px);
+            }
+            case "6":{
+                return eternalMediaBar.svgLoad(R.drawable.settings_144px);
+            }
+            case "7": {
+                return eternalMediaBar.svgLoad(R.drawable.new_install_144px);
             }
             default:{
                 return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
             }
         }
 
+    }
+
+    public Drawable loadGoogleIcon(EternalMediaBar eternalMediaBar,String ico, PackageManager manager){
+        //run it on a switch
+        switch (ico){
+            //case 0 for no icon.
+            case "0":{
+                return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
+            }
+            //each case tries to load an icon from an app, if it fails, it falls back to internal icon.
+            case "1":{
+                try{return manager.getApplicationIcon("com.android.contacts");}
+                //if it fails, fallback to the built-in Social icon.
+                catch (Exception e){return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);}
+            }
+            case "2":{
+                //this icon is composed of two different icons, so we make them as a list of drawables.
+                Drawable[] layers = new Drawable[2];
+                //load the base icon
+                try {layers[0] = manager.getApplicationIcon("com.google.android.videos");}
+                catch (Exception e) {}
+                //load the other icon,
+                try {
+                    layers[1] = new ScaleDrawable(manager.getApplicationIcon("com.google.android.music"), Gravity.CENTER, 1f, 1f);
+                    //now change the scale of it by changing the level
+                    layers[1].setLevel(7000);
+                }
+                catch (Exception e) {}
+                //if the process didn't fail, load the list of icons and draw them as a Layered Drawable.
+                if (layers != new Drawable[2]) {
+                    try {
+                        return new LayerDrawable(layers);
+                    } catch (Exception e) {
+                        return eternalMediaBar.svgLoad(R.drawable.media_144px);
+                    }
+                }
+            }
+            case "3": {
+                try {
+                    return manager.getApplicationIcon("com.google.android.play.games");
+                } catch (Exception e) {
+                    return eternalMediaBar.svgLoad(R.drawable.games_144px);
+                }
+            }
+            case "4":{
+                try {
+                    return manager.getApplicationIcon("com.android.chrome");
+                } catch (Exception e) {
+                    return eternalMediaBar.svgLoad(R.drawable.web_144px);
+                }
+            }
+            case "5": {
+                try {
+                    return manager.getApplicationIcon("com.google.android.apps.docs");
+                } catch (Exception e) {
+                    eternalMediaBar.svgLoad(R.drawable.extras_144px);
+                }
+            }
+            case "6":{
+                try {
+                    return manager.getApplicationIcon("com.android.settings");
+                } catch (Exception e) {
+                    return eternalMediaBar.svgLoad(R.drawable.settings_144px);
+                }
+            }
+            case "7": {
+                return eternalMediaBar.svgLoad(R.drawable.new_install_144px);
+            }
+            default:{
+                return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
+            }
+        }
     }
 }

@@ -28,6 +28,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class EternalMediaBar extends Activity {
     public boolean[] warningToggle;
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
+    private imgLoader imageLoader = new imgLoader();
 
 
 
@@ -126,6 +128,8 @@ public class EternalMediaBar extends Activity {
                     }
                 }
             }
+            //we dont use this, but due to glitches in earlier revisions, there bay be things in here.
+            savedData.hiddenApps.clear();
             createHMenu();
             //load in the apps
             loadApps();
@@ -194,10 +198,12 @@ public class EternalMediaBar extends Activity {
             //close the stream to save some RAM.
             fileOutput.close();
             fileStream.close();
-            //FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
-            //data.write(savedData.writeXML(savedData, this));
-            //data.flush();
-            //data.close();
+            */
+        try{
+            FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
+            data.write(savedData.writeXML(savedData, this));
+            data.flush();
+            data.close();
         }
         catch(Exception e){
             //first fail, ask for write permissions so it won't fail the next time
@@ -205,7 +211,6 @@ public class EternalMediaBar extends Activity {
             //and print the stack just in case.
             e.printStackTrace();
         }
-*/
     }
 
 
@@ -487,127 +492,19 @@ public class EternalMediaBar extends Activity {
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
         //for now, because we need this to work before we convert fully to the new save format, we will set this up here. We can just move it later.
         //later we will also have to promote icon loading to it's own class due to the complexity of supporting custom icons and material design.
-        AppDetail hMenuItem = new AppDetail();
-        hMenuItem.name = "hItem";
-        hMenuItem.isPersistent=true;
-        hli.add(new AppDetail());
-        hli.add(new AppDetail());
-        hli.add(new AppDetail());
-        hli.add(new AppDetail());
-        hli.add(new AppDetail());
-        hli.add(new AppDetail());
-        if (!savedData.useGoogleIcons) {
-            hli.get(0).label = "Social";
-            hli.get(0).icon = svgLoad(R.drawable.social_144px);
-            hli.get(0).name = "hItem";
-            hli.get(0).isPersistent=true;
-            hli.get(1).label = "Media";
-            hli.get(1).icon = svgLoad(R.drawable.media_144px);
-            hli.get(1).name = "hItem";
-            hli.get(1).isPersistent=true;
-            hli.get(2).label = "Games";
-            hli.get(2).icon = svgLoad(R.drawable.games_144px);
-            hli.get(2).name = "hItem";
-            hli.get(2).isPersistent=true;
-            hli.get(3).label = "Web";
-            hli.get(3).icon = svgLoad(R.drawable.web_144px);
-            hli.get(3).name = "hItem";
-            hli.get(3).isPersistent=true;
-            hli.get(4).label = "Utility";
-            hli.get(4).icon = svgLoad(R.drawable.extras_144px);
-            hli.get(4).name = "hItem";
-            hli.get(4).isPersistent=true;
-            hli.get(5).label = "Settings";
-            hli.get(5).icon = svgLoad(R.drawable.settings_144px);
-            hli.get(5).name = "hItem";
-            hli.get(5).isPersistent=true;
-        }
-        //Now we have to do it again since we don't have the custom icon loader class to handle this stuff yet
-        else{
 
-
-            hli.get(0).label = "Social";
-            try{
-                hli.get(0).icon = manager.getApplicationIcon("com.android.contacts");
+        for(int i=0; i<savedData.vLists.size();){
+            AppDetail hMenuItem = new AppDetail();
+            hMenuItem.name = "hItem";
+            hMenuItem.isPersistent = true;
+            hMenuItem.label = savedData.categoryNames.get(i);
+            if (!savedData.useGoogleIcons) {
+                hMenuItem.icon = imageLoader.loadInternal(this, savedData.categoryIcons.get(i), manager);
+            } else {
+                hMenuItem.icon = imageLoader.loadGoogleIcon(this, savedData.categoryIcons.get(i), manager);
             }
-            catch (Exception e) {
-                hli.get(0).icon = svgLoad(R.drawable.social_144px);
-            }
-            hli.get(0).name = "hItem";
-            hli.get(0).isPersistent=true;
-            hli.get(1).label = "Media";
-            //this icon is composed of two different icons, so we make them as a list of drawables.
-            Drawable[] layers = new Drawable[2];
-            //load the base icon
-            try{layers[0] = manager.getApplicationIcon("com.google.android.videos");}
-            catch (Exception e){}
-            //load the other icon,
-            try{layers[1] = new ScaleDrawable(manager.getApplicationIcon("com.google.android.music"),Gravity.CENTER,1f,1f);
-                //now change the scale of it by changing the level
-                layers[1].setLevel(7000);}
-            catch (Exception e){}
-            //if the process didn't fail, load the list of icons and draw them as a Layered Drawable.
-            if (layers != new Drawable[2]){
-                try {
-                    hli.get(1).icon = new LayerDrawable(layers);
-                }
-                catch (Exception e){
-                    hli.get(1).icon = svgLoad(R.drawable.media_144px);
-                }
-            }
-            //otherwise, fallback to the built-in icon.
-            else{
-                hli.get(1).icon = svgLoad(R.drawable.media_144px);
-            }
-            hli.get(1).name = "hItem";
-            hli.get(1).isPersistent=true;
-            hli.get(2).label = "Games";
-            try{
-                hli.get(2).icon = manager.getApplicationIcon("com.google.android.play.games");
-            }
-            catch (Exception e) {
-                hli.get(2).icon = svgLoad(R.drawable.games_144px);
-            }
-            hli.get(2).name = "hItem";
-            hli.get(2).isPersistent=true;
-            hli.get(3).label = "Web";
-            try{
-                hli.get(3).icon = manager.getApplicationIcon("com.android.chrome");
-            }
-            catch (Exception e) {
-                hli.get(3).icon = svgLoad(R.drawable.web_144px);
-            }
-            hli.get(3).name = "hItem";
-            hli.get(3).isPersistent=true;
-            hli.get(4).label = "Utility";
-            try{
-                hli.get(4).icon = manager.getApplicationIcon("com.google.android.apps.docs");
-            }
-            catch (Exception e) {
-                hli.get(4).icon = svgLoad(R.drawable.extras_144px);
-            }
-            hli.get(4).name = "hItem";
-            hli.get(4).isPersistent=true;
-            hli.get(5).label = "Settings";
-            try{
-                hli.get(5).icon = manager.getApplicationIcon("com.android.settings");
-            }
-            catch (Exception e) {
-                hli.get(5).icon = svgLoad(R.drawable.settings_144px);
-            }
-            hli.get(5).name = "hItem";
-            hli.get(5).isPersistent=true;
-        }
-
-
-        //this last one has to stay here, even after the save format has been fully converted, because this menu will never be optional.
-
-        if (savedData.vLists.size() >1 && savedData.vLists.get(savedData.vLists.size() - 1).size() > 0) {
-            hli.add(new AppDetail());
-            hli.get(6).label = "New Apps";
-            hli.get(6).icon = svgLoad(R.drawable.new_install_144px);
-            hli.get(6).name = "hItem";
-            hli.get(6).isPersistent=true;
+            hli.add(hMenuItem);
+            i++;
         }
     }
 
@@ -635,7 +532,9 @@ public class EternalMediaBar extends Activity {
         layout.removeAllViews();
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
+            if(savedData.vLists.get(ii).size()>0) {
                 layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, hli.get(ii).icon, ii, 0, false, "hItem", "hItem"));
+            }
         ii++;
         }
         //change the display for the appropriate icon
@@ -733,9 +632,7 @@ public class EternalMediaBar extends Activity {
                     }
                 }
                 else {
-                    System.out.print("tried to move");
                     if (isLaunchable) {
-                        System.out.print("tried to move");
                         if (secondaryIndex==1){
                             changeOptionsMenu.menuOpen(EternalMediaBar.this, true, launchIntent, appName, (LinearLayout) findViewById(R.id.optionslist));
                         }
