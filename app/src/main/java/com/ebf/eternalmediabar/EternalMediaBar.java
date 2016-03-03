@@ -3,6 +3,7 @@ package com.ebf.eternalmediabar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -28,8 +29,10 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 public class EternalMediaBar extends Activity {
@@ -187,7 +190,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     public void saveFiles(){
         //!!!!DISABLED DURING TESTING OF READING A SAVE FILE
-        /*
+
         //save using the new save file format
         try{
             //create a file Output Stream, this lets us write to the internal memory
@@ -198,12 +201,13 @@ public class EternalMediaBar extends Activity {
             //close the stream to save some RAM.
             fileOutput.close();
             fileStream.close();
-            */
-        try{
+
+        //System.out.print(savedData.writeXML(savedData, this));
+        /*try{
             FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
             data.write(savedData.writeXML(savedData, this));
             data.flush();
-            data.close();
+            data.close();*/
         }
         catch(Exception e){
             //first fail, ask for write permissions so it won't fail the next time

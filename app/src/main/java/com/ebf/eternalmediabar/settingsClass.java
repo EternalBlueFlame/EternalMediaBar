@@ -53,7 +53,7 @@ public class settingsClass implements Serializable {
         xml = xml+"<mirrorMode>"+saveData.mirrorMode+"</mirrorMode>\n\n";
 
         //create a loop for the vLists, and the lists in them, and each appData in them
-        xml = xml+"<vLists>";
+        xml = xml+"<vLists>\n";
         for (int i=0; i< saveData.vLists.size();){
             xml = xml+"\n     <vList>";
             //this will fail if the New Apps category is empty
@@ -112,7 +112,7 @@ public class settingsClass implements Serializable {
         xml = xml+"</oldApps>\n";
 
         //and one more list of appData for the hidden apps
-        xml = xml+"<hiddenApps>\n";
+        xml = xml+"\n<hiddenApps>\n";
         for (int i=0; i<saveData.hiddenApps.size();){
             xml = xml+"\n     <AppData>";
             xml = xml+"\n          <label>"+saveData.hiddenApps.get(i).label.toString().replace("&", "andabcd")+"</label>";
