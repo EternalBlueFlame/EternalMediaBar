@@ -10,15 +10,12 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -27,12 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 public class EternalMediaBar extends Activity {
@@ -68,7 +62,7 @@ public class EternalMediaBar extends Activity {
             if (savedData.vLists.size()<=1) {
                 try {
                     //try load preferences
-                    FileInputStream fs = new FileInputStream(new File("data.xml"));
+                    FileInputStream fs = openFileInput("data.xml");
                     BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
                     StringBuilder sb = new StringBuilder();
                     String line = null;
@@ -83,7 +77,7 @@ public class EternalMediaBar extends Activity {
 
                 }
                 catch (Exception e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     try{
                         FileInputStream fs = new FileInputStream(Environment.getExternalStorageDirectory() + "/data.xml");
                         BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
@@ -189,17 +183,14 @@ public class EternalMediaBar extends Activity {
     ///////////Save a settingsClass to file///////////
     //////////////////////////////////////////////////
     public void saveFiles(){
-        //!!!!DISABLED DURING TESTING OF READING A SAVE FILE
 
         //save using the new save file format
         try{
             //create a file Output Stream, this lets us write to the internal memory
             FileOutputStream fileStream = openFileOutput("data.xml", Context.MODE_PRIVATE);
-            ObjectOutputStream fileOutput = new ObjectOutputStream(fileStream);
+            fileStream.write(savedData.writeXML(savedData, this).getBytes());
             //write a string to the stream
-            fileOutput.writeChars(savedData.writeXML(savedData, this));
             //close the stream to save some RAM.
-            fileOutput.close();
             fileStream.close();
 
         //System.out.print(savedData.writeXML(savedData, this));
@@ -322,7 +313,7 @@ public class EternalMediaBar extends Activity {
                     appIcon.setScaleY(1.25f);
 
                     //scroll to the new entry
-                    vLayout.scrollTo((int) vLayout.getChildAt(vItem).getX(), 0);
+                    vLayout.scrollTo(0, (int) vLayout.getChildAt(vItem).getX());
 
                 }
             }
@@ -344,19 +335,11 @@ public class EternalMediaBar extends Activity {
                 if (proceed) {
                     //set the font face.
                     ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-                    //scale the icon back to normal
-                    ImageView appIcon = (ImageView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
-                    appIcon.setScaleX(1f);
-                    appIcon.setScaleY(1f);
                     //change OptionsVItem
                     optionVitem = move;
                     ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-                    //scale the icon to be larger
-                    appIcon = (ImageView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_icon);
-                    appIcon.setScaleX(1.25f);
-                    appIcon.setScaleY(1.25f);
                     //scroll to the new entry
-                    vLayout.scrollTo((int) vLayout.getChildAt(optionVitem).getX(), 0);
+                    vLayout.scrollTo(0, (int) vLayout.getChildAt(optionVitem).getX());
                 }
             }
         }
@@ -368,7 +351,7 @@ public class EternalMediaBar extends Activity {
                 proceed = false;
             }
             //if you are trying to move too far up set proceed to false
-            else if (move > hLayout.getChildCount()) {
+            else if (move >= hLayout.getChildCount()) {
                 proceed = false;
             }
 
