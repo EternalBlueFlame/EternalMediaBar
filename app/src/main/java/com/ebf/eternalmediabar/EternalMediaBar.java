@@ -44,7 +44,6 @@ public class EternalMediaBar extends Activity {
     public boolean[] warningToggle;
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
-    private imgLoader imageLoader = new imgLoader();
 
 
 
@@ -485,11 +484,7 @@ public class EternalMediaBar extends Activity {
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
             hMenuItem.label = savedData.categoryNames.get(i);
-            if (!savedData.useGoogleIcons) {
-                hMenuItem.icon = imageLoader.loadInternal(this, savedData.categoryIcons.get(i), manager);
-            } else {
-                hMenuItem.icon = imageLoader.loadGoogleIcon(this, savedData.categoryIcons.get(i), manager);
-            }
+            hMenuItem.icon = new imgLoader(this, savedData.categoryIcons.get(i), manager, savedData.useGoogleIcons).doInBackground();
             hli.add(hMenuItem);
             i++;
         }
