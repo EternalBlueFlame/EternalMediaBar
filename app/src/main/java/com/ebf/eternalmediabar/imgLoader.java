@@ -8,8 +8,6 @@ import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 
-import java.util.List;
-
 public class imgLoader extends AsyncTask<imgLoader, Integer, Drawable>{
 
     public EternalMediaBar eternalMediaBar;

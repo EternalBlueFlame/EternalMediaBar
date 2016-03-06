@@ -122,12 +122,10 @@ public class EternalMediaBar extends Activity {
                     }
                 }
             }
-            //we dont use this, but due to glitches in earlier revisions, there bay be things in here.
+            //we dont use this, but due to glitches in earlier revisions, there may be things in here, when it should be empty.
             savedData.hiddenApps.clear();
-            createHMenu();
             //load in the apps
             loadApps();
-            createHMenu();
             //setup the warning variable
             warningToggle = new boolean[1];
             warningToggle[0] = false;
@@ -432,11 +430,12 @@ public class EternalMediaBar extends Activity {
                 appRI.icon = null;
                 savedData.vLists.get(savedData.vLists.size()-1).add(appRI);
             }
+            availableActivities.clear();
         }
     }
 
 
-    //////////////!!DEPRECIATE THIS!!/////////////////
+
     //////////////////////////////////////////////////
     ///////////Return a drawable from a png///////////
     //////////////////////////////////////////////////
@@ -444,38 +443,6 @@ public class EternalMediaBar extends Activity {
         //imageView.setImageDrawable(svg.createPictureDrawable());
         return ContextCompat.getDrawable(this, imageToLoad);
     }
-
-
-
-
-
-
-
-
-
-
-
-    public void createHMenu(){
-
-        //empty hli first to be sure we don't accidentally make duplicate entries
-        hli.clear();
-        //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-        //for now, because we need this to work before we convert fully to the new save format, we will set this up here. We can just move it later.
-        //later we will also have to promote icon loading to it's own class due to the complexity of supporting custom icons and material design.
-
-        for(int i=0; i<savedData.vLists.size();){
-            AppDetail hMenuItem = new AppDetail();
-            hMenuItem.name = "hItem";
-            hMenuItem.isPersistent = true;
-            hMenuItem.label = savedData.categoryNames.get(i);
-            hMenuItem.icon = new imgLoader(this, savedData.categoryIcons.get(i), manager, savedData.useGoogleIcons).doInBackground();
-            hli.add(hMenuItem);
-            i++;
-        }
-    }
-
-
-
 
 
 
@@ -491,6 +458,24 @@ public class EternalMediaBar extends Activity {
         else{
             setContentView(R.layout.activity_eternal_media_bar);
         }
+
+        //////////////////////
+        //Draw the Categories
+        //////////////////////
+        hli.clear();
+        //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
+
+        for(int i=0; i<savedData.vLists.size();){
+            AppDetail hMenuItem = new AppDetail();
+            hMenuItem.name = "hItem";
+            hMenuItem.isPersistent = true;
+            hMenuItem.label = savedData.categoryNames.get(i);
+            hMenuItem.icon = new imgLoader(this, savedData.categoryIcons.get(i), manager, savedData.useGoogleIcons).doInBackground();
+            hli.add(hMenuItem);
+            i++;
+        }
+
+
 
         manager = getPackageManager();
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
@@ -655,9 +640,3 @@ public class EternalMediaBar extends Activity {
     }
 
 }
-
-//class runRun extends AsyncTask<Void, Void, Void> {
-
-//    @Override
-//    protected Void doInBackground(Void... params) {return null;}
-//}
