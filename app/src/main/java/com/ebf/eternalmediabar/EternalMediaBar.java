@@ -32,7 +32,6 @@ import java.util.List;
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
-    private List<AppDetail> oldApps = new ArrayList<>();
     public List<AppDetail> hli = new ArrayList<>();
     public settingsClass savedData = new settingsClass();
 
@@ -120,7 +119,6 @@ public class EternalMediaBar extends Activity {
                         savedData.organizeMode.add(tempInt);
                         savedData.organizeMode.add(tempInt);
                         savedData.organizeMode.add(tempInt);
-                        savedData.oldApps = new ArrayList<>();
                     }
                 }
             }
@@ -374,81 +372,67 @@ public class EternalMediaBar extends Activity {
     private void loadApps(){
         manager = getPackageManager();
 
-        //for some odd reason saveData.oldApps cant be accessed directly in most cases, so we'll push it to another variable to edit and change.
-        oldApps = savedData.oldApps;
-        List<String> newApps = new ArrayList<>();
-        //get the apps from the intent activity list of resolve info in the host OS.
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent , 0);
-        //copy only the necessary info from each app into a copy of the AppDetail Class
-        for(ResolveInfo ri : availableActivities) {
-            AppDetail appRI = new AppDetail();
-            appRI.label = ri.loadLabel(manager);
-            appRI.name = ri.activityInfo.packageName;
-            appRI.isPersistent = false;
-            appRI.icon = null;
-            //add the app to the list of all new apps to compare against oldApps later.
-            newApps.add(ri.activityInfo.packageName);
-            //check if the app has previously been found
-            boolean fail = false;
-            //check each entry in oldApps
-            for (int i=0; i<oldApps.size() && oldApps.size() >0;){
-                //in each entry check to see if the app launch intent is the same
-                if (oldApps.get(i).name.equals(appRI.name)){
-                    //if one entry is the same set fail to true and break the search
-                    fail=true;
-                }
-                if (fail){break;}
-                else{i++;}
-            }
-            //if fail is false, add the app to the newly installed list where the user can organize it, and the old apps list.where we can keep track of it easier.
-            if (!fail) {
-                savedData.vLists.get(savedData.vLists.size()-1).add(appRI);
-                oldApps.add(appRI);
-            }
-        }
 
+        savedData.vLists.get(savedData.vLists.size()-1).clear();
 
-
-        //now check if there are any apps in the old list that are no longer installed, and be sure to remove them from any list they may be on
-        for (int i = 0; i < oldApps.size(); ) {
-            if (!newApps.contains(oldApps.get(i).name) && !oldApps.get(i).isPersistent){
-                //create an instance of the app
-                AppDetail toRemove = oldApps.get(i);
-                //search all lists for it and remove each entry.
-                for (int ii=0; ii< savedData.vLists.size();){
-                    if (savedData.vLists.get(ii).contains(toRemove)){
-                        savedData.vLists.get(ii).remove(toRemove);
-                    }
-                    ii++;
-                }
-                oldApps.remove(toRemove);
-            }
-            i++;
-        }
-        //check for inbuilt launcher apps, and be sure they are there
-        boolean fail = true;
-        AppDetail eternalSettings = new AppDetail();
-        eternalSettings.isPersistent = true;
-        eternalSettings.label = "Eternal Media Bar - Settings";
-        eternalSettings.name = ".options";
-        for (int i=0;i<savedData.vLists.size();){
+        //create a list of bools for checking what system apps are present.
+        Boolean[] sysapps = new Boolean[]{false};
+        //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
+        for (int i=0; i<savedData.vLists.size();){
             for (int ii=0; ii<savedData.vLists.get(i).size();){
-                if (savedData.vLists.get(i).get(ii).name.equals(".options")){
-                    fail = false;
-                    break;
+                //iterate through the lists, then check if it's persistent.
+                if (!savedData.vLists.get(i).get(ii).isPersistent) {
+                    //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
+                    try {
+                        if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(savedData.vLists.get(i).get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
+                            savedData.vLists.get(i).remove(ii);
+                        }
+                        //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
+                        else{
+                            for (int iii=0; iii<availableActivities.size();){
+                                if(availableActivities.get(iii).activityInfo.packageName.equals(savedData.vLists.get(i).get(ii).name)){
+                                    availableActivities.remove(iii);
+                                    //now set the index of iii to break the loop, since we already found what we were looking for.
+                                    iii=availableActivities.size();
+                                }
+                                iii++;
+                            }
+                        }
+                    } catch (Exception e) {
+                        savedData.vLists.get(i).remove(ii);
+                    }
+                }
+                //do a check for if the system apps are present and modify the bool as necessary.
+                else if(savedData.vLists.get(i).get(ii).name.equals(".options")){
+                    sysapps[0] = true;
                 }
                 ii++;
             }
             i++;
         }
-        if (fail){
+
+        //now check the list of bools and add any missing system apps.
+        if (!sysapps[0]){
+            AppDetail eternalSettings = new AppDetail();
+            eternalSettings.isPersistent = true;
+            eternalSettings.label = "Eternal Media Bar - Settings";
+            eternalSettings.name = ".options";
             savedData.vLists.get(5).add(eternalSettings);
         }
-        saveFiles();
-        //since we no longer need this variable, let's empty it.
-        oldApps = new ArrayList<>();
+
+        if (availableActivities.size()>0) {
+            for (ResolveInfo ri : availableActivities) {
+                AppDetail appRI = new AppDetail();
+                appRI.label = ri.loadLabel(manager);
+                appRI.name = ri.activityInfo.packageName;
+                appRI.isPersistent = false;
+                appRI.icon = null;
+                savedData.vLists.get(savedData.vLists.size()-1).add(appRI);
+            }
+        }
     }
 
 

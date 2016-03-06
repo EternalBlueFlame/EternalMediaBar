@@ -25,7 +25,6 @@ public class settingsClass implements Serializable {
     boolean useManufacturerIcons;
     boolean mirrorMode;
     List<int[]> organizeMode;
-    List<AppDetail> oldApps;
     List<AppDetail> hiddenApps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();
     List<String> categoryNames = new ArrayList<>();
@@ -98,20 +97,7 @@ public class settingsClass implements Serializable {
         }
         xml = xml+"</vLists>\n";
 
-        //same to how we did it for each vList, we do again for the old apps.
-        xml = xml+"<oldApps>";
-        for (int i=0; i<saveData.oldApps.size();){
-            xml = xml+"\n     <AppData>";
-            xml = xml+"\n          <label>"+saveData.oldApps.get(i).label.toString().replace("&", "andabcd")+"</label>";
-            xml = xml+"\n          <name>"+saveData.oldApps.get(i).name+"</name>";
-            //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
-            xml = xml+"\n          <persistent>"+saveData.oldApps.get(i).isPersistent+"</persistent>";
-            xml = xml+"\n     </AppData>\n";
-            i++;
-        }
-        xml = xml+"</oldApps>\n";
-
-        //and one more list of appData for the hidden apps
+        //the same way we did it for the vLists, we'll do it again for the hidden apps
         xml = xml+"\n<hiddenApps>\n";
         for (int i=0; i<saveData.hiddenApps.size();){
             xml = xml+"\n     <AppData>";
@@ -163,7 +149,6 @@ public class settingsClass implements Serializable {
         savedData.iconCol = -1;
         savedData.hiddenApps = new ArrayList<>();
         savedData.organizeMode = new ArrayList<>();
-        savedData.oldApps = new ArrayList<>();
 
         //try to make the HTML document from XML. This should have no reason to fail, but we have to compensate for just in case it does or the compiler gets mad..
         try {
@@ -349,38 +334,8 @@ public class settingsClass implements Serializable {
             }
 
             //////////////////////////////////////////////////
-            /////////////////Load the old apps////////////////
+            ///////////////Load the hidden apps///////////////
             //////////////////////////////////////////////////
-            try{
-                //enter the oldApps list
-                NodeList oldAppsList = doc.getElementsByTagName("oldApps");
-                Element appElements = (Element) oldAppsList.item(0);
-
-                // iterate through AppData tags
-                NodeList appsList = appElements.getElementsByTagName("AppData");
-                for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
-                    try {
-                        Element appElement = (Element) appsList.item(currentApp);
-                        AppDetail tempApp = new AppDetail();
-                        if (appElement.getElementsByTagName("persistent").item(0).getTextContent().equals("false")) {
-                            tempApp.isPersistent = false;
-                        }
-                        else{
-                            tempApp.isPersistent=true;
-                        }
-                        tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
-                        tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
-                        savedData.oldApps.add(tempApp);
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-
             try{
                 //enter the hiddenApps list
                 NodeList oldAppsList = doc.getElementsByTagName("hiddenApps");
@@ -415,8 +370,6 @@ public class settingsClass implements Serializable {
             catch (Exception e){
                 e.printStackTrace();
             }
-
-
 
         return savedData;
     }
