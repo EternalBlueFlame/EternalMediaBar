@@ -536,7 +536,7 @@ public class EternalMediaBar extends Activity {
         appLabel.setText(text);
         appLabel.setTextColor(savedData.fontCol);
         //if the launch intent exists try and add an icon from it
-        if (launchIntent.length()>1) {
+        if (launchIntent.length()>1 && inflater!=R.layout.options_item) {
             //if it's an options menu item the image view will fail and skip this
             ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
             //attempt to add the icon from the launchIntent
