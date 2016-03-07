@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -484,7 +483,7 @@ public class EternalMediaBar extends Activity {
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
             if(savedData.vLists.get(ii).size()>0) {
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, hli.get(ii).icon, ii, 0, false, "hItem", "hItem"));
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categoryIcons.get(ii) + " : " + savedData.categoryGoogleIcons.get(ii), "hItem"));
             }
         ii++;
         }
@@ -519,7 +518,7 @@ public class EternalMediaBar extends Activity {
 
 
         for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
-            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, null, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
+            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
             ii++;
         }
 
@@ -530,37 +529,29 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     /////////Function for creating list items/////////
     //////////////////////////////////////////////////
-    public View createMenuEntry(int inflater, CharSequence text, @Nullable Drawable icon, final int index, final int secondaryIndex, final Boolean isLaunchable, final String launchIntent, final String appName){
+    public View createMenuEntry(int inflater, CharSequence text, final int index, final int secondaryIndex, final Boolean isLaunchable, final String launchIntent, final String appName){
         //initialize the views we know will be there
         View child = getLayoutInflater().inflate(inflater, null);
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
         appLabel.setText(text);
         appLabel.setTextColor(savedData.fontCol);
         //if the launch intent exists try and add an icon from it
-        if (launchIntent.length()>1 && icon ==null) {
+        if (launchIntent.length()>1) {
             //if it's an options menu item the image view will fail and skip this
             ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
             //attempt to add the icon from the launchIntent
-            //null icon or a new blank one will be blank, invalid icons will show up as exclamations
-            try {
-                appIcon.setImageDrawable(manager.getApplicationIcon(launchIntent));
-            } catch (Exception e) {
-                if (launchIntent.equals(".options")){
-                    appIcon.setImageDrawable(svgLoad(R.drawable.sub_settings_144px));
+            if (appName.equals("hItem")){
+                String[] icons = launchIntent.split(":");
+                if(savedData.useGoogleIcons) {
+                    appIcon.setImageDrawable(new imgLoader(this, icons[0].trim(), manager, false).doInBackground());
                 }
-                else {
-                    appIcon.setImageDrawable(svgLoad(R.drawable.error_144px));
+                else{
+                    appIcon.setImageDrawable(new imgLoader(this, icons[1].trim(), manager, false).doInBackground());
                 }
             }
-        }
-        else{
-            try {
-                //try to load pre-designated icon, only for bundled icons.
-                ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
-
-                //we'll have to offload this somewhere else for figuring out icons.
-                appIcon.setImageDrawable(icon);
-            } catch (Exception e) {}
+            else {
+                appIcon.setImageDrawable(new imgLoader(this, launchIntent, manager, true).doInBackground());
+            }
         }
 
         //setup the onclick listener and button

@@ -85,7 +85,7 @@ public class optionsMenuChange {
 
 
         //close settings menu, we put this here since it's on the menu without exception.
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
     }
 
 
@@ -147,16 +147,16 @@ public class optionsMenuChange {
         eternalMediaBar.optionVitem = 1;
 
         //add the app that's selected so the user knows for sure what they are messing with.
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
 
         //add all the extra options
 
         //copy the item to another category
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to...", eternalMediaBar.svgLoad(R.drawable.blank), 2, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to...", 2, 0, false, launchIntent, appName));
 
         //move the item to another category
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to...", eternalMediaBar.svgLoad(R.drawable.blank), 3, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to...", 3, 0, false, launchIntent, appName));
 
         //first option is to remove an item from the list.
         //in RC2 this will be modified to support hiding the icon even when it's only in one menu
@@ -171,14 +171,14 @@ public class optionsMenuChange {
             ii++;
         }
         if (i>1) {
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Remove From This List", eternalMediaBar.svgLoad(R.drawable.blank), 6, 0, false, launchIntent, "4"));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Remove From This List", 6, 0, false, launchIntent, "4"));
         }
 
         //open the app's settings
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Application Settings", eternalMediaBar.svgLoad(R.drawable.blank), 7, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Application Settings", 7, 0, false, launchIntent, appName));
 
         //open the organization menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Reorganize This Category", eternalMediaBar.svgLoad(R.drawable.blank), 11, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Reorganize This Category", 11, 0, false, launchIntent, appName));
 
     }
 
@@ -190,17 +190,17 @@ public class optionsMenuChange {
         //add the item for changing whether or not to use Google icons.
         eternalMediaBar.optionVitem = 0;
         if (eternalMediaBar.savedData.useGoogleIcons){
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't use Google Icons", 8, 0, false, ".", "."));
         }
         else{
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", eternalMediaBar.svgLoad(R.drawable.blank), 8, 0, false, ".", "."));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", 8, 0, false, ".", "."));
         }
 
         //add the item for mirroring the UI
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", eternalMediaBar.svgLoad(R.drawable.blank), 9, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", 9, 0, false, ".", "."));
 
         //add the item for changing the font color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", eternalMediaBar.svgLoad(R.drawable.blank), 10, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", 10, 0, false, ".", "."));
     }
 
 
@@ -209,18 +209,18 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     public void createCopyList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, String launchIntent, String appName){
         eternalMediaBar.optionVitem=0;
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 4, i, false, ".", "3"));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, 4, i, false, ".", "3"));
             }
             i++;
         }
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 1, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, false, launchIntent, appName));
         //close settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
     }
 
 
@@ -229,11 +229,11 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     public void createMoveList(EternalMediaBar eternalMediaBar, LinearLayout lLayout, String launchIntent, String appName){
         eternalMediaBar.optionVitem = 0;
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, null, -1, 0, false, launchIntent, ""));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
-                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, eternalMediaBar.svgLoad(R.drawable.blank), 5, i, false, ".", ""));
+                lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, 5, i, false, ".", ""));
             }
             i++;
         }
@@ -253,9 +253,9 @@ public class optionsMenuChange {
                             }
                         }/*/
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", eternalMediaBar.svgLoad(R.drawable.blank), 1, 1, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, false, launchIntent, appName));
         //close settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
     }
 
 
@@ -272,7 +272,7 @@ public class optionsMenuChange {
         lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         //load the header that contains the current color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", new ColorDrawable(eternalMediaBar.savedData.fontCol), -1, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", -1, 0, false, ".colHeader", "."));
         //create the inflater for the seeker bars
         View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
@@ -335,10 +335,10 @@ public class optionsMenuChange {
         //and finally add the view
         lLayout.addView(child);
         //add the item for save and quit
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", eternalMediaBar.svgLoad(R.drawable.blank), 0, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 0, 0, false, ".", "."));
 
         //add the item for cancel changes
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", eternalMediaBar.svgLoad(R.drawable.blank), 10, eternalMediaBar.savedData.fontCol, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", 10, eternalMediaBar.savedData.fontCol, false, ".", "."));
     }
 
     //////////////////////////////////////////////////
@@ -354,36 +354,37 @@ public class optionsMenuChange {
         eternalMediaBar.optionVitem = 0;
         lLayout.removeAllViews();
         if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==1){
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", 11, 1, false, ".radioCheck", appName));
         }
         else{
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", 11, 1, false, ".radioUnCheck", appName));
         }
         if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==2){
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 2, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", 11, 2, false, ".radioCheck", appName));
         }
         else{
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 2, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", 11, 2, false, ".radioUnCheck", appName));
         }
         if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==3){
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 11, 3, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", 11, 3, false, ".radioCheck", appName));
         }
         else{
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 11, 3, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", 11, 3, false, ".radioUnCheck", appName));
         }
 
+        lLayout.addView(View.inflate(eternalMediaBar.getApplicationContext(), R.layout.list_item, null));
 
         if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] ==0) {
             //add the item for only applying this once
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 12, -1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", 12, -1, false, ".radioCheck", appName));
             //add the item for always applying this
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 12, 1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", 12, 1, false, ".radioUnCheck", appName));
         }
         else{
             //add the item for only applying this once
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp), 12, -1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", 12, -1, false, ".radioUnCheck", appName));
             //add the item for always applying this
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp), 12, 1, false, launchIntent, appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", 12, 1, false, ".radioCheck", appName));
 
         }
     }
