@@ -17,7 +17,7 @@ IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENCE, WE WILL NOT LICENSE THE SOFTWA
 1. GRANT AND SCOPE OF LICENCE
 1.1. We hereby grant to you a non-exclusive, non-transferable licence to use the Software and the Documents for your personal, non-commercial use (except where commercial use has been expressly permitted by us) on the terms of this Licence.
 1.2. You may:
-1.2.1. Download, install and use the Software only for the purpose of the operation of the Program/s;
+1.2.1. Download, install, and use the Software only for the purpose of the operation of the Program/s;
 1.2.2. Provided you comply with the provisions in condition 2, copy the Software for non-commercial transfer or backup only;
 1.2.3. Receive and use any free supplementary software code or update of the Software as may be provided by us at our discretion
 1.2.4. Use any Documents in support of the use permitted under condition.
@@ -34,7 +34,7 @@ IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENCE, WE WILL NOT LICENSE THE SOFTWA
 2.2.3. not to create any software which is substantially similar to the Software.
 2.2.4. to keep all copies of the Software secure and to maintain accurate and up-to-date records of the number and locations of all copies of the Software.
 2.2.5. to include our copyright notice on all entire and partial copies and modifications you make of the Software on any medium.
-2.2.6. not to provide or otherwise make available the Software in part (including but not limited to program listings, object and source program listings, object code and source code), in any form to any person without prior written consent from us.
+2.2.6. not to Remove or modify and form of advertising that may or may not be in the Program/s.
 
 3. INTELLECTUAL PROPERTY RIGHTS
 3.1. You acknowledge that all intellectual property rights in the Software and the Documents anywhere in the world belong to us, that rights in the Software are licensed (not sold) to you, and that you have no rights in, or to, the Software or the Documents other than the right to use them in accordance with the terms of this Licence.
@@ -47,13 +47,14 @@ IF YOU DO NOT AGREE TO THE TERMS OF THIS LICENCE, WE WILL NOT LICENSE THE SOFTWA
 4.1. You acknowledge that the Software has not been developed to meet your individual requirements, and that it is therefore your responsibility to ensure that the facilities and functions of the Software meet your requirements.
 4.2. If you are a consumer, we only supply the Software and Documents for domestic and private use. You agree not to use the Software and Documents for any commercial, business or re-sale purposes, and we have no liability to you for any loss of profit, loss of business, business interruption, or loss of business opportunity.
 4.2.1. If you are a business customer (such as an educational establishment), we only supply the Software and the Documents for internal use by your business, and you agree not to use the Software or Documents for any re-sale purposes.
-4.3. You acknowledge that the Software may not be free of bugs or errors, and agree that the existence of minor errors shall not constitute a breach of this Licence.
+4.3. You acknowledge that the Software may not be free of bugs or errors, and agree that the existence of any errors shall not constitute a breach of this Licence.
 4.4. We do not offer any warranty or guarantee in respect of the operation of your Google Account and we shall have no liability to you resulting from the operation of your Google account and the effect that has on the Software.
 4.5. We shall have no liability under or in connection with this Licence whether in contract, tort (including negligence), breach of statutory duty or otherwise. This does not apply to the types of loss set out in condition 4.6.
 4.6. Nothing in this Licence shall limit or exclude our liability for:
 4.6.1. fraud or fraudulent misrepresentation.
 4.6.2. any other liability that cannot be excluded or limited by English law.
-4.7. This Licence sets out the full extent of our obligations and liabilities in respect of the supply of the Software and Documents. Except as expressly stated in this Licence, there are no conditions, warranties, representations or other terms, express or implied, that are binding on us. Any condition, warranty, representation or other term concerning the supply of the Software and Documents which might otherwise be implied into, or incorporated in, this Licence whether by statute, common law or otherwise, is excluded to the fullest extent permitted by law.
+4.7. We shall have no liability for any loss of data due to any error/s and, or negligence in, or to, the Program/s and, or any related Program/s.
+4.8. This Licence sets out the full extent of our obligations and liabilities in respect of the supply of the Software and Documents. Except as expressly stated in this Licence, there are no conditions, warranties, representations or other terms, express or implied, that are binding on us. Any condition, warranty, representation or other term concerning the supply of the Software and Documents which might otherwise be implied into, or incorporated in, this Licence whether by statute, common law or otherwise, is excluded to the fullest extent permitted by law.
 
 5. TERMINATION
 5.1. We may terminate this Licence immediately by written notice (digital or otherwise) to you if you commit a material or persistent breach of this Licence which you fail to remedy (if remediable) within 14 days after the service of written notice requiring you to do so.

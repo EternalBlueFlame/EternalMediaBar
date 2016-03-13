@@ -218,7 +218,7 @@ public class optionsMenuChange {
             i++;
         }
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, true, launchIntent, appName));
         //close settings menu
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
     }
@@ -253,7 +253,7 @@ public class optionsMenuChange {
                             }
                         }/*/
         //return to first settings menu
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, false, launchIntent, appName));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, true, launchIntent, appName));
         //close settings menu
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
     }

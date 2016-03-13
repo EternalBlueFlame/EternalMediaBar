@@ -27,15 +27,5 @@
         android:shadowDy="3.5"
         android:shadowRadius="5" />
 
-    <Button
-        android:id="@+id/item_app_button"
-        android:layout_width="144dp"
-        android:layout_height="48dp"
-        android:alpha="0"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
-        android:clickable="true" />
-
 
 </RelativeLayout>

@@ -236,13 +236,13 @@ public class EternalMediaBar extends Activity {
                     //get the layout
                     LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
-                    vLayout.getChildAt(vItem).findViewById(R.id.item_app_button).performClick();
+                    vLayout.getChildAt(vItem).performClick();
                 }
                 else{
                     //get the layout
                     LinearLayout lLayout = (LinearLayout)findViewById(R.id.optionslist);
                     //get the item in the layout and activate its button function
-                    lLayout.getChildAt(optionVitem).findViewById(R.id.item_app_button).performClick();
+                    lLayout.getChildAt(optionVitem).performClick();
                 }
 				return true;
 			}
@@ -252,7 +252,7 @@ public class EternalMediaBar extends Activity {
                     //get the layout
                     LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
-                    vLayout.getChildAt(vItem).findViewById(R.id.item_app_button).performLongClick();
+                    vLayout.getChildAt(vItem).performLongClick();
                 }
                 else{
                     changeOptionsMenu.menuClose(EternalMediaBar.this, (LinearLayout) findViewById(R.id.optionslist));
@@ -475,7 +475,6 @@ public class EternalMediaBar extends Activity {
         }
 
 
-
         manager = getPackageManager();
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         //empty the list
@@ -555,8 +554,8 @@ public class EternalMediaBar extends Activity {
         }
 
         //setup the onclick listener and button
-        Button btn = (Button) child.findViewById(R.id.item_app_button);
-        btn.setOnClickListener(new Button.OnClickListener() {
+        //Button btn = (Button) child.findViewById(R.id.item_app_button);
+        child.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(appName.equals("hItem")){
@@ -609,7 +608,7 @@ public class EternalMediaBar extends Activity {
             }
         });
 
-        btn.setOnLongClickListener(new Button.OnLongClickListener() {
+        child.setOnLongClickListener(new Button.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
             if (optionsMenu){
