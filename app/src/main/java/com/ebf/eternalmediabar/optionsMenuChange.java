@@ -195,7 +195,12 @@ public class optionsMenuChange {
         else{
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Use Google Icons", 8, 0, false, ".", "."));
         }
-
+        if (eternalMediaBar.savedData.dimLists){
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Don't Dim List Backgrounds", 13, 0, false, ".", "."));
+        }
+        else{
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Dim List Backgrounds", 13, 0, false, ".", "."));
+        }
         //add the item for mirroring the UI
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", 9, 0, false, ".", "."));
 
@@ -476,6 +481,19 @@ public class optionsMenuChange {
         menuClose(eternalMediaBar, lLayout);
     }
 
+
+    //////////////////////////////////////////////////
+    ////////////Enable/Disable Dim Lists//////////////
+    //////////////////////////////////////////////////
+    public void toggleDimLists(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
+        if (eternalMediaBar.savedData.dimLists){
+            eternalMediaBar.savedData.dimLists=false;
+        }
+        else{
+            eternalMediaBar.savedData.dimLists = true;
+        }
+        menuClose(eternalMediaBar, lLayout);
+    }
 
     //////////////////////////////////////////////////
     //////////////////Organize List///////////////////

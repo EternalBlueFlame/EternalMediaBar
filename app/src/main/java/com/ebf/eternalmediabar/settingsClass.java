@@ -24,6 +24,7 @@ public class settingsClass implements Serializable {
     boolean useGoogleIcons;
     boolean useManufacturerIcons;
     boolean mirrorMode;
+    boolean dimLists;
     List<int[]> organizeMode;
     List<AppDetail> hiddenApps = new ArrayList<AppDetail>();
     List<List<AppDetail>> vLists = new ArrayList<List<AppDetail>>();
@@ -49,7 +50,8 @@ public class settingsClass implements Serializable {
         xml = xml+"<gamingMode>"+saveData.gamingMode+"</gamingMode>\n";
         xml = xml+"<useGoogleIcons>"+saveData.useGoogleIcons+"</useGoogleIcons>\n";
         xml = xml+"<useManufacturerIcons>"+saveData.useManufacturerIcons+"</useManufacturerIcons>\n";
-        xml = xml+"<mirrorMode>"+saveData.mirrorMode+"</mirrorMode>\n\n";
+        xml = xml+"<mirrorMode>"+saveData.mirrorMode+"</mirrorMode>\n";
+        xml = xml+"<dimLists>"+saveData.dimLists+"</dimLists>\n\n";
 
         //create a loop for the vLists, and the lists in them, and each appData in them
         xml = xml+"<vLists>\n";
@@ -133,7 +135,7 @@ public class settingsClass implements Serializable {
     //////////////////////////////////////////////////
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
-    // this function is so huge I have to seperate it as if it's multiple functions or we'll all be lost.
+    // this function is so huge I have to separate it as if it's multiple functions or we'll all be lost.
     public settingsClass returnSettings(String xml) {
         settingsClass savedData= new settingsClass();
         //catch with below by initializing vLists properly
@@ -144,6 +146,7 @@ public class settingsClass implements Serializable {
         savedData.gamingMode = false;
         savedData.useManufacturerIcons = false;
         savedData.loadAppBG = true;
+        savedData.dimLists = true;
         savedData.fontCol = -1;
         savedData.menuCol = -1;
         savedData.iconCol = -1;
@@ -233,6 +236,14 @@ public class settingsClass implements Serializable {
             }
             catch (Exception e){
                 savedData.mirrorMode = false;
+            }
+            try {
+                //get the bool for mirrorMode
+                SingularNode = doc.getElementsByTagName("dimLists");
+                savedData.dimLists = boolFromString(((Element) SingularNode.item(0)).getTextContent());
+            }
+            catch (Exception e){
+                savedData.dimLists = true;
             }
 
 

@@ -7,25 +7,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 public class EternalMediaBar extends Activity {
@@ -35,7 +32,7 @@ public class EternalMediaBar extends Activity {
     public settingsClass savedData = new settingsClass();
 
     public int hItem = 0;
-    private boolean init = false;
+    public boolean init = false;
     public boolean optionsMenu = false;
     public int vItem = 0;
     public int optionVitem =1;
@@ -54,88 +51,31 @@ public class EternalMediaBar extends Activity {
         //set the current layout value
         setContentView(R.layout.activity_eternal_media_bar);
 
-        //run once
-        if (!init) {
-            if (savedData.vLists.size()<=1) {
-                try {
-                    //try load preferences
-                    FileInputStream fs = openFileInput("data.xml");
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line).append("\n");
-                    }
-                    reader.close();
-                    fs.close();
-                    savedData = savedData.returnSettings(sb.toString());
 
-
-
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    try{
-                        FileInputStream fs = new FileInputStream(Environment.getExternalStorageDirectory() + "/data.xml");
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
-                        StringBuilder sb = new StringBuilder();
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line).append("\n");
-                        }
-                        reader.close();
-                        fs.close();
-                        savedData = savedData.returnSettings(sb.toString());
-                    }
-                    catch (Exception ee) {
-                        //output to debug log just in case something went fully wrong
-                        ee.printStackTrace();
-                        //catch with below by initializing vLists properly
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        savedData.vLists.add(new ArrayList<AppDetail>());
-                        //we should initialize the other variables as well.
-                        savedData.useGoogleIcons = false;
-                        savedData.mirrorMode = false;
-                        savedData.cleanCacheOnStart = false;
-                        savedData.gamingMode = false;
-                        savedData.useManufacturerIcons = false;
-                        savedData.loadAppBG = true;
-                        savedData.fontCol = Color.WHITE;
-                        savedData.menuCol = Color.WHITE;
-                        savedData.iconCol = Color.WHITE;
-                        savedData.hiddenApps = new ArrayList<>();
-                        int[] tempInt = new int[]{0, 1, 1};
-                        savedData.organizeMode = new ArrayList<>();
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                        savedData.organizeMode.add(tempInt);
-                    }
-                }
+        final EternalMediaBar emb = this;
+        final View animateOut = (View) findViewById(R.id.apps_displayscroll);
+        animateOut.setAnimation(AnimationUtils.loadAnimation(this, R.anim.delay));
+        animateOut.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                new initialization(emb).doInBackground();}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // clear animation to prevent flicker
+                animateOut.clearAnimation();
             }
-            //we dont use this, but due to glitches in earlier revisions, there may be things in here, when it should be empty.
-            savedData.hiddenApps.clear();
-            //load in the apps
-            loadApps();
-            //setup the warning variable
-            warningToggle = new boolean[1];
-            warningToggle[0] = false;
-
-            //make sure this doesn't happen again
-            init = true;
-
-            //Lastly, activate the list move function to load the list view and attempt to highlight what menu we are on.
-            listMove(0, true);
-        }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        animateOut.animate();
     }
+
+
+
+
+
+
+
 
     //////////////////////////////////////////////////
     ///////this function is for requesting any////////
@@ -366,7 +306,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     ///////Figure out what is installed, or not///////
     //////////////////////////////////////////////////
-    private void loadApps(){
+    public void loadApps(){
         manager = getPackageManager();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -479,6 +419,11 @@ public class EternalMediaBar extends Activity {
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         //empty the list
         layout.removeAllViews();
+        //if we have it set to dim the background, dim it
+        if(savedData.dimLists) {
+            //we have to use the depreciated method to retain android 4.0 support, we don't have any need for the theme extension anyway.
+            layout.setBackgroundColor(getResources().getColor(R.color.dimColor));
+        }
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
             if(savedData.vLists.get(ii).size()>0) {
@@ -510,9 +455,14 @@ public class EternalMediaBar extends Activity {
         }
         vLayout.removeAllViews();
 
-
+        //set the list organization method
         if (savedData.organizeMode.get(hItem)[1] == 1 && savedData.vLists.get(hItem).size() >1) {
             changeOptionsMenu.organizeList(this, null, 0);
+        }
+        //if we have it set to dim the background, dim it
+        if(savedData.dimLists) {
+            //we have to use the depreciated method to retain android 4.0 support, we don't have any need for the theme extension anyway.
+            vLayout.setBackgroundColor(getResources().getColor(R.color.dimColor));
         }
 
 
@@ -601,7 +551,7 @@ public class EternalMediaBar extends Activity {
                             case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, lLayout, secondaryIndex);break;}
                             case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this, lLayout, secondaryIndex, launchIntent, appName);break;}
                             case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, lLayout, secondaryIndex);break;}
-
+                            case 13:{changeOptionsMenu.toggleDimLists(EternalMediaBar.this, lLayout);}
                         }
                     }
                 }

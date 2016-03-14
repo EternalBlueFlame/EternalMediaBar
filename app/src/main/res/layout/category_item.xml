@@ -7,23 +7,23 @@
 
     <ImageView
         android:id="@+id/item_app_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:contentDescription="@string/nullicon"
         android:layout_marginLeft="24dp"/>
 
     <TextView
         android:id="@+id/item_app_label"
-        android:layout_width="96dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:textColor="#ffffffff"
-        android:textSize="16sp"
-        android:layout_marginTop="44dp"
+        android:textSize="18sp"
+        android:layout_marginTop="48dp"
         android:gravity="center_horizontal"
         android:layout_marginLeft="0dp"
         android:shadowColor="#ff000000"
         android:shadowDx="4"
-        android:shadowDy="3.5"
+        android:shadowDy="4"
         android:shadowRadius="5" />
 
 

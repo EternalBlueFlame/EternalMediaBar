@@ -25,7 +25,7 @@
             android:id="@+id/categories"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="84dp"
+            android:layout_height="match_parent"
             android:layout_gravity="right"/>
     </HorizontalScrollView>
 
@@ -41,7 +41,7 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="192dp"
+            android:layout_width="match_parent"
             android:id="@+id/apps_display"
             android:layout_height="wrap_content"/>
     </ScrollView>
@@ -63,7 +63,7 @@
         we use this so we can easily mirror the bg, and again so we mirror the content back to normal.-->
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/optionslist"
             android:scaleX="-1" />
