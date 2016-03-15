@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeActivity"
-    android:id="@+id/mainlayout">
+    android:id="@+id/mainlayout"
+    android:clickable="false">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/backgroundview"
-        android:contentDescription="@string/nullicon" />
+        android:id="@+id/appBackground"
+        android:layout_centerVertical="true" />
 
     <HorizontalScrollView
         android:id="@+id/categoriesscroll"
@@ -65,9 +66,76 @@
             android:layout_height="wrap_content"
             android:id="@+id/optionslist"
             />
-
-
     </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:id="@+id/textClock"
+        android:singleLine="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="12:00 AM"
+        android:textAlignment="center"
+        android:shadowColor="#ff000000"
+        android:shadowDx="4"
+        android:shadowDy="4"
+        android:shadowRadius="5" />
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="64dp"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/textClock"
+        android:layout_toStartOf="@+id/textClock" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="1"
+        android:id="@+id/button"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/imageView"
+        android:layout_toStartOf="@+id/imageView"
+        android:text="Search" />
+
+    <!-- editable is declared redundant, but it isn't, the keyboard won't appear without it -->
+    <EditText
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:inputType="textAutoComplete"
+        android:alpha="0.6"
+        android:singleLine="true"
+        android:textSize="13sp"
+        android:editable="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/button"
+        android:layout_toRightOf="@+id/gridLayout"
+        android:layout_toEndOf="@+id/gridLayout" />
+
+    <GridLayout
+        android:layout_width="120dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:columnCount="6"
+        android:rowCount="7"
+        android:id="@+id/gridLayout">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:layout_row="6"
+            android:layout_column="5" />
+    </GridLayout>
 
 
 </RelativeLayout>

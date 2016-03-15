@@ -514,9 +514,9 @@ public class optionsMenuChange {
             }
             //alphabetical
             case 1:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<AppDetail>() {
+                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<appDetail>() {
                     @Override
-                    public int compare(AppDetail lhs, AppDetail rhs) {
+                    public int compare(appDetail lhs, appDetail rhs) {
                         return lhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });
@@ -527,9 +527,9 @@ public class optionsMenuChange {
             }
             //reverse alphabetical
             case 2:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<AppDetail>() {
+                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<appDetail>() {
                     @Override
-                    public int compare(AppDetail lhs, AppDetail rhs) {
+                    public int compare(appDetail lhs, appDetail rhs) {
                         return rhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });

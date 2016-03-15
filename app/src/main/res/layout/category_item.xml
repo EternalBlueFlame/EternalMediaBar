@@ -10,7 +10,8 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:contentDescription="@string/nullicon"
-        android:layout_marginLeft="24dp"/>
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="4dp"/>
 
     <TextView
         android:id="@+id/item_app_label"
@@ -18,7 +19,7 @@
         android:layout_height="wrap_content"
         android:textColor="#ffffffff"
         android:textSize="18sp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="52dp"
         android:gravity="center_horizontal"
         android:layout_marginLeft="0dp"
         android:shadowColor="#ff000000"

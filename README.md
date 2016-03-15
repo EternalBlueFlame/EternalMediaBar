@@ -41,7 +41,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <hr>
 <strong>RC2.5 Plans:</strong>
 -	fix double save on load glitch.
--	if you plugin headphones or a controller it will automatically change to the approporate menu.
+-	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
 -	apps fade out and back in when changing categories.
 -	app boot animation overlay (plays an android boot animation while the app you want to use loads in the background).

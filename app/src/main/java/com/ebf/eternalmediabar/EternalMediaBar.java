@@ -3,8 +3,10 @@ package com.ebf.eternalmediabar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
@@ -12,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,14 +24,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
-    public List<AppDetail> hli = new ArrayList<>();
+    public List<appDetail> hli = new ArrayList<>();
     public settingsClass savedData = new settingsClass();
 
     public int hItem = 0;
@@ -58,7 +65,11 @@ public class EternalMediaBar extends Activity {
         animateOut.getAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                new initialization(emb).doInBackground();}
+                //run the initialization script
+                new initialization(emb).doInBackground();
+                //set the clock
+                setClock();
+            }
             @Override
             public void onAnimationEnd(Animation animation) {
                 // clear animation to prevent flicker
@@ -69,6 +80,7 @@ public class EternalMediaBar extends Activity {
         });
         animateOut.animate();
     }
+
 
 
 
@@ -109,9 +121,52 @@ public class EternalMediaBar extends Activity {
             else{
                 loadListView();
             }
+        }
+        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(new intentReceiver(), filter);
 
+    }
+
+    private class intentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //if the headset is plugged in, show a toast and move to the media list
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                if (intent.getIntExtra("state", -1) == 1) {
+                    Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
+                    //we have to iterate through the tags to find the list with the desired tag
+                    for (int i=0; i<savedData.vLists.size();){
+                        if (savedData.categoryTags.get(i).contains("Music")){
+                            listMove(i, true);
+                            break;
+                        }
+                        i++;
+                    }
+                }
+            }
+
+            //manage the battery icon here
+
+            //if API >=17
+            //manage the notifications here
+            //else
+            //notification grid.width=0px
+
+            //setClock has to be run every time an intent fires off, after that intent has fired off, otherwise the time does not display correctly
+            setClock();
         }
     }
+
+
+
+    public void setClock(){
+        TextView clock = (TextView) findViewById(R.id.textClock);
+        Calendar cal = Calendar.getInstance();
+        clock.setText(DateFormat.format("h:mm aaa", Calendar.getInstance().getTime()));
+    }
+
+
 
     //////////////////////////////////////////////////
     ///////////Save a settingsClass to file///////////
@@ -141,6 +196,7 @@ public class EternalMediaBar extends Activity {
             e.printStackTrace();
         }
     }
+
 
 
     //////////////////////////////////////////////////
@@ -353,7 +409,7 @@ public class EternalMediaBar extends Activity {
 
         //now check the list of bools and add any missing system apps.
         if (!sysapps[0]){
-            AppDetail eternalSettings = new AppDetail();
+            appDetail eternalSettings = new appDetail();
             eternalSettings.isPersistent = true;
             eternalSettings.label = "Eternal Media Bar - Settings";
             eternalSettings.name = ".options";
@@ -362,7 +418,7 @@ public class EternalMediaBar extends Activity {
 
         if (availableActivities.size()>0) {
             for (ResolveInfo ri : availableActivities) {
-                AppDetail appRI = new AppDetail();
+                appDetail appRI = new appDetail();
                 appRI.label = ri.loadLabel(manager);
                 appRI.name = ri.activityInfo.packageName;
                 appRI.isPersistent = false;
@@ -405,7 +461,7 @@ public class EternalMediaBar extends Activity {
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
 
         for(int i=0; i<savedData.vLists.size();){
-            AppDetail hMenuItem = new AppDetail();
+            appDetail hMenuItem = new appDetail();
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
             hMenuItem.label = savedData.categoryNames.get(i);
