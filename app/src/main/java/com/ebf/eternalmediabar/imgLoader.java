@@ -1,15 +1,18 @@
 package com.ebf.eternalmediabar;
 
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 
-public class imgLoader extends AsyncTask<imgLoader, Integer, Drawable>{
+
+public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
 
     public EternalMediaBar eternalMediaBar;
     public String ico;
@@ -26,53 +29,53 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Drawable>{
 
 
     @Override
-    protected Drawable doInBackground(imgLoader... params) {
+    protected Bitmap doInBackground(imgLoader... params) {
         //check if the icon is supposed to be internal or not
         if(isInternal) {
             //run a switch to load an icon dependant on it's value.
             switch (ico) {
                 case ".colHeader": {
-                    return new ColorDrawable(eternalMediaBar.savedData.fontCol);
+                    return Bitmap.createBitmap(new int[]{eternalMediaBar.savedData.fontCol},1,1, Bitmap.Config.ARGB_8888);
                 }
                 case ".radioCheck":{
-                    return eternalMediaBar.svgLoad(R.drawable.ic_radio_button_checked_white_24dp);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.ic_radio_button_checked_white_24dp);
                 }
                 case ".radioUnCheck":{
-                    return eternalMediaBar.svgLoad(R.drawable.ic_radio_button_unchecked_white_24dp);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.ic_radio_button_unchecked_white_24dp);
                 }
                 case "0": {
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
+                    return Bitmap.createBitmap(new int[]{-1},1,1, Bitmap.Config.ALPHA_8);
                 }
                 case "1": {
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.social_144px);
                 }
                 case "2": {
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.media_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.media_144px);
                 }
                 case "3": {
-                    return eternalMediaBar.svgLoad(R.drawable.games_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.games_144px);
                 }
                 case "4": {
-                    return eternalMediaBar.svgLoad(R.drawable.web_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.web_144px);
                 }
                 case "5": {
-                    return eternalMediaBar.svgLoad(R.drawable.extras_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.extras_144px);
                 }
                 case "6": {
-                    return eternalMediaBar.svgLoad(R.drawable.settings_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.settings_144px);
                 }
                 case "7": {
-                    return eternalMediaBar.svgLoad(R.drawable.new_install_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.new_install_144px);
                 }
                 default: {
                     //use this for loading the application's icon
                     try {
-                        return manager.getApplicationIcon(ico);
+                        return ((BitmapDrawable)manager.getApplicationIcon(ico)).getBitmap();
                     } catch (Exception e) {
                         if (ico.equals(".options")) {
-                            return eternalMediaBar.svgLoad(R.drawable.sub_settings_144px);
+                            return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.sub_settings_144px);
                         } else {
-                            return eternalMediaBar.svgLoad(R.drawable.error_144px);
+                            return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.error_144px);
                         }
                     }
                 }
@@ -83,13 +86,13 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Drawable>{
             switch (ico){
                 //case 0 for no icon.
                 case "0":{
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
+                    return Bitmap.createBitmap(new int[]{-1}, 1, 1, Bitmap.Config.ARGB_8888);
                 }
                 //each case tries to load an icon from an app, if it fails, it falls back to internal icon.
                 case "1":{
-                    try{return manager.getApplicationIcon("com.android.contacts");}
+                    try{return ((BitmapDrawable)manager.getApplicationIcon("com.android.contacts")).getBitmap();}
                     //if it fails, fallback to the built-in Social icon.
-                    catch (Exception e){return ContextCompat.getDrawable(eternalMediaBar, R.drawable.social_144px);}
+                    catch (Exception e){BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.social_144px);}
                 }
                 case "2":{
                     //this icon is composed of two different icons, so we make them as a list of drawables.
@@ -107,48 +110,55 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Drawable>{
                     //if the process didn't fail, load the list of icons and draw them as a Layered Drawable.
                     if (layers != new Drawable[2]) {
                         try {
-                            return new LayerDrawable(layers);
+                            //because we are trying to combine multiple images to a single image, we have to create a bitmap, then draw the images to it as if it's a canvas.
+                            Bitmap bit = (Bitmap.createBitmap((int) (48 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f),(int) (48 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f), Bitmap.Config.ARGB_8888));
+                            LayerDrawable layersDraw = new LayerDrawable(layers);
+                            layersDraw.setBounds(0,0, (int) (48 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f),(int) (48 * eternalMediaBar.getResources().getDisplayMetrics().density + 0.5f));
+                            layersDraw.draw(new Canvas(bit));
+
+
+                            return bit;
                         } catch (Exception e) {
-                            return eternalMediaBar.svgLoad(R.drawable.media_144px);
+                            return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.media_144px);
                         }
                     }
                     else {
-                        return eternalMediaBar.svgLoad(R.drawable.media_144px);
+                        return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.media_144px);
                     }
                 }
                 case "3": {
                     try {
-                        return manager.getApplicationIcon("com.google.android.play.games");
+                        return ((BitmapDrawable)manager.getApplicationIcon("com.google.android.play.games")).getBitmap();
                     } catch (Exception e) {
-                        return eternalMediaBar.svgLoad(R.drawable.games_144px);
+                        return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.games_144px);
                     }
                 }
                 case "4":{
                     try {
-                        return manager.getApplicationIcon("com.android.chrome");
+                        return ((BitmapDrawable)manager.getApplicationIcon("com.android.chrome")).getBitmap();
                     } catch (Exception e) {
-                        return eternalMediaBar.svgLoad(R.drawable.web_144px);
+                        return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.web_144px);
                     }
                 }
                 case "5": {
                     try {
-                        return manager.getApplicationIcon("com.google.android.apps.docs");
+                        return ((BitmapDrawable)manager.getApplicationIcon("com.google.android.apps.docs")).getBitmap();
                     } catch (Exception e) {
-                        eternalMediaBar.svgLoad(R.drawable.extras_144px);
+                        return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.extras_144px);
                     }
                 }
                 case "6":{
                     try {
-                        return manager.getApplicationIcon("com.android.settings");
+                        return ((BitmapDrawable)manager.getApplicationIcon("com.android.settings")).getBitmap();
                     } catch (Exception e) {
-                        return eternalMediaBar.svgLoad(R.drawable.settings_144px);
+                        return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.settings_144px);
                     }
                 }
                 case "7": {
-                    return eternalMediaBar.svgLoad(R.drawable.new_install_144px);
+                    return BitmapFactory.decodeResource(eternalMediaBar.getResources(),R.drawable.new_install_144px);
                 }
                 default:{
-                    return ContextCompat.getDrawable(eternalMediaBar, R.drawable.blank);
+                    return Bitmap.createBitmap(new int[]{-1}, 1, 1, Bitmap.Config.ALPHA_8);
                 }
             }
         }

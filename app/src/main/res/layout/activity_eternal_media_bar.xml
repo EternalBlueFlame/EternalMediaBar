@@ -48,8 +48,73 @@
             android:layout_height="wrap_content"/>
     </ScrollView>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:id="@+id/linearLayout">
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0.25" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="48dp"
+            android:id="@+id/imageView"
+            android:background="@drawable/searchleft_144px" />
+
+        <SearchView
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:id="@+id/searchView"
+            android:background="@drawable/searchcenter_144px"
+            android:layout_weight="0.25"
+            android:textSize="13sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:id="@+id/button"
+            android:background="@drawable/searchcenter_144px"
+            android:text="Search"
+            android:layout_weight="0" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="48dp"
+            android:id="@+id/imageView2"
+            android:background="@drawable/searchright_144px" />
+
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0.25" />
+    </LinearLayout>
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="192dp"
+        android:id="@+id/searchscroll"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_view"
+            android:clickable="true"
+            android:background="@color/black">
+
+        </LinearLayout>
+    </ScrollView>
+
 
     <!-- This has to be last so it will render above everything else -->
+
     <ScrollView
         android:orientation="vertical"
         android:layout_width="144dp"
@@ -57,7 +122,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="-145dp"
-        android:layout_below="@+id/categoriesscroll"
         android:layout_height="match_parent"
         android:background="@drawable/menu_bg">
         <LinearLayout
@@ -67,75 +131,6 @@
             android:id="@+id/optionslist"
             />
     </ScrollView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:id="@+id/textClock"
-        android:singleLine="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="12:00 AM"
-        android:textAlignment="center"
-        android:shadowColor="#ff000000"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="5" />
-
-    <ImageView
-        android:layout_width="32dp"
-        android:layout_height="64dp"
-        android:id="@+id/imageView"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/textClock"
-        android:layout_toStartOf="@+id/textClock" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="1"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/imageView"
-        android:layout_toStartOf="@+id/imageView"
-        android:text="Search" />
-
-    <!-- editable is declared redundant, but it isn't, the keyboard won't appear without it -->
-    <EditText
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:inputType="textAutoComplete"
-        android:alpha="0.6"
-        android:singleLine="true"
-        android:textSize="13sp"
-        android:editable="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/button"
-        android:layout_toRightOf="@+id/gridLayout"
-        android:layout_toEndOf="@+id/gridLayout" />
-
-    <GridLayout
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:columnCount="6"
-        android:rowCount="7"
-        android:id="@+id/gridLayout">
-
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:layout_row="6"
-            android:layout_column="5" />
-    </GridLayout>
 
 
 </RelativeLayout>

@@ -10,28 +10,24 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+
+
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
@@ -44,6 +40,7 @@ public class EternalMediaBar extends Activity {
     public int vItem = 0;
     public int optionVitem =1;
     public boolean[] warningToggle;
+    private boolean inputsDisabled = false;
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
 
@@ -58,7 +55,6 @@ public class EternalMediaBar extends Activity {
         //set the current layout value
         setContentView(R.layout.activity_eternal_media_bar);
 
-
         final EternalMediaBar emb = this;
         final View animateOut = (View) findViewById(R.id.apps_displayscroll);
         animateOut.setAnimation(AnimationUtils.loadAnimation(this, R.anim.delay));
@@ -67,23 +63,57 @@ public class EternalMediaBar extends Activity {
             public void onAnimationStart(Animation animation) {
                 //run the initialization script
                 new initialization(emb).doInBackground();
-                //set the clock
-                setClock();
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 // clear animation to prevent flicker
                 animateOut.clearAnimation();
             }
+
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
         animateOut.animate();
     }
 
 
+    private void searchIntent(String query) {
+        //get the results view and be sure it's clear.
+        LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
+        if(searchView.getChildCount()>0){
+            for(int i=0;i<searchView.getChildCount();){
+                searchView.getChildAt(i).invalidate();
+                i++;
+            }
+            searchView.removeAllViews();
+        }
+        //first, be sure there's actually something to search
+        if (query.length()>0) {
+            //make sure the search is lower case, because searches are caps sensitive
+            query=query.toLowerCase();
+            //iterate vLists
+            for (int i = 0; i < savedData.vLists.size(); ) {
+                //set the bool for if there is a header on the category then iterate through the apps in the category
+                Boolean categoryListed =false;
+                for (int ii = 0; ii < savedData.vLists.get(i).size(); ) {
+                    //make sure the labels are lowercase, and if it finds something
+                    if (savedData.vLists.get(i).get(ii).label.toString().toLowerCase().contains(query)) {
+                        //check if this category has a header, if not make one and note that there is one.
+                        if(!categoryListed){
+                            searchView.addView(createMenuEntry(R.layout.list_item, hli.get(i).label,-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
+                            categoryListed=true;
+                        }
 
-
+                        searchView.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(i).get(ii).label, -1, 0, true, savedData.vLists.get(i).get(ii).name, (String) savedData.vLists.get(i).get(ii).label));
+                    }
+                    ii++;
+                }
+                i++;
+            }
+        }
+    }
 
 
 
@@ -94,9 +124,12 @@ public class EternalMediaBar extends Activity {
     ////////needed permissions in android 6+//////////
     //////////////////////////////////////////////////
     @TargetApi(Build.VERSION_CODES.M)
-            public void getPerms(){
+    public void getPerms(){
         requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
     }
+
+
+
 
     //////////////////////////////////////////////////
     ///////When the app comes back from being/////////
@@ -125,9 +158,11 @@ public class EternalMediaBar extends Activity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(new intentReceiver(), filter);
-
     }
 
+    //////////////////////////////////////////////////
+    ///////////Intent receiver for events/////////////
+    //////////////////////////////////////////////////
     private class intentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -136,8 +171,8 @@ public class EternalMediaBar extends Activity {
                 if (intent.getIntExtra("state", -1) == 1) {
                     Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
                     //we have to iterate through the tags to find the list with the desired tag
-                    for (int i=0; i<savedData.vLists.size();){
-                        if (savedData.categoryTags.get(i).contains("Music")){
+                    for (int i = 0; i < savedData.vLists.size(); ) {
+                        if (savedData.categoryTags.get(i).contains("Music")) {
                             listMove(i, true);
                             break;
                         }
@@ -145,26 +180,9 @@ public class EternalMediaBar extends Activity {
                     }
                 }
             }
-
-            //manage the battery icon here
-
-            //if API >=17
-            //manage the notifications here
-            //else
-            //notification grid.width=0px
-
-            //setClock has to be run every time an intent fires off, after that intent has fired off, otherwise the time does not display correctly
-            setClock();
         }
     }
 
-
-
-    public void setClock(){
-        TextView clock = (TextView) findViewById(R.id.textClock);
-        Calendar cal = Calendar.getInstance();
-        clock.setText(DateFormat.format("h:mm aaa", Calendar.getInstance().getTime()));
-    }
 
 
 
@@ -431,16 +449,6 @@ public class EternalMediaBar extends Activity {
 
 
 
-    //////////////////////////////////////////////////
-    ///////////Return a drawable from a png///////////
-    //////////////////////////////////////////////////
-    Drawable svgLoad(int imageToLoad){
-        //imageView.setImageDrawable(svg.createPictureDrawable());
-        return ContextCompat.getDrawable(this, imageToLoad);
-    }
-
-
-
 
     //////////////////////////////////////////////////
     ///////Function to draw all the information///////
@@ -453,6 +461,21 @@ public class EternalMediaBar extends Activity {
         else{
             setContentView(R.layout.activity_eternal_media_bar);
         }
+
+        SearchView searchQuery = (SearchView) findViewById(R.id.searchView);
+        searchQuery.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchIntent(newText);
+                return false;
+            }
+        });
+
 
         //////////////////////
         //Draw the Categories
@@ -548,23 +571,23 @@ public class EternalMediaBar extends Activity {
             if (appName.equals("hItem")){
                 String[] icons = launchIntent.split(":");
                 if(savedData.useGoogleIcons) {
-                    appIcon.setImageDrawable(new imgLoader(this, icons[0].trim(), manager, false).doInBackground());
+                    appIcon.setImageBitmap(new imgLoader(this, icons[0].trim(), manager, false).doInBackground());
                 }
                 else{
-                    appIcon.setImageDrawable(new imgLoader(this, icons[1].trim(), manager, false).doInBackground());
+                    appIcon.setImageBitmap(new imgLoader(this, icons[1].trim(), manager, false).doInBackground());
                 }
             }
             else {
-                appIcon.setImageDrawable(new imgLoader(this, launchIntent, manager, true).doInBackground());
+                appIcon.setImageBitmap(new imgLoader(this, launchIntent, manager, true).doInBackground());
             }
         }
 
         //setup the onclick listener and button
         //Button btn = (Button) child.findViewById(R.id.item_app_button);
-        child.setOnClickListener(new Button.OnClickListener() {
+        child.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(appName.equals("hItem")){
+                if(appName.equals("hItem")&& index!=-1){
                     listMove(index, true);
                 }
                 else if (launchIntent.equals(".options")){
@@ -614,7 +637,7 @@ public class EternalMediaBar extends Activity {
             }
         });
 
-        child.setOnLongClickListener(new Button.OnLongClickListener() {
+        child.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
             if (optionsMenu){

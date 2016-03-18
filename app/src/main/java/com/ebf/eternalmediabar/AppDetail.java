@@ -1,6 +1,6 @@
 package com.ebf.eternalmediabar;
 
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import java.io.Serializable;
 
 public class appDetail implements Serializable {
@@ -8,7 +8,7 @@ public class appDetail implements Serializable {
 
     CharSequence label;
     String name;
-    Drawable icon;
+    Bitmap icon;
     boolean isPersistent;
 }
 
