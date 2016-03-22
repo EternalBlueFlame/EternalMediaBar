@@ -309,9 +309,11 @@ public class settingsClass implements Serializable {
                     }
                     //Get the category tags
                     try{
+                        savedData.categoryTags = new ArrayList<>();
                         savedData.categoryTags.add(appElements.getElementsByTagName("listTags").item(0).getTextContent());
                     }
                     catch (Exception e){
+                        savedData.categoryTags = new ArrayList<>();
                         switch (vListNodes){
                             case 0:{
                                 savedData.categoryTags.add("Communication : Social : Sports : Education");

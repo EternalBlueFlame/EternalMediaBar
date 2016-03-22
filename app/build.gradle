@@ -14,18 +14,8 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
-            renderscriptOptimLevel 5
-            pseudoLocalesEnabled true
-        }
-        debug {
-            jniDebuggable true
-            renderscriptOptimLevel 5
-            minifyEnabled true
-            pseudoLocalesEnabled true
-            zipAlignEnabled true
+            renderscriptOptimLevel=3
+
         }
     }
     productFlavors {

@@ -102,7 +102,7 @@ public class EternalMediaBar extends Activity {
                     if (savedData.vLists.get(i).get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(createMenuEntry(R.layout.list_item, hli.get(i).label,-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
+                            searchView.addView(createMenuEntry(R.layout.search_category, hli.get(i).label,-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
                             categoryListed=true;
                         }
 
@@ -483,7 +483,8 @@ public class EternalMediaBar extends Activity {
         hli.clear();
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
 
-        for(int i=0; i<savedData.vLists.size();){
+
+        for (int i = 0; i < savedData.vLists.size(); ) {
             appDetail hMenuItem = new appDetail();
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
@@ -505,7 +506,10 @@ public class EternalMediaBar extends Activity {
         }
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
-            if(savedData.vLists.get(ii).size()>0) {
+            if(!savedData.categoryNames.get(ii).equals("New Apps")) {
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categoryIcons.get(ii) + " : " + savedData.categoryGoogleIcons.get(ii), "hItem"));
+            }
+            else if (savedData.vLists.get(ii).size() >0){
                 layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categoryIcons.get(ii) + " : " + savedData.categoryGoogleIcons.get(ii), "hItem"));
             }
         ii++;
