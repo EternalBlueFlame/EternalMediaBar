@@ -15,13 +15,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -55,27 +56,17 @@ public class EternalMediaBar extends Activity {
         //set the current layout value
         setContentView(R.layout.activity_eternal_media_bar);
 
-        final EternalMediaBar emb = this;
-        final View animateOut = (View) findViewById(R.id.apps_displayscroll);
-        animateOut.setAnimation(AnimationUtils.loadAnimation(this, R.anim.delay));
-        animateOut.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                //run the initialization script
-                new initialization(emb).doInBackground();
-            }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // clear animation to prevent flicker
-                animateOut.clearAnimation();
+        new initialization().execute(this);
+        for(;;){
+            if(init){
+                loadListView();
+                break;
             }
+        }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        animateOut.animate();
+
+
     }
 
 
@@ -91,6 +82,36 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
+
+            if(query.length()>2) {
+                //search it online first
+                try {
+                    JSONObject mainObject = new JSONObject(new webSearchResults().execute(query).get());
+                    JSONObject subObject = mainObject.getJSONObject("responseData");
+                    JSONArray arrayObject = subObject.getJSONArray("results");
+
+                    for (int i = 0; i < savedData.vLists.size(); ) {
+                        if (savedData.categoryTags.get(i).contains("Web")) {
+                            searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
+                            break;
+                        }
+                        i++;
+                    }
+
+                    for (int i=0;;) {
+                        if(!arrayObject.isNull(i)) {
+                            Log.d("EternalMediaBar", arrayObject.getJSONObject(i).getString("url"));
+                            i++;
+                        }
+                        else{
+                            break;
+                        }
+                    }
+
+                }
+                catch (Exception e){e.printStackTrace();}
+            }
+
             //make sure the search is lower case, because searches are caps sensitive
             query=query.toLowerCase();
             //iterate vLists
@@ -190,7 +211,6 @@ public class EternalMediaBar extends Activity {
     ///////////Save a settingsClass to file///////////
     //////////////////////////////////////////////////
     public void saveFiles(){
-
         //save using the new save file format
         try{
             //create a file Output Stream, this lets us write to the internal memory
@@ -245,7 +265,7 @@ public class EternalMediaBar extends Activity {
                 return true;
             }
             //event for when enter/x/a is pressed
-			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_DPAD_CENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
+			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
                 if (!optionsMenu) {
                     //get the layout
                     LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
@@ -290,17 +310,8 @@ public class EternalMediaBar extends Activity {
             //if you are not on the options menu
             if (!optionsMenu) {
                 LinearLayout vLayout = (LinearLayout) findViewById(R.id.apps_display);
-                boolean proceed = true;
-                //if you are trying to move too far down set proceed to false
-                if (move < 0) {
-                    proceed = false;
-                }
-                //if you are trying to move too far up set proceed to false
-                else if (move > vLayout.getChildCount()-1) {
-                    proceed = false;
-                }
-
-                if (proceed) {
+                //if you are trying to move within the actual list size then do so.
+                if (move >= 0 || move < vLayout.getChildCount()) {
                     //change the old item, if it exists
                     try {
                         //change the old font face
@@ -313,16 +324,18 @@ public class EternalMediaBar extends Activity {
                     catch(Exception e){}
                     //change vItem
                     vItem = move;
-                    //change the font face
-                    ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-                    //scale the icon larger
-                    ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
-                    appIcon.setScaleX(1.25f);
-                    appIcon.setScaleY(1.25f);
+                    try {
+                        //change the font face
+                        ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                        //scale the icon larger
+                        ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                        appIcon.setScaleX(1.25f);
+                        appIcon.setScaleY(1.25f);
 
-                    //scroll to the new entry
-                    vLayout.scrollTo(0, (int) vLayout.getChildAt(vItem).getX());
-
+                        //scroll to the new entry
+                        vLayout.scrollTo(0, (int) vLayout.getChildAt(vItem).getX());
+                    }
+                    catch (Exception e){}
                 }
             }
             //if you are on the options menu
@@ -330,17 +343,8 @@ public class EternalMediaBar extends Activity {
                 move -= vItem;
                 move += optionVitem;
                 LinearLayout vLayout = (LinearLayout) findViewById(R.id.optionslist);
-                boolean proceed = true;
-                //if you are trying to move too far down set proceed to false
-                if (move < 0) {
-                    proceed = false;
-                }
-                //if you are trying to move too far up set proceed to false
-                else if (move > vLayout.getChildCount()-1) {
-                    proceed = false;
-                }
-
-                if (proceed) {
+                //if you are trying to move within the actual list size then do so.
+                if (move >= 0 || move < vLayout.getChildCount()) {
                     //set the font face.
                     ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                     //change OptionsVItem
@@ -353,25 +357,12 @@ public class EternalMediaBar extends Activity {
         }
         else{
             LinearLayout hLayout = (LinearLayout) findViewById(R.id.categories);
-            boolean proceed = true;
-            //if you are trying to move too far down set proceed to false
-            if (move < 0) {
-                proceed = false;
-            }
-            //if you are trying to move too far up set proceed to false
-            else if (move >= hLayout.getChildCount()) {
-                proceed = false;
-            }
-
-            if (proceed) {
+            //if you are trying to move within the actual list size then do so.
+            if (move >= 0 && move < hLayout.getChildCount()) {
                 //change hItem
                 hItem = move;
                 //reload the list
                 loadListView();
-                try {
-                    hLayout.scrollTo((int) hLayout.getChildAt(hItem).getY(), 0);
-                }
-                catch (Exception e){}
             }
         }
     }
@@ -382,15 +373,12 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     public void loadApps(){
         manager = getPackageManager();
-
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent , 0);
 
-        savedData.vLists.get(savedData.vLists.size()-1).clear();
-
         //create a list of bools for checking what system apps are present.
-        Boolean[] sysapps = new Boolean[]{false};
+        Boolean[] sysApps = new Boolean[]{false};
         //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
         for (int i=0; i<savedData.vLists.size();){
             for (int ii=0; ii<savedData.vLists.get(i).size();){
@@ -418,7 +406,7 @@ public class EternalMediaBar extends Activity {
                 }
                 //do a check for if the system apps are present and modify the bool as necessary.
                 else if(savedData.vLists.get(i).get(ii).name.equals(".options")){
-                    sysapps[0] = true;
+                    sysApps[0] = true;
                 }
                 ii++;
             }
@@ -426,12 +414,18 @@ public class EternalMediaBar extends Activity {
         }
 
         //now check the list of bools and add any missing system apps.
-        if (!sysapps[0]){
+        if (!sysApps[0]){
             appDetail eternalSettings = new appDetail();
             eternalSettings.isPersistent = true;
             eternalSettings.label = "Eternal Media Bar - Settings";
             eternalSettings.name = ".options";
-            savedData.vLists.get(5).add(eternalSettings);
+            for (int i = 0; i < savedData.vLists.size(); ) {
+                if (savedData.categoryTags.get(i).contains("Tools")) {
+                    savedData.vLists.get(i).add(eternalSettings);
+                    break;
+                }
+                i++;
+            }
         }
 
         if (availableActivities.size()>0) {
@@ -441,7 +435,13 @@ public class EternalMediaBar extends Activity {
                 appRI.name = ri.activityInfo.packageName;
                 appRI.isPersistent = false;
                 appRI.icon = null;
-                savedData.vLists.get(savedData.vLists.size()-1).add(appRI);
+                for (int i = 0; i < savedData.vLists.size(); ) {
+                    if (savedData.categoryTags.get(i).contains("Unorganized")) {
+                        savedData.vLists.get(i).add(appRI);
+                        break;
+                    }
+                    i++;
+                }
             }
             availableActivities.clear();
         }
