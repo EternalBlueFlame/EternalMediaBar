@@ -3,6 +3,7 @@ package com.ebf.eternalmediabar;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -25,13 +26,8 @@ public class settingsClass implements Serializable {
     boolean useManufacturerIcons;
     boolean mirrorMode;
     boolean dimLists;
-    List<int[]> organizeMode;
-    List<appDetail> hiddenApps = new ArrayList<appDetail>();
-    List<List<appDetail>> vLists = new ArrayList<List<appDetail>>();
-    List<String> categoryNames = new ArrayList<>();
-    List<String> categoryIcons = new ArrayList<>();
-    List<String> categoryTags = new ArrayList<>();
-    List<String> categoryGoogleIcons = new ArrayList<>();
+    List<appDetail> hiddenApps = new ArrayList<>();
+    List<categoryClass> categories = new ArrayList<>();
 
 
     //////////////////////////////////////////////////
@@ -56,36 +52,39 @@ public class settingsClass implements Serializable {
 
         //create a loop for the vLists, and the lists in them, and each appData in them
         xml = xml+"<vLists>\n";
-        for (int i=0; i< saveData.vLists.size();){
+        for (int i=0; i< saveData.categories.size();){
             xml = xml+"\n     <vList>";
             //this will fail if the New Apps category is empty
             try {
                 //in 2.5 include this list of names as part of the save file. Also use a string to define icon.
                 xml = xml + "\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
-                xml = xml + "\n          <listIcon>" + saveData.categoryIcons.get(i) + "</listIcon>";
-                xml = xml + "\n          <listGoogleIcon>" + saveData.categoryGoogleIcons.get(i) + "</listGoogleIcon>\n";
-                xml = xml + "\n          <listTags>" + saveData.categoryTags.get(i) + "</listTags>\n";
+                xml = xml + "\n          <listIcon>" + saveData.categories.get(i).categoryIcon + "</listIcon>";
+                xml = xml + "\n          <listGoogleIcon>" + saveData.categories.get(i).categoryGoogleIcon + "</listGoogleIcon>\n";
+                for (int ii=0;i<saveData.categories.get(i).categoryTags.size();){
+                    xml = xml + "\n          <categoryTag>" + saveData.categories.get(i).categoryTags.get(ii) + "</categoryTag>\n";
+                    ii++;
+                }
+
                 //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
             }
             catch (Exception e){}
-            //in revision 2, due to the way the variable is managed, this may fail, so we need to compensate for that.
+            //due to the way the variable is managed, this may fail, so we need to compensate for that.
             try {
                 //while we do this we can also define the organize mode to save some time and effort.
                 xml = xml + "          <organizeMode>\n";
-                xml = xml + "               <sub>" + saveData.organizeMode.get(i)[0] + "</sub>\n";
-                xml = xml + "               <repeat>" + saveData.organizeMode.get(i)[1] + "</repeat>\n";
-                xml = xml + "               <main>" + saveData.organizeMode.get(i)[2] + "</main>\n";
+                xml = xml + "               <sub>" + saveData.categories.get(i).organizeMode[0] + "</sub>\n";
+                xml = xml + "               <repeat>" + saveData.categories.get(i).organizeMode[1] + "</repeat>\n";
+                xml = xml + "               <main>" + saveData.categories.get(i).organizeMode[2] + "</main>\n";
                 xml = xml + "          </organizeMode>\n\n";
             } catch (Exception e) {}
             //now load the actual apps in the list
-            for (int ii=0; ii<saveData.vLists.get(i).size();){
+            for (int ii=0; ii<saveData.categories.get(i).appList.size();){
                 //Similar to HTML we will use the same syntax to declare the variables, this makes it easy to parse later on.
                 //we will add the whitespace as well, just in case for some odd reason we actually need to be able to read the save file for debugging purposes.
                 xml = xml+"\n          <AppData>";
-                xml = xml+"\n               <label>"+saveData.vLists.get(i).get(ii).label.toString().replace("&", "andabcd")+"</label>";
-                xml = xml+"\n               <name>"+saveData.vLists.get(i).get(ii).name+"</name>";
-                //getting the icon is probably unnecessary, this will need to be researched more //xml = xml+"\n          <icon>"+saveData.oldApps.get(i).icon.toString()+"</icon>";
-                xml = xml+"\n               <persistent>"+saveData.vLists.get(i).get(ii).isPersistent+"</persistent>";
+                xml = xml+"\n               <label>"+saveData.categories.get(i).appList.get(ii).label.toString().replace("&", "andabcd")+"</label>";
+                xml = xml+"\n               <name>"+saveData.categories.get(i).appList.get(ii).name+"</name>";
+                xml = xml+"\n               <persistent>"+saveData.categories.get(i).appList.get(ii).isPersistent+"</persistent>";
                 xml = xml+"\n          </AppData>";
                 ii++;
             }
@@ -146,7 +145,7 @@ public class settingsClass implements Serializable {
         savedData.menuCol = -1;
         savedData.iconCol = -1;
         savedData.hiddenApps = new ArrayList<>();
-        savedData.organizeMode = new ArrayList<>();
+        savedData.categories = new ArrayList<>();
 
         //try to make the HTML document from XML. This should have no reason to fail, but we have to compensate for just in case it does or the compiler gets mad..
         try {
@@ -254,108 +253,53 @@ public class settingsClass implements Serializable {
                 NodeList vListList = categoryNode.getElementsByTagName("vList");
                 for (int vListNodes = 0; vListNodes < vListList.getLength(); vListNodes++) {
                     Element appElements = (Element) vListList.item(vListNodes);
-                    savedData.vLists.add(new ArrayList<appDetail>());
+                    savedData.categories.add(new categoryClass());
                     try {
-                        savedData.categoryNames.add(appElements.getElementsByTagName("listName").item(0).getTextContent());
-                        savedData.categoryIcons.add(appElements.getElementsByTagName("listIcon").item(0).getTextContent());
-                        savedData.categoryGoogleIcons.add(appElements.getElementsByTagName("listGoogleIcon").item(0).getTextContent());
+                        savedData.categories.get(vListNodes).categoryName = appElements.getElementsByTagName("listName").item(0).getTextContent();
+                        savedData.categories.get(vListNodes).categoryIcon = appElements.getElementsByTagName("listIcon").item(0).getTextContent();
+                        savedData.categories.get(vListNodes).categoryGoogleIcon = appElements.getElementsByTagName("listGoogleIcon").item(0).getTextContent();
                     }
                     catch(Exception e){
-                        System.out.print("failed to get menu" + vListNodes);
                         switch (vListNodes){
-                            case 0:{
-                                savedData.categoryNames.add("Social");
-                                savedData.categoryIcons.add("1");
-                                savedData.categoryGoogleIcons.add("1");
-                                break;
-                            }
-                            case 1:{
-                                savedData.categoryNames.add("Media");
-                                savedData.categoryIcons.add("2");
-                                savedData.categoryGoogleIcons.add("2");
-                                break;
-                            }
-                            case 2:{
-                                savedData.categoryNames.add("Games");
-                                savedData.categoryIcons.add("3");
-                                savedData.categoryGoogleIcons.add("3");
-                                break;
-                            }
-                            case 3:{
-                                savedData.categoryNames.add("Web");
-                                savedData.categoryIcons.add("4");
-                                savedData.categoryGoogleIcons.add("4");
-                                break;
-                            }
-                            case 4:{
-                                savedData.categoryNames.add("Utility");
-                                savedData.categoryIcons.add("5");
-                                savedData.categoryGoogleIcons.add("5");
-                                break;
-                            }
-                            case 5:{
-                                savedData.categoryNames.add("Settings");
-                                savedData.categoryIcons.add("6");
-                                savedData.categoryGoogleIcons.add("6");
-                                break;
-                            }
-                            case 6:{
-                                savedData.categoryNames.add("New Apps");
-                                savedData.categoryIcons.add("7");
-                                savedData.categoryGoogleIcons.add("7");
-                                break;
-                            }
+                            case 0:{savedData.categories.get(vListNodes).categoryName = "Social"; break;}
+                            case 1:{savedData.categories.get(vListNodes).categoryName = "Media"; break;}
+                            case 2:{savedData.categories.get(vListNodes).categoryName = "Games"; break;}
+                            case 3:{savedData.categories.get(vListNodes).categoryName = "Web"; break;}
+                            case 4:{savedData.categories.get(vListNodes).categoryName = "Utility"; break;}
+                            case 5:{savedData.categories.get(vListNodes).categoryName = "Settings"; break;}
+                            case 6:{savedData.categories.get(vListNodes).categoryName = "New Apps"; break;}
                         }
+                        savedData.categories.get(vListNodes).categoryIcon = vListList.toString();
+                        savedData.categories.get(vListNodes).categoryGoogleIcon = vListList.toString();
                     }
                     //Get the category tags
                     try{
-                        savedData.categoryTags = new ArrayList<>();
-                        savedData.categoryTags.add(appElements.getElementsByTagName("listTags").item(0).getTextContent());
+                        savedData.categories.get(vListNodes).categoryTags = new ArrayList<>();
+                        // iterate through Tag tags
+                        for(int i=0; i<appElements.getElementsByTagName("categoryTag").getLength();) {
+                            savedData.categories.get(vListNodes).categoryTags.add(appElements.getElementsByTagName("categoryTags").item(i).getTextContent());
+                            i++;
+                        }
                     }
                     catch (Exception e){
-                        savedData.categoryTags = new ArrayList<>();
                         switch (vListNodes){
-                            case 0:{
-                                savedData.categoryTags.add("Communication : Social : Sports : Education");
-                                break;
-                            }
-                            case 1:{
-                                savedData.categoryTags.add("Music : Video : Entertainment : Books : Comics : Photo");
-                                break;
-                            }
-                            case 2:{
-                                savedData.categoryTags.add("Games");
-                                break;
-                            }
-                            case 3:{
-                                savedData.categoryTags.add("Weather : News : Shopping : Lifestyle : Transportation : Travel");
-                                break;
-                            }
-                            case 4:{
-                                savedData.categoryTags.add("Business : Finance : Health : Medical : Productivity");
-                                break;
-                            }
-                            case 5:{
-                                savedData.categoryTags.add("Live Wallpaper : Personalization : Tools : Widgets : Libraries : Android Wear");
-                                break;
-                            }
-
-                            case 6:{
-                                savedData.categoryTags.add("Unorganized");
-                                break;
-                            }
+                            case 0:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));}
+                            case 1:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));}
+                            case 2:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Games"));}
+                            case 3:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));}
+                            case 4:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));}
+                            case 5:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));}
+                            case 6:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));}
                         }
                     }
                     //try and grab the variables for the list name, list icon, list google icon and list organization mode.
                     try {
-                        savedData.organizeMode.add(new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())});
+                        savedData.categories.get(vListNodes).organizeMode = new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())};
                     }
-                    catch (Exception e){
-                        savedData.organizeMode.add(new int[]{0,1,1});
-                    }
+                    catch (Exception e){}
                     // iterate through AppData tags
                     NodeList appsList = appElements.getElementsByTagName("AppData");
-                    for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
+                    for (int currentApp = 0; currentApp < appsList.getLength();) {
                         try {
                             Element appElement = (Element) appsList.item(currentApp);
                             appDetail tempApp = new appDetail();
@@ -366,24 +310,13 @@ public class settingsClass implements Serializable {
                             }
                             tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
                             tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
-                            savedData.vLists.get(savedData.vLists.size() - 1).add(tempApp);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            savedData.categories.get(vListNodes).appList.add(tempApp);
+                        } catch (Exception e) {}
+                        currentApp++;
                     }
                 }
             }
-            catch (Exception e){
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                savedData.vLists.add(new ArrayList<appDetail>());
-                //create the horizontal list
-                //...
-            }
+            catch (Exception e){e.printStackTrace();}
 
             //////////////////////////////////////////////////
             ///////////////Load the hidden apps///////////////
@@ -395,7 +328,7 @@ public class settingsClass implements Serializable {
 
                 // iterate through AppData tags
                 NodeList appsList = appElements.getElementsByTagName("AppData");
-                for (int currentApp = 0; currentApp < appsList.getLength(); currentApp++) {
+                for (int currentApp = 0; currentApp < appsList.getLength();) {
                     try {
                         Element appElement = (Element) appsList.item(currentApp);
                         appDetail tempApp = new appDetail();
@@ -412,6 +345,7 @@ public class settingsClass implements Serializable {
                     catch (Exception e){
                         e.printStackTrace();
                     }
+                    currentApp++;
                 }
             }
             catch (Exception e){

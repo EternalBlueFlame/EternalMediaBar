@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
 
@@ -16,7 +17,7 @@ public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
     protected Void doInBackground(EternalMediaBar... eternalMediaBar) {
         //run once
         if (!eternalMediaBar[0].init) {
-            if (eternalMediaBar[0].savedData.vLists.size() <= 1) {
+            if (eternalMediaBar[0].savedData.categories.size() <= 1) {
                 try {
                     //try load preferences
                     FileInputStream fs = eternalMediaBar[0].openFileInput("data.xml");
@@ -45,13 +46,13 @@ public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
                         eternalMediaBar[0].savedData = eternalMediaBar[0].savedData.returnSettings(sb.toString());
                     } catch (Exception ee) {
                         //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
-                        eternalMediaBar[0].savedData.vLists.add(new ArrayList<appDetail>());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
+                        eternalMediaBar[0].savedData.categories.add(new categoryClass());
                         //we should initialize the other variables as well.
                         eternalMediaBar[0].savedData.useGoogleIcons = false;
                         eternalMediaBar[0].savedData.mirrorMode = false;
@@ -65,50 +66,42 @@ public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
                         eternalMediaBar[0].savedData.dimLists= true;
                         eternalMediaBar[0].savedData.hiddenApps = new ArrayList<>();
                         int[] tempInt = new int[]{0, 1, 1};
-                        eternalMediaBar[0].savedData.organizeMode = new ArrayList<>();
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.organizeMode.add(tempInt);
-                        eternalMediaBar[0].savedData.categoryTags = new ArrayList<>();
-                        eternalMediaBar[0].savedData.categoryTags.add("Communication : Social : Sports : Education");
-                        eternalMediaBar[0].savedData.categoryTags.add("Music : Video : Entertainment : Books : Comics : Photo");
-                        eternalMediaBar[0].savedData.categoryTags.add("Games");
-                        eternalMediaBar[0].savedData.categoryTags.add("Weather : News : Shopping : Lifestyle : Transportation : Travel : Web");
-                        eternalMediaBar[0].savedData.categoryTags.add("Business : Finance : Health : Medical : Productivity");
-                        eternalMediaBar[0].savedData.categoryTags.add("Live Wallpaper : Personalization : Tools : Widgets : Libraries : Android Wear");
-                        eternalMediaBar[0].savedData.categoryTags.add("Unorganized");
+                        for(int i=0;i<eternalMediaBar[0].savedData.categories.size();){
+                            eternalMediaBar[0].savedData.categories.get(i).organizeMode = tempInt;
+                            switch (i){
+                                case 0:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Social";
+                                }
+                                case 1:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Media";
+                                }
+                                case 2:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Games"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Games";
+                                }
+                                case 3:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Web";
+                                }
+                                case 4:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Utility";
+                                }
+                                case 5:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Settings";
+                                }
+                                case 6:{
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "New Apps";
+                                }
+                            }
 
-                        eternalMediaBar[0].savedData.categoryNames = new ArrayList<>();
-                        eternalMediaBar[0].savedData.categoryNames.add("Social");
-                        eternalMediaBar[0].savedData.categoryNames.add("Media");
-                        eternalMediaBar[0].savedData.categoryNames.add("Games");
-                        eternalMediaBar[0].savedData.categoryNames.add("Web");
-                        eternalMediaBar[0].savedData.categoryNames.add("Utility");
-                        eternalMediaBar[0].savedData.categoryNames.add("Settings");
-                        eternalMediaBar[0].savedData.categoryNames.add("New Apps");
-
-                        eternalMediaBar[0].savedData.categoryGoogleIcons = new ArrayList<>();
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("1");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("2");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("3");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("4");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("5");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("6");
-                        eternalMediaBar[0].savedData.categoryGoogleIcons.add("7");
-
-                        eternalMediaBar[0].savedData.categoryIcons = new ArrayList<>();
-                        eternalMediaBar[0].savedData.categoryIcons.add("1");
-                        eternalMediaBar[0].savedData.categoryIcons.add("2");
-                        eternalMediaBar[0].savedData.categoryIcons.add("3");
-                        eternalMediaBar[0].savedData.categoryIcons.add("4");
-                        eternalMediaBar[0].savedData.categoryIcons.add("5");
-                        eternalMediaBar[0].savedData.categoryIcons.add("6");
-                        eternalMediaBar[0].savedData.categoryIcons.add("7");
-
+                            eternalMediaBar[0].savedData.categories.get(i).categoryIcon = ""+i;
+                            eternalMediaBar[0].savedData.categories.get(i).categoryGoogleIcon = ""+i;
+                        }
                     }
                 }
             }
@@ -122,18 +115,6 @@ public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
 
             //make sure this doesn't happen again
             eternalMediaBar[0].init = true;
-
-
-            //leave this here for a while to fix the tag glitches that only happen for previously existing users.
-            eternalMediaBar[0].savedData.categoryTags = new ArrayList<>();
-            eternalMediaBar[0].savedData.categoryTags.add("Communication : Social : Sports : Education");
-            eternalMediaBar[0].savedData.categoryTags.add("Music : Video : Entertainment : Books : Comics : Photo");
-            eternalMediaBar[0].savedData.categoryTags.add("Games");
-            eternalMediaBar[0].savedData.categoryTags.add("Weather : News : Shopping : Lifestyle : Transportation : Travel : Web");
-            eternalMediaBar[0].savedData.categoryTags.add("Business : Finance : Health : Medical : Productivity");
-            eternalMediaBar[0].savedData.categoryTags.add("Live Wallpaper : Personalization : Tools : Widgets : Libraries : Android Wear");
-            eternalMediaBar[0].savedData.categoryTags.add("Unorganized");
-
         }
         return null;
     }

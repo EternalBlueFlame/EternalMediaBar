@@ -161,9 +161,9 @@ public class optionsMenuChange {
         //first option is to remove an item from the list.
         //in RC2 this will be modified to support hiding the icon even when it's only in one menu
         int i=0;
-        for (int ii=0; ii< eternalMediaBar.savedData.vLists.size();){
-            for (int iii=0; iii< eternalMediaBar.savedData.vLists.get(ii).size();){
-                if (eternalMediaBar.savedData.vLists.get(ii).get(iii).name.equals(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem).name)){
+        for (int ii=0; ii< eternalMediaBar.savedData.categories.size();){
+            for (int iii=0; iii< eternalMediaBar.savedData.categories.get(ii).appList.size();){
+                if (eternalMediaBar.savedData.categories.get(ii).appList.get(iii).name.equals(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.get(eternalMediaBar.vItem).name)){
                     i++;
                 }
                 iii++;
@@ -216,7 +216,7 @@ public class optionsMenuChange {
         eternalMediaBar.optionVitem=0;
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
-        for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
+        for (int i=0; i < eternalMediaBar.savedData.categories.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
                 lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Copy to " + eternalMediaBar.hli.get(i).label, 4, i, false, ".", "3"));
             }
@@ -236,7 +236,7 @@ public class optionsMenuChange {
         eternalMediaBar.optionVitem = 0;
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
-        for (int i=0; i < eternalMediaBar.savedData.vLists.size()-1; ) {
+        for (int i=0; i < eternalMediaBar.savedData.categories.size()-1; ) {
             if (i != eternalMediaBar.hItem) {
                 lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Move to " + eternalMediaBar.hli.get(i).label, 5, i, false, ".", ""));
             }
@@ -353,24 +353,24 @@ public class optionsMenuChange {
 
         //we have to reload this menu every time we change it because we're using a radio button system, so we might as well make use of that by changing the variable from its own function.
         if(secondaryIndex!=0){
-            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2] = secondaryIndex;
+            eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[2] = secondaryIndex;
         }
         //add the item for changing the organization method
         eternalMediaBar.optionVitem = 0;
         lLayout.removeAllViews();
-        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==1){
+        if (eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[2]==1){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", 11, 1, false, ".radioCheck", appName));
         }
         else{
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Alphabetically", 11, 1, false, ".radioUnCheck", appName));
         }
-        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==2){
+        if (eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[2]==2){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", 11, 2, false, ".radioCheck", appName));
         }
         else{
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Reverse Alphabetically", 11, 2, false, ".radioUnCheck", appName));
         }
-        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]==3){
+        if (eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[2]==3){
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "No Organization", 11, 3, false, ".radioCheck", appName));
         }
         else{
@@ -379,7 +379,7 @@ public class optionsMenuChange {
 
         lLayout.addView(View.inflate(eternalMediaBar.getApplicationContext(), R.layout.list_item, null));
 
-        if (eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] ==0) {
+        if (eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[1] ==0) {
             //add the item for only applying this once
             lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", 12, -1, false, ".radioCheck", appName));
             //add the item for always applying this
@@ -408,7 +408,7 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
     public void copyItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout lLayout){
         //create a copy of the selected item in another list
-        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
+        eternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.get(eternalMediaBar.vItem));
         menuClose(eternalMediaBar, lLayout);
     }
 
@@ -417,11 +417,11 @@ public class optionsMenuChange {
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
     public void moveItem(EternalMediaBar eternalMediaBar, int secondaryIndex, LinearLayout lLayout){
-        eternalMediaBar.savedData.vLists.get(secondaryIndex).add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
-        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).remove(eternalMediaBar.vItem);
+        eternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.get(eternalMediaBar.vItem));
+        eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.remove(eternalMediaBar.vItem);
         menuClose(eternalMediaBar, lLayout);
         //make sure that if the new apps list disappears, we aren't on it.
-        if (eternalMediaBar.hItem == (eternalMediaBar.savedData.vLists.size()-1) && eternalMediaBar.savedData.vLists.get(eternalMediaBar.savedData.vLists.size()-1).size()==0){
+        if (eternalMediaBar.hItem == (eternalMediaBar.savedData.categories.size()-1) && eternalMediaBar.savedData.categories.get(eternalMediaBar.savedData.categories.size()-1).appList.size()==0){
             eternalMediaBar.listMove(0, true);
         }
         else{
@@ -434,8 +434,8 @@ public class optionsMenuChange {
     //////////////Move an app menu item///////////////
     //////////////////////////////////////////////////
     public void hideApp(EternalMediaBar eternalMediaBar, LinearLayout lLayout){
-        eternalMediaBar.savedData.hiddenApps.add(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).get(eternalMediaBar.vItem));
-        eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem).remove(eternalMediaBar.vItem);
+        eternalMediaBar.savedData.hiddenApps.add(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.get(eternalMediaBar.vItem));
+        eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList.remove(eternalMediaBar.vItem);
         menuClose(eternalMediaBar, lLayout);
     }
 
@@ -501,20 +501,20 @@ public class optionsMenuChange {
     public void organizeList(EternalMediaBar eternalMediaBar, @Nullable LinearLayout lLayout, int secondaryIndex){
         //we want to define the organization method when we load this menu.
         if (secondaryIndex ==1){
-            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] =1;
+            eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[1] =1;
         }
         else if (secondaryIndex ==-1){
-            eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[1] =0;
+            eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[1] =0;
         }
 
-        switch(eternalMediaBar.savedData.organizeMode.get(eternalMediaBar.hItem)[2]){
+        switch(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[2]){
             //no organization
             case 0:case 3:{
                 break;
             }
             //alphabetical
             case 1:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<appDetail>() {
+                Collections.sort(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList, new Comparator<appDetail>() {
                     @Override
                     public int compare(appDetail lhs, appDetail rhs) {
                         return lhs.label.toString().compareTo(rhs.label.toString());
@@ -527,7 +527,7 @@ public class optionsMenuChange {
             }
             //reverse alphabetical
             case 2:{
-                Collections.sort(eternalMediaBar.savedData.vLists.get(eternalMediaBar.hItem), new Comparator<appDetail>() {
+                Collections.sort(eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).appList, new Comparator<appDetail>() {
                     @Override
                     public int compare(appDetail lhs, appDetail rhs) {
                         return rhs.label.toString().compareTo(rhs.label.toString());

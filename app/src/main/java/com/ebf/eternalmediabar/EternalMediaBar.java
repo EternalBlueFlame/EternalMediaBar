@@ -90,9 +90,9 @@ public class EternalMediaBar extends Activity {
                     JSONObject subObject = mainObject.getJSONObject("responseData");
                     JSONArray arrayObject = subObject.getJSONArray("results");
 
-                    for (int i = 0; i < savedData.vLists.size(); ) {
-                        if (savedData.categoryTags.get(i).contains("Web")) {
-                            searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
+                    for (int i = 0; i < savedData.categories.size(); ) {
+                        if (savedData.categories.get(i).categoryName.equals("Web")) {
+                            searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
                             break;
                         }
                         i++;
@@ -115,19 +115,19 @@ public class EternalMediaBar extends Activity {
             //make sure the search is lower case, because searches are caps sensitive
             query=query.toLowerCase();
             //iterate vLists
-            for (int i = 0; i < savedData.vLists.size(); ) {
+            for (int i = 0; i < savedData.categories.size(); ) {
                 //set the bool for if there is a header on the category then iterate through the apps in the category
                 Boolean categoryListed =false;
-                for (int ii = 0; ii < savedData.vLists.get(i).size(); ) {
+                for (int ii = 0; ii < savedData.categories.get(i).appList.size(); ) {
                     //make sure the labels are lowercase, and if it finds something
-                    if (savedData.vLists.get(i).get(ii).label.toString().toLowerCase().contains(query)) {
+                    if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(createMenuEntry(R.layout.search_category, hli.get(i).label,-1,0,false, savedData.categoryIcons.get(i) + " : " + savedData.categoryGoogleIcons.get(i),"hItem"));
+                            searchView.addView(createMenuEntry(R.layout.search_category, hli.get(i).label,-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
                             categoryListed=true;
                         }
 
-                        searchView.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(i).get(ii).label, -1, 0, true, savedData.vLists.get(i).get(ii).name, (String) savedData.vLists.get(i).get(ii).label));
+                        searchView.addView(createMenuEntry(R.layout.list_item, savedData.categories.get(i).appList.get(ii).label, -1, 0, true, savedData.categories.get(i).appList.get(ii).name, (String) savedData.categories.get(i).appList.get(ii).label));
                     }
                     ii++;
                 }
@@ -163,12 +163,12 @@ public class EternalMediaBar extends Activity {
             //load in the apps
             loadApps();
             //make sure vItem isn't out of bounds
-            if (vItem >= savedData.vLists.get(hItem).size()){
-                vItem = savedData.vLists.get(hItem).size();
+            if (vItem >= savedData.categories.get(hItem).appList.size()){
+                vItem = savedData.categories.get(hItem).appList.size();
             }
 
             //make sure that if the new apps list disappears, we aren't on it.
-            if (hItem == (savedData.vLists.size()-1) && savedData.vLists.get(savedData.vLists.size()-1).size()==0){
+            if (hItem == (savedData.categories.size()-1) && savedData.categories.get(savedData.categories.size()-1).appList.size()==0){
                 listMove(0, true);
             }
             //otherwise just load normally
@@ -192,8 +192,8 @@ public class EternalMediaBar extends Activity {
                 if (intent.getIntExtra("state", -1) == 1) {
                     Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
                     //we have to iterate through the tags to find the list with the desired tag
-                    for (int i = 0; i < savedData.vLists.size(); ) {
-                        if (savedData.categoryTags.get(i).contains("Music")) {
+                    for (int i = 0; i < savedData.categories.size(); ) {
+                        if (savedData.categories.get(i).categoryTags.contains("Music")) {
                             listMove(i, true);
                             break;
                         }
@@ -380,19 +380,19 @@ public class EternalMediaBar extends Activity {
         //create a list of bools for checking what system apps are present.
         Boolean[] sysApps = new Boolean[]{false};
         //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
-        for (int i=0; i<savedData.vLists.size();){
-            for (int ii=0; ii<savedData.vLists.get(i).size();){
+        for (int i=0; i<savedData.categories.size();){
+            for (int ii=0; ii<savedData.categories.get(i).appList.size();){
                 //iterate through the lists, then check if it's persistent.
-                if (!savedData.vLists.get(i).get(ii).isPersistent) {
+                if (!savedData.categories.get(i).appList.get(ii).isPersistent) {
                     //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
                     try {
-                        if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(savedData.vLists.get(i).get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
-                            savedData.vLists.get(i).remove(ii);
+                        if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(savedData.categories.get(i).appList.get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
+                            savedData.categories.get(i).appList.remove(ii);
                         }
                         //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
                         else{
                             for (int iii=0; iii<availableActivities.size();){
-                                if(availableActivities.get(iii).activityInfo.packageName.equals(savedData.vLists.get(i).get(ii).name)){
+                                if(availableActivities.get(iii).activityInfo.packageName.equals(savedData.categories.get(i).appList.get(ii).name)){
                                     availableActivities.remove(iii);
                                     //now set the index of iii to break the loop, since we already found what we were looking for.
                                     iii=availableActivities.size();
@@ -401,11 +401,11 @@ public class EternalMediaBar extends Activity {
                             }
                         }
                     } catch (Exception e) {
-                        savedData.vLists.get(i).remove(ii);
+                        savedData.categories.get(i).appList.remove(ii);
                     }
                 }
                 //do a check for if the system apps are present and modify the bool as necessary.
-                else if(savedData.vLists.get(i).get(ii).name.equals(".options")){
+                else if(savedData.categories.get(i).appList.get(ii).name.equals(".options")){
                     sysApps[0] = true;
                 }
                 ii++;
@@ -419,9 +419,9 @@ public class EternalMediaBar extends Activity {
             eternalSettings.isPersistent = true;
             eternalSettings.label = "Eternal Media Bar - Settings";
             eternalSettings.name = ".options";
-            for (int i = 0; i < savedData.vLists.size(); ) {
-                if (savedData.categoryTags.get(i).contains("Tools")) {
-                    savedData.vLists.get(i).add(eternalSettings);
+            for (int i = 0; i < savedData.categories.size(); ) {
+                if (savedData.categories.get(i).categoryTags.contains("Tools")) {
+                    savedData.categories.get(i).appList.add(eternalSettings);
                     break;
                 }
                 i++;
@@ -435,9 +435,9 @@ public class EternalMediaBar extends Activity {
                 appRI.name = ri.activityInfo.packageName;
                 appRI.isPersistent = false;
                 appRI.icon = null;
-                for (int i = 0; i < savedData.vLists.size(); ) {
-                    if (savedData.categoryTags.get(i).contains("Unorganized")) {
-                        savedData.vLists.get(i).add(appRI);
+                for (int i = 0; i < savedData.categories.size(); ) {
+                    if (savedData.categories.get(i).categoryTags.contains("Unorganized")) {
+                        savedData.categories.get(i).appList.add(appRI);
                         break;
                     }
                     i++;
@@ -484,12 +484,12 @@ public class EternalMediaBar extends Activity {
         //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
 
 
-        for (int i = 0; i < savedData.vLists.size(); ) {
+        for (int i = 0; i < savedData.categories.size(); ) {
             appDetail hMenuItem = new appDetail();
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
-            hMenuItem.label = savedData.categoryNames.get(i);
-            hMenuItem.icon = new imgLoader(this, savedData.categoryIcons.get(i), manager, savedData.useGoogleIcons).doInBackground();
+            hMenuItem.label = savedData.categories.get(i).categoryName;
+            hMenuItem.icon = new imgLoader(this, savedData.categories.get(i).categoryIcon, manager, savedData.useGoogleIcons).doInBackground();
             hli.add(hMenuItem);
             i++;
         }
@@ -506,11 +506,11 @@ public class EternalMediaBar extends Activity {
         }
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
-            if(!savedData.categoryNames.get(ii).equals("New Apps")) {
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categoryIcons.get(ii) + " : " + savedData.categoryGoogleIcons.get(ii), "hItem"));
+            if(!savedData.categories.get(ii).categoryName.equals("New Apps")) {
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon, "hItem"));
             }
-            else if (savedData.vLists.get(ii).size() >0){
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categoryIcons.get(ii) + " : " + savedData.categoryGoogleIcons.get(ii), "hItem"));
+            else if (savedData.categories.get(ii).appList.size() >0){
+                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon, "hItem"));
             }
         ii++;
         }
@@ -539,7 +539,7 @@ public class EternalMediaBar extends Activity {
         vLayout.removeAllViews();
 
         //set the list organization method
-        if (savedData.organizeMode.get(hItem)[1] == 1 && savedData.vLists.get(hItem).size() >1) {
+        if (savedData.categories.get(hItem).organizeMode[1] == 1 && savedData.categories.get(hItem).appList.size() >1) {
             changeOptionsMenu.organizeList(this, null, 0);
         }
         //if we have it set to dim the background, dim it
@@ -549,8 +549,8 @@ public class EternalMediaBar extends Activity {
         }
 
 
-        for (int ii=0; ii< savedData.vLists.get(hItem).size();) {
-            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.vLists.get(hItem).get(ii).label, ii, 0, true, savedData.vLists.get(hItem).get(ii).name, (String) savedData.vLists.get(hItem).get(ii).label));
+        for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {
+            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.categories.get(hItem).appList.get(ii).label, ii, 0, true, savedData.categories.get(hItem).appList.get(ii).name, (String) savedData.categories.get(hItem).appList.get(ii).label));
             ii++;
         }
 
