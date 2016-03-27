@@ -1,5 +1,8 @@
 package com.ebf.eternalmediabar;
 
+
+import android.util.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,12 +63,17 @@ public class settingsClass implements Serializable {
                 xml = xml + "\n          <listName>" + eternalMediaBar.hli.get(i).label + "</listName>";
                 xml = xml + "\n          <listIcon>" + saveData.categories.get(i).categoryIcon + "</listIcon>";
                 xml = xml + "\n          <listGoogleIcon>" + saveData.categories.get(i).categoryGoogleIcon + "</listGoogleIcon>\n";
-                for (int ii=0;i<saveData.categories.get(i).categoryTags.size();){
-                    xml = xml + "\n          <categoryTag>" + saveData.categories.get(i).categoryTags.get(ii) + "</categoryTag>\n";
-                    ii++;
-                }
 
                 //The rest of the information needed for the hList is the same for every entry, so it can easily be created manually on loading a save file.
+            }
+            catch (Exception e){}
+            try{
+                xml = xml + "          <categoryTags>";
+                for (int ii=0;ii<saveData.categories.get(i).categoryTags.size();){
+                    xml = xml + "\n               <tag>" + saveData.categories.get(i).categoryTags.get(ii) + "</tag>";
+                    ii++;
+                }
+                xml = xml + "\n          </categoryTags>\n";
             }
             catch (Exception e){}
             //due to the way the variable is managed, this may fail, so we need to compensate for that.
@@ -251,50 +259,52 @@ public class settingsClass implements Serializable {
 
                 //iterate through  VList tags
                 NodeList vListList = categoryNode.getElementsByTagName("vList");
-                for (int vListNodes = 0; vListNodes < vListList.getLength(); vListNodes++) {
-                    Element appElements = (Element) vListList.item(vListNodes);
-                    savedData.categories.add(new categoryClass());
+                for (int categoriesInXML = 0; categoriesInXML < vListList.getLength(); categoriesInXML++) {
+                    categoryClass newCategory = new categoryClass();
+                    Element appElements = (Element) vListList.item(categoriesInXML);
                     try {
-                        savedData.categories.get(vListNodes).categoryName = appElements.getElementsByTagName("listName").item(0).getTextContent();
-                        savedData.categories.get(vListNodes).categoryIcon = appElements.getElementsByTagName("listIcon").item(0).getTextContent();
-                        savedData.categories.get(vListNodes).categoryGoogleIcon = appElements.getElementsByTagName("listGoogleIcon").item(0).getTextContent();
+                        newCategory.categoryName = appElements.getElementsByTagName("listName").item(0).getTextContent();
+                        newCategory.categoryIcon = appElements.getElementsByTagName("listIcon").item(0).getTextContent();
+                        newCategory.categoryGoogleIcon = appElements.getElementsByTagName("listGoogleIcon").item(0).getTextContent();
                     }
                     catch(Exception e){
-                        switch (vListNodes){
-                            case 0:{savedData.categories.get(vListNodes).categoryName = "Social"; break;}
-                            case 1:{savedData.categories.get(vListNodes).categoryName = "Media"; break;}
-                            case 2:{savedData.categories.get(vListNodes).categoryName = "Games"; break;}
-                            case 3:{savedData.categories.get(vListNodes).categoryName = "Web"; break;}
-                            case 4:{savedData.categories.get(vListNodes).categoryName = "Utility"; break;}
-                            case 5:{savedData.categories.get(vListNodes).categoryName = "Settings"; break;}
-                            case 6:{savedData.categories.get(vListNodes).categoryName = "New Apps"; break;}
+                        switch (categoriesInXML){
+                            case 0:{newCategory.categoryName = "Social"; break;}
+                            case 1:{newCategory.categoryName = "Media"; break;}
+                            case 2:{newCategory.categoryName = "Games"; break;}
+                            case 3:{newCategory.categoryName = "Web"; break;}
+                            case 4:{newCategory.categoryName = "Utility"; break;}
+                            case 5:{newCategory.categoryName = "Settings"; break;}
+                            case 6:{newCategory.categoryName = "New Apps"; break;}
                         }
-                        savedData.categories.get(vListNodes).categoryIcon = vListList.toString();
-                        savedData.categories.get(vListNodes).categoryGoogleIcon = vListList.toString();
+                        newCategory.categoryIcon = vListList.toString();
+                        newCategory.categoryGoogleIcon = vListList.toString();
                     }
                     //Get the category tags
                     try{
-                        savedData.categories.get(vListNodes).categoryTags = new ArrayList<>();
-                        // iterate through Tag tags
-                        for(int i=0; i<appElements.getElementsByTagName("categoryTag").getLength();) {
-                            savedData.categories.get(vListNodes).categoryTags.add(appElements.getElementsByTagName("categoryTags").item(i).getTextContent());
-                            i++;
+                        // iterate through AppData tags
+                        NodeList tagList = appElements.getElementsByTagName("categoryTags").item(0).getChildNodes();
+                        for (int currentTag = 0; currentTag < tagList.getLength();) {
+                            newCategory.categoryTags.add(tagList.item(currentTag).getTextContent());
+                            currentTag++;
                         }
                     }
                     catch (Exception e){
-                        switch (vListNodes){
-                            case 0:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));}
-                            case 1:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));}
-                            case 2:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Games"));}
-                            case 3:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));}
-                            case 4:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));}
-                            case 5:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));}
-                            case 6:{savedData.categories.get(vListNodes).categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));}
+                        e.printStackTrace();
+                        Log.d("EternalMediaBar","Failed to get tags");
+                        switch (categoriesInXML){
+                            case 0:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));break;}
+                            case 1:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));break;}
+                            case 2:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Games"));break;}
+                            case 3:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));break;}
+                            case 4:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));break;}
+                            case 5:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));break;}
+                            case 6:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));break;}
                         }
                     }
                     //try and grab the variables for the list name, list icon, list google icon and list organization mode.
                     try {
-                        savedData.categories.get(vListNodes).organizeMode = new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())};
+                        newCategory.organizeMode = new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())};
                     }
                     catch (Exception e){}
                     // iterate through AppData tags
@@ -310,10 +320,11 @@ public class settingsClass implements Serializable {
                             }
                             tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
                             tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
-                            savedData.categories.get(vListNodes).appList.add(tempApp);
+                            newCategory.appList.add(tempApp);
                         } catch (Exception e) {}
                         currentApp++;
                     }
+                    savedData.categories.add(newCategory);
                 }
             }
             catch (Exception e){e.printStackTrace();}

@@ -44,6 +44,7 @@ public class EternalMediaBar extends Activity {
     private boolean inputsDisabled = false;
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
+    intentReceiver mainReciever = new intentReceiver();
 
 
 
@@ -56,7 +57,6 @@ public class EternalMediaBar extends Activity {
         //set the current layout value
         setContentView(R.layout.activity_eternal_media_bar);
 
-
         new initialization().execute(this);
         for(;;){
             if(init){
@@ -64,7 +64,6 @@ public class EternalMediaBar extends Activity {
                 break;
             }
         }
-
 
 
     }
@@ -162,6 +161,8 @@ public class EternalMediaBar extends Activity {
         if (init){
             //load in the apps
             loadApps();
+
+            saveFiles();
             //make sure vItem isn't out of bounds
             if (vItem >= savedData.categories.get(hItem).appList.size()){
                 vItem = savedData.categories.get(hItem).appList.size();
@@ -176,9 +177,21 @@ public class EternalMediaBar extends Activity {
                 loadListView();
             }
         }
+        else{
+            init=false;
+        }
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(new intentReceiver(), filter);
+        registerReceiver(mainReciever, filter);
+    }
+
+    //////////////////////////////////////////////////
+    //unregister IntentReceiver on minimize or close//
+    //////////////////////////////////////////////////
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mainReciever);
     }
 
     //////////////////////////////////////////////////
@@ -221,11 +234,11 @@ public class EternalMediaBar extends Activity {
             fileStream.close();
 
         //System.out.print(savedData.writeXML(savedData, this));
-        /*try{
-            FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data.xml");
-            data.write(savedData.writeXML(savedData, this));
-            data.flush();
-            data.close();*/
+        //try{
+        //    FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data6.xml");
+        //    data.write(savedData.writeXML(savedData, this));
+        //    data.flush();
+        //    data.close();
         }
         catch(Exception e){
             //first fail, ask for write permissions so it won't fail the next time
@@ -376,37 +389,36 @@ public class EternalMediaBar extends Activity {
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent , 0);
-
         //create a list of bools for checking what system apps are present.
         Boolean[] sysApps = new Boolean[]{false};
+
         //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
         for (int i=0; i<savedData.categories.size();){
             for (int ii=0; ii<savedData.categories.get(i).appList.size();){
-                //iterate through the lists, then check if it's persistent.
-                if (!savedData.categories.get(i).appList.get(ii).isPersistent) {
-                    //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
-                    try {
-                        if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(savedData.categories.get(i).appList.get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
-                            savedData.categories.get(i).appList.remove(ii);
-                        }
-                        //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
-                        else{
-                            for (int iii=0; iii<availableActivities.size();){
-                                if(availableActivities.get(iii).activityInfo.packageName.equals(savedData.categories.get(i).appList.get(ii).name)){
-                                    availableActivities.remove(iii);
-                                    //now set the index of iii to break the loop, since we already found what we were looking for.
-                                    iii=availableActivities.size();
-                                }
-                                iii++;
+                //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
+                try {
+                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(savedData.categories.get(i).appList.get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
+                        savedData.categories.get(i).appList.remove(ii);
+                        ii--;
+                    }
+                    //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
+                    else{
+                        for (int iii=0; iii<availableActivities.size();){
+                            if(availableActivities.get(iii).activityInfo.packageName.equals(savedData.categories.get(i).appList.get(ii).name)){
+                                availableActivities.remove(iii);
+                                //now set the index of iii to break the loop, since we already found what we were looking for.
+                                iii=availableActivities.size();
                             }
+                            iii++;
                         }
-                    } catch (Exception e) {
+                    }
+                } catch (Exception e) {
+                    if(savedData.categories.get(i).appList.get(ii).name.equals(".options")){
+                        sysApps[0] = true;
+                    }
+                    else if(!savedData.categories.get(i).appList.get(ii).isPersistent){
                         savedData.categories.get(i).appList.remove(ii);
                     }
-                }
-                //do a check for if the system apps are present and modify the bool as necessary.
-                else if(savedData.categories.get(i).appList.get(ii).name.equals(".options")){
-                    sysApps[0] = true;
                 }
                 ii++;
             }

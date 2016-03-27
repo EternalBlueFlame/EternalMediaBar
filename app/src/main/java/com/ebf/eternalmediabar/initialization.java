@@ -71,44 +71,42 @@ public class initialization  extends AsyncTask<EternalMediaBar, Integer, Void> {
                             switch (i){
                                 case 0:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Social";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Social";break;
                                 }
                                 case 1:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Media";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Media";break;
                                 }
                                 case 2:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Games"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Games";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Games";break;
                                 }
                                 case 3:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Web";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Web";break;
                                 }
                                 case 4:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Utility";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Utility";break;
                                 }
                                 case 5:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Settings";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "Settings";break;
                                 }
                                 case 6:{
                                     eternalMediaBar[0].savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));
-                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "New Apps";
+                                    eternalMediaBar[0].savedData.categories.get(i).categoryName = "New Apps";break;
                                 }
                             }
-
-                            eternalMediaBar[0].savedData.categories.get(i).categoryIcon = ""+i;
-                            eternalMediaBar[0].savedData.categories.get(i).categoryGoogleIcon = ""+i;
+                            eternalMediaBar[0].savedData.categories.get(i).categoryIcon = ""+(i+1);
+                            eternalMediaBar[0].savedData.categories.get(i).categoryGoogleIcon = ""+(i+1);
+                            i++;
                         }
                     }
                 }
             }
             //we dont use this, but due to glitches in earlier revisions, there may be things in here, when it should be empty.
             eternalMediaBar[0].savedData.hiddenApps.clear();
-            //load in the apps
-            eternalMediaBar[0].loadApps();
             //setup the warning variable
             eternalMediaBar[0].warningToggle = new boolean[1];
             eternalMediaBar[0].warningToggle[0] = false;
