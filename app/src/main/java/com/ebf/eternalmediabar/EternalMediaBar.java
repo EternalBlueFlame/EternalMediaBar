@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,25 +49,45 @@ public class EternalMediaBar extends Activity {
 
     //////////////////////////////////////////////////
     ////////////When the app first starts/////////////
+    ////////////or comes back from being//////////////
+    ////////////   in the background   ///////////////
     //////////////////////////////////////////////////
     @Override
-    protected void onCreate (Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //set the current layout value
-        setContentView(R.layout.activity_eternal_media_bar);
+    protected void onResume() {
+        super.onResume();
+        if (init){
+            //load in the apps
+            loadApps();
 
-        new initialization().execute(this);
-        for(;;){
-            if(init){
+            saveFiles();
+            //make sure vItem isn't out of bounds
+            if (vItem >= savedData.categories.get(hItem).appList.size()){
+                vItem = savedData.categories.get(hItem).appList.size();
+            }
+
+            //make sure that if the new apps list disappears, we aren't on it.
+            if (hItem == (savedData.categories.size()-1) && savedData.categories.get(savedData.categories.size()-1).appList.size()==0){
+                listMove(0, true);
+            }
+            //otherwise just load normally
+            else{
                 loadListView();
-                break;
             }
         }
-
-
+        else{
+            setContentView(R.layout.activity_eternal_media_bar);
+            new initialization().doInBackground(this);
+            loadListView();
+        }
+        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mainReciever, filter);
     }
 
 
+    //////////////////////////////////////////////////
+    ///////////Intent receiver for search/////////////
+    //////////////////////////////////////////////////
     private void searchIntent(String query) {
         //get the results view and be sure it's clear.
         LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
@@ -146,43 +165,6 @@ public class EternalMediaBar extends Activity {
     @TargetApi(Build.VERSION_CODES.M)
     public void getPerms(){
         requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
-    }
-
-
-
-
-    //////////////////////////////////////////////////
-    ///////When the app comes back from being/////////
-    ///////       in the background          /////////
-    //////////////////////////////////////////////////
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (init){
-            //load in the apps
-            loadApps();
-
-            saveFiles();
-            //make sure vItem isn't out of bounds
-            if (vItem >= savedData.categories.get(hItem).appList.size()){
-                vItem = savedData.categories.get(hItem).appList.size();
-            }
-
-            //make sure that if the new apps list disappears, we aren't on it.
-            if (hItem == (savedData.categories.size()-1) && savedData.categories.get(savedData.categories.size()-1).appList.size()==0){
-                listMove(0, true);
-            }
-            //otherwise just load normally
-            else{
-                loadListView();
-            }
-        }
-        else{
-            init=false;
-        }
-        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
-        filter.addAction(Intent.ACTION_HEADSET_PLUG);
-        registerReceiver(mainReciever, filter);
     }
 
     //////////////////////////////////////////////////

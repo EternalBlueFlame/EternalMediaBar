@@ -290,7 +290,6 @@ public class settingsClass implements Serializable {
                         }
                     }
                     catch (Exception e){
-                        e.printStackTrace();
                         Log.d("EternalMediaBar","Failed to get tags");
                         switch (categoriesInXML){
                             case 0:{newCategory.categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));break;}
@@ -306,7 +305,7 @@ public class settingsClass implements Serializable {
                     try {
                         newCategory.organizeMode = new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())};
                     }
-                    catch (Exception e){}
+                    catch (Exception e){newCategory.organizeMode = new int[]{0,1,1};}
                     // iterate through AppData tags
                     NodeList appsList = appElements.getElementsByTagName("AppData");
                     for (int currentApp = 0; currentApp < appsList.getLength();) {

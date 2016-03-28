@@ -5,7 +5,7 @@ import java.util.List;
 
 public class categoryClass {
 
-    int[] organizeMode;
+    int[] organizeMode = new int[]{0,1,1};
     List<appDetail> appList = new ArrayList<>();
     String categoryName = "";
     String categoryIcon = "";
