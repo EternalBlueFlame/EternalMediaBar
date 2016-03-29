@@ -34,7 +34,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
         if(isInternal) {
             //run a switch to load an icon dependant on it's value.
             switch (ico) {
-                case ".colHeader": {
+                case ".colHeaderFont": {
                     return Bitmap.createBitmap(new int[]{eternalMediaBar.savedData.fontCol},1,1, Bitmap.Config.ARGB_8888);
                 }
                 case ".radioCheck":{

@@ -108,21 +108,18 @@ public class EternalMediaBar extends Activity {
                     JSONObject subObject = mainObject.getJSONObject("responseData");
                     JSONArray arrayObject = subObject.getJSONArray("results");
 
+                    if(!arrayObject.isNull(0)) {
                     for (int i = 0; i < savedData.categories.size(); ) {
-                        if (savedData.categories.get(i).categoryName.equals("Web")) {
+                        if (savedData.categories.get(i).categoryTags.contains("Web")) {
                             searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
                             break;
                         }
                         i++;
                     }
 
-                    for (int i=0;;) {
-                        if(!arrayObject.isNull(i)) {
+                    for (int i=0;arrayObject.isNull(i);) {
                             Log.d("EternalMediaBar", arrayObject.getJSONObject(i).getString("url"));
                             i++;
-                        }
-                        else{
-                            break;
                         }
                     }
 
@@ -615,20 +612,31 @@ public class EternalMediaBar extends Activity {
                         //choose which list to make dependant on the values given for the call.
                         switch (index) {
                             case -1:{/*/ Null Case /*/}
+                            //menu open and close
                             case 0:{changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout); break;}
                             case 1:{changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName, lLayout);break;}
+                            //copy, hide and move menus
                             case 2:{changeOptionsMenu.createCopyList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
                             case 3:{changeOptionsMenu.createMoveList(EternalMediaBar.this, lLayout, launchIntent, appName);break;}
                             case 4:{changeOptionsMenu.copyItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
                             case 5:{changeOptionsMenu.moveItem(EternalMediaBar.this, secondaryIndex, lLayout);break;}
                             case 6:{changeOptionsMenu.hideApp(EternalMediaBar.this, lLayout);break;}
+                            //open app settings
                             case 7:{startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, lLayout, launchIntent));break;}
+                            //toggles
                             case 8:{changeOptionsMenu.toggleGoogleIcons(EternalMediaBar.this, lLayout);break;}
                             case 9:{changeOptionsMenu.mirrorUI(EternalMediaBar.this, lLayout);break;}
-                            case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, lLayout, secondaryIndex);break;}
+                            case 13:{changeOptionsMenu.toggleDimLists(EternalMediaBar.this, lLayout);break;}
+                            //list organize
                             case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this, lLayout, secondaryIndex, launchIntent, appName);break;}
                             case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, lLayout, secondaryIndex);break;}
-                            case 13:{changeOptionsMenu.toggleDimLists(EternalMediaBar.this, lLayout);}
+                            //cases for changing colors
+                            case 14:{savedData.fontCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout);break;}
+                            case 15:{savedData.iconCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout);break;}
+                            case 16:{savedData.menuCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this, lLayout);break;}
+                            case 10:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Font");break;}
+                            case 17:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Icon");break;}
+                            case 18:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Menu");break;}
                         }
                     }
                 }

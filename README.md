@@ -40,6 +40,9 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>
+-	finish adding the web search option.
+-	finish adding hex color text box to color selector.
+-	Remove the requirement for layout when calling options menu items.
 -	option to require double tap to open an app, good for when you have a hard time hitting the right app, also lets you make better use of custom app backgrounds without a controller.
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
@@ -50,7 +53,10 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	use the XML read to parse play.google.com for app categories.
 -	List organizer, allow users to manually change positions of apps in the list, and sort them alphabetically (EMB apps stay topmost).
 -	extra settings:
--	change icon color //hmenu only
+-	option to change icon color with month like PSP.
+-	change icon color //all internal icons.
+-	new icons can be inverted before color change to make it a different style.
+-	color selector for the google now bar.
 -	change menu background color //effects icon background and slide out menu color.
 -	enable/disable custom app backgrounds.
 -	download app backgrounds from google play (xml parse).
@@ -74,10 +80,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <strong>RC4 plans:</strong>
 -	built in video player. //Built off VLC? //Separate Activity.
 -	Google Play Release?
--	root checker.
--	CPU max clock control for root users.
--	max clock control able to be changed per app.
--	Gaming mode, toggle, High battery drain warning. always max CPU frequency when on.
 <hr/>
 <hr>
 <strong>RC5 plans:</strong>

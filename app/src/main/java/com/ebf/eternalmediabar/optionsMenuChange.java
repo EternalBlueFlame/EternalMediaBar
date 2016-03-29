@@ -206,6 +206,8 @@ public class optionsMenuChange {
 
         //add the item for changing the font color
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", 10, 0, false, ".", "."));
+        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Icon Color", 17, 0, false, ".", "."));
+        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Menu Color", 18, 0, false, ".", "."));
     }
 
 
@@ -261,89 +263,6 @@ public class optionsMenuChange {
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Go Back", 1, 1, true, launchIntent, appName));
         //close settings menu
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Exit Options", 0, 0, false, launchIntent, appName));
-    }
-
-
-    //////////////////////////////////////////////////
-    ////////////////Color select menu/////////////////
-    //////////////////////////////////////////////////
-    public void colorSelect(final EternalMediaBar eternalMediaBar, LinearLayout lLayout, int secondaryIndex){
-        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
-        if (secondaryIndex!=0){
-            eternalMediaBar.savedData.fontCol = secondaryIndex;
-            menuClose(eternalMediaBar, lLayout);
-            return;
-        }
-        lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
-        lLayout.removeAllViews();
-        //load the header that contains the current color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose Font Color", -1, 0, false, ".colHeader", "."));
-        //create the inflater for the seeker bars
-        View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
-        //get the red seeker bar, then set it's progress
-        SeekBar seekerRed = (SeekBar) child.findViewById(R.id.redSeek);
-        seekerRed.setProgress(Color.red(eternalMediaBar.savedData.fontCol));
-        //lastly change the listener
-        seekerRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                eternalMediaBar.savedData.fontCol = Color.argb(255, progress, Color.green(eternalMediaBar.savedData.fontCol), Color.blue(eternalMediaBar.savedData.fontCol));
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
-            }
-
-            //these are useless, but we need them to exist
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        //Now we do it again for green
-        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
-        seekerGreen.setProgress(Color.green(eternalMediaBar.savedData.fontCol));
-        //lastly change the listener
-        seekerGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                eternalMediaBar.savedData.fontCol = Color.argb(255, Color.red(eternalMediaBar.savedData.fontCol), progress, Color.blue(eternalMediaBar.savedData.fontCol));
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
-            }
-
-            //these are useless, but we need them to exist
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        //Now we do it one more time for blue
-        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
-        seekerBlue.setProgress(Color.blue(eternalMediaBar.savedData.fontCol));
-        //lastly change the listener
-        seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
-                eternalMediaBar.savedData.fontCol = Color.argb(255,  Color.red(eternalMediaBar.savedData.fontCol), Color.green(eternalMediaBar.savedData.fontCol), progress);
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
-            }
-            //these are useless, but we need them to exist
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-        //and finally add the view
-        lLayout.addView(child);
-        //add the item for save and quit
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 0, 0, false, ".", "."));
-
-        //add the item for cancel changes
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", 10, eternalMediaBar.savedData.fontCol, false, ".", "."));
     }
 
     //////////////////////////////////////////////////
@@ -544,5 +463,106 @@ public class optionsMenuChange {
             }
         }
     }
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////Color Selector//////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    public void colorSelection(final EternalMediaBar eternalMediaBar, String colorName){
+        LinearLayout lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
+        final int[] tempCol;
+        switch (colorName) {
+            case "Font":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.fontCol),Color.green(eternalMediaBar.savedData.fontCol),Color.blue(eternalMediaBar.savedData.fontCol),Color.alpha(eternalMediaBar.savedData.fontCol)};break;}
+            case "Icon":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.iconCol),Color.green(eternalMediaBar.savedData.iconCol),Color.blue(eternalMediaBar.savedData.iconCol),Color.alpha(eternalMediaBar.savedData.iconCol)};break;}
+            case "Menu":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.menuCol),Color.green(eternalMediaBar.savedData.menuCol),Color.blue(eternalMediaBar.savedData.menuCol),Color.alpha(eternalMediaBar.savedData.iconCol)};break;}
+            default:{tempCol = new int[]{0,0,0,255};}
+        }
+        lLayout.removeAllViews();
+        //load the header that contains the current color
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose" + colorName + "Color", -1, 0, false, ".colHeader" + colorName, "."));
+        //create the inflater for the seeker bars
+        View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
+        //get the red seeker bar, then set it's progress
+        SeekBar seekerRed = (SeekBar) child.findViewById(R.id.redSeek);
+        seekerRed.setProgress(tempCol[0]);
+        //lastly change the listener
+        seekerRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                tempCol[0] = progress;
+                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+            }
+            //these are useless, but we need them to exist
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //Now we do it again for green
+        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
+        seekerGreen.setProgress(tempCol[1]);
+        //lastly change the listener
+        seekerGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                tempCol[1] = progress;
+                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+            }
+
+            //these are useless, but we need them to exist
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //Now we do it one more time for blue
+        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
+        seekerBlue.setProgress(tempCol[2]);
+        //lastly change the listener
+        seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                tempCol[2] = progress;
+                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+            }
+
+            //these are useless, but we need them to exist
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //Now we do it one more time for blue
+        SeekBar seekerAlpha = (SeekBar) child.findViewById(R.id.alphaSeek);
+        seekerBlue.setProgress(tempCol[3]);
+        //lastly change the listener
+        seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //when the bar is moved, change the value of the font color, then update the image accordingly.
+                tempCol[3] = progress;
+                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3],tempCol[0],tempCol[1],tempCol[2])));
+            }
+            //these are useless, but we need them to exist
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //and finally add the view
+        lLayout.addView(child);
+        //add the item for save and quit
+        switch (colorName) {
+            case "Font":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 14, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
+            case "Icon":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 15, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
+            case "Menu":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 16, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
+        }
+
+        //add the item for cancel changes
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", 0, 0, false, ".", "."));
+    }
+
 
 }
