@@ -81,7 +81,7 @@
         android:layout_gravity="center_horizontal"
         android:clickable="true"
         android:layout_below="@+id/textView4"
-        android:max="255"
+        android:max="230"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="10dp" />

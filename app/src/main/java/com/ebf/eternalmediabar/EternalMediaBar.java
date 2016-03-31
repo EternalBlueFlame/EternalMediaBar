@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.util.Log;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -330,19 +330,22 @@ public class EternalMediaBar extends Activity {
             }
             //if you are on the options menu
             else {
-                move -= vItem;
-                move += optionVitem;
-                LinearLayout vLayout = (LinearLayout) findViewById(R.id.optionslist);
-                //if you are trying to move within the actual list size then do so.
-                if (move >= 0 || move < vLayout.getChildCount()) {
-                    //set the font face.
-                    ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-                    //change OptionsVItem
-                    optionVitem = move;
-                    ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-                    //scroll to the new entry
-                    vLayout.scrollTo(0, (int) vLayout.getChildAt(optionVitem).getX());
+                try {
+                    move -= vItem;
+                    move += optionVitem;
+                    LinearLayout vLayout = (LinearLayout) findViewById(R.id.optionslist);
+                    //if you are trying to move within the actual list size then do so.
+                    if (move >= 0 || move < vLayout.getChildCount()) {
+                        //set the font face.
+                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                        //change OptionsVItem
+                        optionVitem = move;
+                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                        //scroll to the new entry
+                        vLayout.scrollTo(0, (int) vLayout.getChildAt(optionVitem).getX());
+                    }
                 }
+                catch (Exception e){}
             }
         }
         else{
@@ -478,6 +481,7 @@ public class EternalMediaBar extends Activity {
         TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
         appLabel.setText(text);
         appLabel.setTextColor(savedData.fontCol);
+        appLabel.setAlpha(Color.alpha(savedData.fontCol));
         //if the launch intent exists try and add an icon from it
         if (launchIntent.length()>1 && inflater!=R.layout.options_item) {
             //if it's an options menu item the image view will fail and skip this
@@ -498,11 +502,14 @@ public class EternalMediaBar extends Activity {
         }
 
         //setup the onclick listener and button
-        //Button btn = (Button) child.findViewById(R.id.item_app_button);
         child.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(appName.equals("hItem")&& index!=-1){
+                if (optionsMenu && appName.equals("hItem")){
+                    changeOptionsMenu.menuClose(EternalMediaBar.this);
+                    listMove(index, true);
+                }
+                else if(appName.equals("hItem")){
                     listMove(index, true);
                 }
                 else if (launchIntent.equals(".options")){
@@ -526,9 +533,6 @@ public class EternalMediaBar extends Activity {
                         }
                     }
                     else {
-                        //initialize the variables for the list ahead of time
-                        LinearLayout lLayout = (LinearLayout) findViewById(R.id.optionslist);
-                        lLayout.removeAllViews();
                         //choose which list to make dependant on the values given for the call.
                         switch (index) {
                             case -1:{/*/ Null Case /*/}
@@ -551,12 +555,7 @@ public class EternalMediaBar extends Activity {
                             case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this,  secondaryIndex, launchIntent, appName);break;}
                             case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, secondaryIndex);break;}
                             //cases for changing colors
-                            case 14:{savedData.fontCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this);break;}
-                            case 15:{savedData.iconCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this);break;}
-                            case 16:{savedData.menuCol=index; changeOptionsMenu.menuClose(EternalMediaBar.this);break;}
-                            case 10:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Font");break;}
-                            case 17:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Icon");break;}
-                            case 18:{changeOptionsMenu.colorSelection(EternalMediaBar.this, "Menu");break;}
+                            case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, appName, secondaryIndex);break;}
                         }
                     }
                 }

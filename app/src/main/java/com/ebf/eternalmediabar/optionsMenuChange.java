@@ -4,14 +4,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 
@@ -208,9 +207,9 @@ public class optionsMenuChange {
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Mirror Layout", 9, 0, false, ".", "."));
 
         //add the item for changing the font color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", 10, 0, false, ".", "."));
-        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Icon Color", 17, 0, false, ".", "."));
-        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Menu Color", 18, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Font Color", 10, 0, false, ".", "Font"));
+        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Icon Color", 10, 0, false, ".", "Icon"));
+        //lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Change Menu Color", 10, 0, false, ".", "Menu"));
     }
 
 
@@ -220,6 +219,7 @@ public class optionsMenuChange {
     public void createCopyList(EternalMediaBar eternalMediaBar, String launchIntent, String appName){
         eternalMediaBar.optionVitem=0;
         LinearLayout lLayout = (LinearLayout)eternalMediaBar.findViewById(R.id.optionslist);
+        lLayout.removeAllViews();
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.categories.size()-1; ) {
@@ -241,6 +241,7 @@ public class optionsMenuChange {
     public void createMoveList(EternalMediaBar eternalMediaBar, String launchIntent, String appName){
         eternalMediaBar.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)eternalMediaBar.findViewById(R.id.optionslist);
+        lLayout.removeAllViews();
         lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, appName, -1, 0, false, launchIntent, ""));
 
         for (int i=0; i < eternalMediaBar.savedData.categories.size()-1; ) {
@@ -481,94 +482,185 @@ public class optionsMenuChange {
     //////////////////Color Selector//////////////////
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
-    public void colorSelection(final EternalMediaBar eternalMediaBar, String colorName){
-        LinearLayout lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
-        final int[] tempCol;
-        switch (colorName) {
-            case "Font":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.fontCol),Color.green(eternalMediaBar.savedData.fontCol),Color.blue(eternalMediaBar.savedData.fontCol),Color.alpha(eternalMediaBar.savedData.fontCol)};break;}
-            case "Icon":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.iconCol),Color.green(eternalMediaBar.savedData.iconCol),Color.blue(eternalMediaBar.savedData.iconCol),Color.alpha(eternalMediaBar.savedData.iconCol)};break;}
-            case "Menu":{tempCol = new int[]{Color.red(eternalMediaBar.savedData.menuCol),Color.green(eternalMediaBar.savedData.menuCol),Color.blue(eternalMediaBar.savedData.menuCol),Color.alpha(eternalMediaBar.savedData.iconCol)};break;}
-            default:{tempCol = new int[]{0,0,0,255};}
+    public void colorSelect(final EternalMediaBar eternalMediaBar, final String colorName, int secondaryIndex){
+        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
+        if (secondaryIndex!=0){
+            switch (colorName){
+                case "Font":{eternalMediaBar.savedData.fontCol = secondaryIndex;}
+                case "Icon":{eternalMediaBar.savedData.iconCol = secondaryIndex;}
+                case "Menu":{eternalMediaBar.savedData.menuCol = secondaryIndex;}
+            }
+            menuClose(eternalMediaBar);
+            return;
         }
+        LinearLayout lLayout = (LinearLayout) eternalMediaBar.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         //load the header that contains the current color
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose" + colorName + "Color", -1, 0, false, ".colHeader" + colorName, "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_header, "Choose "+colorName+" Color", -1, 0, false, ".colHeader", "."));
         //create the inflater for the seeker bars
         View child = eternalMediaBar.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
         SeekBar seekerRed = (SeekBar) child.findViewById(R.id.redSeek);
-        seekerRed.setProgress(tempCol[0]);
-        //lastly change the listener
+        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
+        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
+        SeekBar seekerAlpha = (SeekBar) child.findViewById(R.id.alphaSeek);
+        EditText hexText = (EditText) child.findViewById(R.id.hexText);
+        switch (colorName){
+            case "Font":{
+                seekerRed.setProgress(Color.red(eternalMediaBar.savedData.fontCol));
+                seekerGreen.setProgress(Color.green(eternalMediaBar.savedData.fontCol));
+                seekerBlue.setProgress(Color.blue(eternalMediaBar.savedData.fontCol));
+                seekerAlpha.setProgress(Color.alpha(eternalMediaBar.savedData.fontCol) - 25);
+                hexText.setText("#"+Integer.toHexString(eternalMediaBar.savedData.fontCol));}
+            case "Icon":{
+                seekerRed.setProgress(Color.red(eternalMediaBar.savedData.iconCol));
+                seekerGreen.setProgress(Color.green(eternalMediaBar.savedData.iconCol));
+                seekerBlue.setProgress(Color.blue(eternalMediaBar.savedData.iconCol));
+                seekerAlpha.setProgress(Color.alpha(eternalMediaBar.savedData.iconCol) - 25);
+                hexText.setText("#"+Integer.toHexString(eternalMediaBar.savedData.iconCol));}
+            case "Menu":{
+                seekerRed.setProgress(Color.red(eternalMediaBar.savedData.menuCol));
+                seekerGreen.setProgress(Color.green(eternalMediaBar.savedData.menuCol));
+                seekerBlue.setProgress(Color.blue(eternalMediaBar.savedData.menuCol));
+                seekerAlpha.setProgress(Color.alpha(eternalMediaBar.savedData.menuCol) - 25);
+                hexText.setText("#"+Integer.toHexString(eternalMediaBar.savedData.menuCol));}
+        }
+
+
+
+        //lastly change the listener for the Red seek bar
         seekerRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                 //when the bar is moved, change the value of the font color, then update the image accordingly.
-                tempCol[0] = progress;
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+                switch (colorName) {
+                    case "Font":{
+                        eternalMediaBar.savedData.fontCol = Color.argb(Color.alpha(eternalMediaBar.savedData.fontCol), progress, Color.green(eternalMediaBar.savedData.fontCol), Color.blue(eternalMediaBar.savedData.fontCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.fontCol));}
+                    case "Icon":{
+                        eternalMediaBar.savedData.iconCol = Color.argb(Color.alpha(eternalMediaBar.savedData.iconCol), progress, Color.green(eternalMediaBar.savedData.iconCol), Color.blue(eternalMediaBar.savedData.iconCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.iconCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.iconCol));}
+                    case "Menu":{
+                        eternalMediaBar.savedData.menuCol = Color.argb(Color.alpha(eternalMediaBar.savedData.menuCol), progress, Color.green(eternalMediaBar.savedData.menuCol), Color.blue(eternalMediaBar.savedData.menuCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.menuCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.menuCol));}
+                };
             }
             //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+
         //Now we do it again for green
-        SeekBar seekerGreen = (SeekBar) child.findViewById(R.id.greenSeek);
-        seekerGreen.setProgress(tempCol[1]);
-        //lastly change the listener
         seekerGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //when the bar is moved, change the value of the font color, then update the image accordingly.
-                tempCol[1] = progress;
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+                switch (colorName) {
+                    case "Font": {
+                        eternalMediaBar.savedData.fontCol = Color.argb(Color.alpha(eternalMediaBar.savedData.fontCol), Color.red(eternalMediaBar.savedData.fontCol), progress, Color.blue(eternalMediaBar.savedData.fontCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.fontCol));}
+                    case "Icon":{
+                        eternalMediaBar.savedData.iconCol = Color.argb(Color.alpha(eternalMediaBar.savedData.iconCol), Color.red(eternalMediaBar.savedData.iconCol), progress, Color.blue(eternalMediaBar.savedData.iconCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.iconCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.iconCol));}
+                    case "Menu":{
+                        eternalMediaBar.savedData.menuCol = Color.argb(Color.alpha(eternalMediaBar.savedData.menuCol), Color.red(eternalMediaBar.savedData.menuCol), progress, Color.blue(eternalMediaBar.savedData.menuCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.menuCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.menuCol));}
+                }
             }
-
             //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+
         //Now we do it one more time for blue
-        SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
-        seekerBlue.setProgress(tempCol[2]);
-        //lastly change the listener
         seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //when the bar is moved, change the value of the font color, then update the image accordingly.
-                tempCol[2] = progress;
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2])));
+                switch (colorName) {
+                    case "Font": {
+                        eternalMediaBar.savedData.fontCol = Color.argb(Color.alpha(eternalMediaBar.savedData.fontCol), Color.red(eternalMediaBar.savedData.fontCol), Color.green(eternalMediaBar.savedData.fontCol), progress);
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.fontCol));
+                    }
+                    case "Icon": {
+                        eternalMediaBar.savedData.iconCol = Color.argb(Color.alpha(eternalMediaBar.savedData.iconCol), Color.red(eternalMediaBar.savedData.iconCol), Color.green(eternalMediaBar.savedData.iconCol), progress);
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.iconCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.iconCol));
+                    }
+                    case "Menu": {
+                        eternalMediaBar.savedData.menuCol = Color.argb(Color.alpha(eternalMediaBar.savedData.menuCol), Color.red(eternalMediaBar.savedData.menuCol), Color.green(eternalMediaBar.savedData.menuCol), progress);
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.menuCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.menuCol));
+                    }
+                }
             }
 
             //these are useless, but we need them to exist
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
-        //Now we do it one more time for blue
-        SeekBar seekerAlpha = (SeekBar) child.findViewById(R.id.alphaSeek);
-        seekerBlue.setProgress(tempCol[3]);
-        //lastly change the listener
-        seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+        //Now we do it one more time for Alpha
+        seekerAlpha.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //when the bar is moved, change the value of the font color, then update the image accordingly.
-                tempCol[3] = progress;
-                ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(Color.argb(tempCol[3],tempCol[0],tempCol[1],tempCol[2])));
+                switch (colorName) {
+                    case "Font":{
+                        eternalMediaBar.savedData.fontCol = Color.argb(progress+25, Color.red(eternalMediaBar.savedData.fontCol), Color.green(eternalMediaBar.savedData.fontCol), Color.blue(eternalMediaBar.savedData.fontCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.fontCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.fontCol));}
+                    case "Icon":{
+                        eternalMediaBar.savedData.iconCol = Color.argb(progress+25, Color.red(eternalMediaBar.savedData.iconCol), Color.green(eternalMediaBar.savedData.iconCol), Color.blue(eternalMediaBar.savedData.iconCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.iconCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.iconCol));}
+                    case "Menu":{
+                        eternalMediaBar.savedData.menuCol = Color.argb(progress+25, Color.red(eternalMediaBar.savedData.menuCol), Color.green(eternalMediaBar.savedData.menuCol), Color.blue(eternalMediaBar.savedData.menuCol));
+                        ((ImageView) ((LinearLayout) eternalMediaBar.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.item_app_icon)).setImageDrawable(new ColorDrawable(eternalMediaBar.savedData.menuCol));
+                        ((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(eternalMediaBar.savedData.menuCol));}
+                }
             }
             //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+
+        hexText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                try {
+                    int col = Color.parseColor(((EditText) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).getText().toString());
+                    ((SeekBar) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.redSeek)).setProgress(Color.red(col));
+                    ((SeekBar) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.greenSeek)).setProgress(Color.green(col));
+                    ((SeekBar) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.blueSeek)).setProgress(Color.blue(col));
+                    ((SeekBar) (eternalMediaBar.findViewById(R.id.optionslist)).findViewById(R.id.alphaSeek)).setProgress(Color.alpha(col));
+                }
+                catch (Exception e){}
+            }
+        });
+
+
+
         //and finally add the view
         lLayout.addView(child);
         //add the item for save and quit
-        switch (colorName) {
-            case "Font":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 14, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
-            case "Icon":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 15, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
-            case "Menu":{lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 16, Color.argb(tempCol[3], tempCol[0], tempCol[1], tempCol[2]), false, ".", "."));break;}
-        }
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Save and close", 0, 0, false, ".", "."));
 
         //add the item for cancel changes
-        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", 0, 0, false, ".", "."));
+        lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.options_item, "Close without saving", 10, eternalMediaBar.savedData.fontCol, false, ".", colorName));
     }
-
 
 }

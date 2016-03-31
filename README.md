@@ -41,8 +41,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <hr>
 <strong>RC2.5 Plans:</strong>
 -	finish adding the web search option.
--	finish adding hex color text box to color selector.
--	Remove the requirement for layout when calling options menu items.
 -	option to require double tap to open an app, good for when you have a hard time hitting the right app, also lets you make better use of custom app backgrounds without a controller.
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
