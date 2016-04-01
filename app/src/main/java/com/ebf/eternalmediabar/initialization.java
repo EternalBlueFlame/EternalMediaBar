@@ -6,12 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Environment;
 import android.support.v4.content.AsyncTaskLoader;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,32 +34,10 @@ public class initialization  extends AsyncTaskLoader<Boolean> {
         if (!eternalMediaBar.init) {
             if (eternalMediaBar.savedData.categories.size() <= 1) {
                 try {
-                    //try load preferences
-                    FileInputStream fs = eternalMediaBar.openFileInput("data.xml");
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line).append("\n");
-                    }
-                    reader.close();
-                    fs.close();
-                    eternalMediaBar.savedData = eternalMediaBar.savedData.returnSettings(sb.toString());
+                    eternalMediaBar.savedData = eternalMediaBar.savedData.returnSettings(eternalMediaBar);
 
 
                 } catch (Exception e) {
-                    try {
-                        FileInputStream fs = new FileInputStream(Environment.getExternalStorageDirectory() + "/data.xml");
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(fs));
-                        String line = null;
-                        StringBuilder sb = new StringBuilder();
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line).append("\n");
-                        }
-                        reader.close();
-                        fs.close();
-                        eternalMediaBar.savedData = eternalMediaBar.savedData.returnSettings(sb.toString());
-                    } catch (Exception ee) {
                         //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
                         eternalMediaBar.savedData.categories.add(new categoryClass());
                         eternalMediaBar.savedData.categories.add(new categoryClass());
@@ -128,7 +102,6 @@ public class initialization  extends AsyncTaskLoader<Boolean> {
                             eternalMediaBar.savedData.categories.get(i).categoryGoogleIcon = "" + (i + 1);
                             i++;
                         }
-                    }
                 }
             }
             //we dont use this, but due to glitches in earlier revisions, there may be things in here, when it should be empty.

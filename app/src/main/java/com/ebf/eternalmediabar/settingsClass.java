@@ -4,7 +4,7 @@ package com.ebf.eternalmediabar;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
@@ -147,7 +146,7 @@ public class settingsClass implements Serializable {
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
     // this function is so huge I have to separate it as if it's multiple functions or we'll all be lost.
-    public settingsClass returnSettings(String xml) {
+    public settingsClass returnSettings(EternalMediaBar eternalMediaBar) {
         settingsClass savedData= new settingsClass();
         //catch with below by initializing vLists properly
         //we should initialize the other variables as well.
@@ -156,10 +155,13 @@ public class settingsClass implements Serializable {
 
         //try to make the HTML document from XML. This should have no reason to fail, but we have to compensate for just in case it does or the compiler gets mad..
         try {
+
+            //try load preferences
+            FileInputStream fs = eternalMediaBar.openFileInput("data.xml");
             //build a document file
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+            Document doc = dbFactory.newDocumentBuilder().parse(fs);
+            fs.close();
             //try to load the individual elements, it is possible one or more could be missing, so we have to compensate for that.
             //make a node list to re-use.
             NodeList SingularNode;
