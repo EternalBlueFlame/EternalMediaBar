@@ -95,7 +95,9 @@ public class settingsClass implements Serializable {
             try{
                 bytes.append("          <categoryTags>");
                 for (int ii=0;ii<saveData.categories.get(i).categoryTags.size();){
-                    bytes.append("\n               <tag>" + saveData.categories.get(i).categoryTags.get(ii) + "</tag>");
+                    if (saveData.categories.get(i).categoryTags.get(ii).matches(".*[a-zA-Z]+.*")) {
+                        bytes.append("\n               <tag>" + saveData.categories.get(i).categoryTags.get(ii) + "</tag>");
+                    }
                     ii++;
                 }
                 bytes.append("\n          </categoryTags>\n");
@@ -300,7 +302,9 @@ public class settingsClass implements Serializable {
                         // iterate through AppData tags
                         NodeList tagList = appElements.getElementsByTagName("categoryTags").item(0).getChildNodes();
                         for (int currentTag = 0; currentTag < tagList.getLength();) {
-                            newCategory.categoryTags.add(tagList.item(currentTag).getTextContent());
+                            if (tagList.item(currentTag).getTextContent().matches(".*[a-zA-Z]+.*")) {
+                                newCategory.categoryTags.add(tagList.item(currentTag).getTextContent());
+                            }
                             currentTag++;
                         }
                     }

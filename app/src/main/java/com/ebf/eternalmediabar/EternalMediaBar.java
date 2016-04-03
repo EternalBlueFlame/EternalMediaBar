@@ -23,7 +23,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,6 @@ public class EternalMediaBar extends Activity {
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
     intentReceiver mainReciever = new intentReceiver();
-
 
 
     //////////////////////////////////////////////////
