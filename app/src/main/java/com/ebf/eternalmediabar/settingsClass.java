@@ -33,30 +33,30 @@ public class settingsClass implements Serializable {
     List<appDetail> hiddenApps = new ArrayList<>();
     List<categoryClass> categories = new ArrayList<>();
 
-
     //////////////////////////////////////////////////
     //////Create the string for saving to a file//////
     //////////////////////////////////////////////////
     //we can't manage files from this class due to permissions, but we can handle processing the variables
-    public void writeXML(settingsClass saveData, EternalMediaBar eternalMediaBar){
+    public void writeXML(EternalMediaBar eternalMediaBar){
         try {
+
             FileOutputStream fileStream = eternalMediaBar.openFileOutput("data.xml", Context.MODE_PRIVATE);
             fileStream.write((
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<xmlRoot>\n<iconCol>" +
-                                    saveData.iconCol + "</iconCol>\n<menuCol>" +
-                                    saveData.menuCol + "</menuCol>\n<fontCol>" +
-                                    saveData.fontCol + "</fontCol>\n<cleanCacheOnStart>" +
-                                    saveData.cleanCacheOnStart + "</cleanCacheOnStart>\n<loadAppBG>" +
-                                    saveData.loadAppBG + "</loadAppBG>\n<gamingMode>" +
-                                    saveData.gamingMode + "</gamingMode>\n<useGoogleIcons>" +
-                                    saveData.useGoogleIcons + "</useGoogleIcons>\n<useManufacturerIcons>" +
-                                    saveData.useManufacturerIcons + "</useManufacturerIcons>\n<mirrorMode>" +
-                                    saveData.mirrorMode + "</mirrorMode>\n<dimLists>" +
-                                    saveData.dimLists + "</dimLists>\n\n<vLists>\n" +
-                                    appSavesToXML(saveData, eternalMediaBar) +
-                                    hiddenAppsToString(saveData, eternalMediaBar)+
-                                    "\n</xmlRoot>"
-                    ).getBytes());
+                            "<xmlRoot>\n<iconCol>" +
+                                    eternalMediaBar.savedData.iconCol + "</iconCol>\n<menuCol>" +
+                                    eternalMediaBar.savedData.menuCol + "</menuCol>\n<fontCol>" +
+                                    eternalMediaBar.savedData.fontCol + "</fontCol>\n<cleanCacheOnStart>" +
+                                    eternalMediaBar.savedData.cleanCacheOnStart + "</cleanCacheOnStart>\n<loadAppBG>" +
+                                    eternalMediaBar.savedData.loadAppBG + "</loadAppBG>\n<gamingMode>" +
+                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<useGoogleIcons>" +
+                                    eternalMediaBar.savedData.useGoogleIcons + "</useGoogleIcons>\n<useManufacturerIcons>" +
+                                    eternalMediaBar.savedData.useManufacturerIcons + "</useManufacturerIcons>\n<mirrorMode>" +
+                                    eternalMediaBar.savedData.mirrorMode + "</mirrorMode>\n<dimLists>" +
+                                    eternalMediaBar.savedData.dimLists + "</dimLists>\n\n<vLists>\n" +
+                                    appSavesToXML(eternalMediaBar.savedData) +
+                                    hiddenAppsToString(eternalMediaBar.savedData)+
+                                    "\n</xmlRoot>").getBytes()
+                    );
             //write a string to the stream
             //close the stream to save some RAM.
             fileStream.flush();
@@ -65,9 +65,23 @@ public class settingsClass implements Serializable {
         catch (Exception e){e.printStackTrace();}
     }
 
+    /*/
+        //save to external storage
+        //try{
+        //    FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data6.xml");
+        //    data.write(String);
+        //    data.flush();
+        //    data.close();
+        }
+        catch(Exception e){
+            //first fail, ask for write permissions so it won't fail the next time
+            //getPerms();
+            //and print the stack just in case.
+            e.printStackTrace();
+        }/*/
 
 
-    private String appSavesToXML(settingsClass saveData, EternalMediaBar eternalMediaBar) {
+    public String appSavesToXML(settingsClass saveData) {
 
         StringBuilder bytes= new StringBuilder();
 
@@ -114,7 +128,7 @@ public class settingsClass implements Serializable {
 
     }
 
-    private String hiddenAppsToString(settingsClass saveData, EternalMediaBar eternalMediaBar){
+    public String hiddenAppsToString(settingsClass saveData){
 
         //the same way we did it for the vLists, we'll do it again for the hidden apps
         StringBuilder bytes= new StringBuilder("\n<hiddenApps>\n");
@@ -313,11 +327,7 @@ public class settingsClass implements Serializable {
                         try {
                             Element appElement = (Element) appsList.item(currentApp);
                             appDetail tempApp = new appDetail();
-                            if (appElement.getElementsByTagName("persistent").item(0).getTextContent().equals("false")) {
-                                tempApp.isPersistent = false;
-                            } else {
-                                tempApp.isPersistent = true;
-                            }
+                            tempApp.isPersistent = boolFromString(appElement.getElementsByTagName("persistent").item(0).getTextContent());
                             tempApp.label = appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&");
                             tempApp.name = appElement.getElementsByTagName("name").item(0).getTextContent();
                             newCategory.appList.add(tempApp);

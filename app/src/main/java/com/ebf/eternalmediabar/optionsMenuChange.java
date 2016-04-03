@@ -135,7 +135,7 @@ public class optionsMenuChange {
             public void onAnimationRepeat(Animation animation) {}
         });
         //save any changes and reload the view
-        eternalMediaBar.savedData.writeXML(eternalMediaBar.savedData, eternalMediaBar);
+        eternalMediaBar.savedData.writeXML(eternalMediaBar);
         eternalMediaBar.loadListView();
     }
 
@@ -307,15 +307,15 @@ public class optionsMenuChange {
 
         if (eternalMediaBar.savedData.categories.get(eternalMediaBar.hItem).organizeMode[1] ==0) {
             //add the item for only applying this once
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", 12, -1, false, ".radioCheck", appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply once", 12, -1, false, ".radioCheck", appName));
             //add the item for always applying this
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", 12, 1, false, ".radioUnCheck", appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always apply", 12, 1, false, ".radioUnCheck", appName));
         }
         else{
             //add the item for only applying this once
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply just this once", 12, -1, false, ".radioUnCheck", appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Apply once", 12, -1, false, ".radioUnCheck", appName));
             //add the item for always applying this
-            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always use this method for this category", 12, 1, false, ".radioCheck", appName));
+            lLayout.addView(eternalMediaBar.createMenuEntry(R.layout.list_item, "Always apply", 12, 1, false, ".radioCheck", appName));
 
         }
     }

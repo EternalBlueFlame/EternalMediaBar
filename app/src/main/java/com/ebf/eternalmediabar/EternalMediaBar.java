@@ -23,6 +23,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class EternalMediaBar extends Activity {
         super.onResume();
         if (init){
             //load in the apps
-            new initialization(this, this).loadInBackground();
+            new initialization().loadData(this);
 
             //make sure vItem isn't out of bounds
             if (vItem >= savedData.categories.get(hItem).appList.size()){
@@ -74,7 +75,7 @@ public class EternalMediaBar extends Activity {
         }
         else{
             setContentView(R.layout.activity_eternal_media_bar);
-            new initialization(this, this).loadInBackground();
+            new initialization().loadData(this);
             loadListView();
         }
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
@@ -167,8 +168,11 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     @Override
     protected void onPause() {
-        super.onPause();
         unregisterReceiver(mainReciever);
+        onTrimMemory(TRIM_MEMORY_COMPLETE);
+
+        super.onPause();
+
     }
 
     //////////////////////////////////////////////////
@@ -194,36 +198,6 @@ public class EternalMediaBar extends Activity {
         }
     }
 
-
-
-
-    //////////////////////////////////////////////////
-    ///////////Save a settingsClass to file///////////
-    //////////////////////////////////////////////////
-    /*/public void saveFiles(){
-        //save using the new save file format
-        try{
-            //create a file Output Stream, this lets us write to the internal memory
-            //FileOutputStream fileStream = openFileOutput("data.xml", Context.MODE_PRIVATE);
-            //fileStream.write(savedData.writeXML(savedData, this).getBytes());
-            //write a string to the stream
-            //close the stream to save some RAM.
-            //fileStream.close();
-
-        //System.out.print(savedData.writeXML(savedData, this));
-        //try{
-        //    FileWriter data = new FileWriter(Environment.getExternalStorageDirectory().getPath() +"/data6.xml");
-        //    data.write(savedData.writeXML(savedData, this));
-        //    data.flush();
-        //    data.close();
-        }
-        catch(Exception e){
-            //first fail, ask for write permissions so it won't fail the next time
-            //getPerms();
-            //and print the stack just in case.
-            e.printStackTrace();
-        }
-    }/*/
 
 
 
