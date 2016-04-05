@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 
+import com.ebf.eternalVariables.appDetail;
+
 import java.util.Collections;
 import java.util.Comparator;
 

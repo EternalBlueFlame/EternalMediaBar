@@ -20,6 +20,9 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ebf.eternalVariables.appDetail;
+import com.ebf.eternalVariables.webSearchResults;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +42,6 @@ public class EternalMediaBar extends Activity {
     public int vItem = 0;
     public int optionVitem =1;
     public boolean[] warningToggle;
-    private boolean inputsDisabled = false;
 
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
     intentReceiver mainReciever = new intentReceiver();
@@ -79,6 +81,7 @@ public class EternalMediaBar extends Activity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mainReciever, filter);
+
     }
 
 
@@ -267,41 +270,38 @@ public class EternalMediaBar extends Activity {
     /////////////change selected item/////////////////
     //////////////////////////////////////////////////
     void listMove(int move, boolean isCategory){
-        //function to move the highlight selection based on which menu you are on.
-        if (!isCategory) {
-            //if you are not on the options menu
-            if (!optionsMenu) {
-                LinearLayout vLayout = (LinearLayout) findViewById(R.id.apps_display);
-                //if you are trying to move within the actual list size then do so.
-                if (move >= 0 || move < vLayout.getChildCount()) {
-                    //change the old item, if it exists
-                    try {
-                        //change the old font face
-                        ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-                        //scale the icon back to normal
-                        ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
-                        appIcon.setScaleX(1f);
-                        appIcon.setScaleY(1f);
-                    }
-                    catch(Exception e){}
-                    //change vItem
-                    vItem = move;
-                    try {
-                        //change the font face
-                        ((TextView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-                        //scale the icon larger
-                        ImageView appIcon = (ImageView) vLayout.getChildAt(vItem).findViewById(R.id.item_app_icon);
-                        appIcon.setScaleX(1.25f);
-                        appIcon.setScaleY(1.25f);
-
-                        //scroll to the new entry
-                        vLayout.scrollTo(0, (int) vLayout.getChildAt(vItem).getX());
-                    }
-                    catch (Exception e){}
+        if (!isCategory && !optionsMenu){
+            LinearLayout layout = (LinearLayout) findViewById(R.id.apps_display);
+            if (move >= 0 && move < layout.getChildCount()) {
+                //change the old item, if it exists
+                try {
+                    //change the old font face
+                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                    //scale the icon back to normal
+                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1f);
+                    appIcon.setScaleY(1f);
                 }
+                catch(Exception e){}
+                //change vItem
+                vItem = move;
+                try {
+                    //change the font face
+                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                    //scale the icon larger
+                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                    appIcon.setScaleX(1.25f);
+                    appIcon.setScaleY(1.25f);
+
+                    //scroll to the new entry
+                    layout.scrollTo(0, (int) layout.getChildAt(vItem).getX());
+                }
+                catch (Exception e){}
             }
-            //if you are on the options menu
-            else {
+        }
+        else if(!isCategory && optionsMenu){
+            LinearLayout layout = (LinearLayout) findViewById(R.id.optionslist);
+            if (move >= 0 && move < layout.getChildCount()) {
                 try {
                     move -= vItem;
                     move += optionVitem;
@@ -321,9 +321,8 @@ public class EternalMediaBar extends Activity {
             }
         }
         else{
-            LinearLayout hLayout = (LinearLayout) findViewById(R.id.categories);
-            //if you are trying to move within the actual list size then do so.
-            if (move >= 0 && move < hLayout.getChildCount()) {
+            LinearLayout layout = (LinearLayout) findViewById(R.id.categories);
+            if (move >= 0 && move < layout.getChildCount()) {
                 //change hItem
                 hItem = move;
                 //reload the list
@@ -457,19 +456,13 @@ public class EternalMediaBar extends Activity {
         //if the launch intent exists try and add an icon from it
         if (launchIntent.length()>1 && inflater!=R.layout.options_item) {
             //if it's an options menu item the image view will fail and skip this
-            ImageView appIcon = (ImageView) child.findViewById(R.id.item_app_icon);
             //attempt to add the icon from the launchIntent
             if (appName.equals("hItem")){
                 String[] icons = launchIntent.split(":");
-                if(savedData.useGoogleIcons) {
-                    appIcon.setImageBitmap(new imgLoader(this, icons[0].trim(), manager, false).doInBackground());
-                }
-                else{
-                    appIcon.setImageBitmap(new imgLoader(this, icons[1].trim(), manager, false).doInBackground());
-                }
+                ((ImageView) child.findViewById(R.id.item_app_icon)).setImageBitmap(new imgLoader(this, icons[1].trim(), manager, savedData.useGoogleIcons).doInBackground());
             }
             else {
-                appIcon.setImageBitmap(new imgLoader(this, launchIntent, manager, true).doInBackground());
+                ((ImageView) child.findViewById(R.id.item_app_icon)).setImageBitmap(new imgLoader(this, launchIntent, manager, false).doInBackground());
             }
         }
 
@@ -477,16 +470,20 @@ public class EternalMediaBar extends Activity {
         child.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (optionsMenu && appName.equals("hItem")){
-                    changeOptionsMenu.menuClose(EternalMediaBar.this);
-                    listMove(index, true);
-                }
-                else if(appName.equals("hItem")){
-                    listMove(index, true);
+                if (appName.equals("hItem")){
+                    if (optionsMenu) {
+                        changeOptionsMenu.menuClose(EternalMediaBar.this);
+                        optionsMenu = false;
+                        listMove(index, true);
+                    }
+                    else{
+                        listMove(index, true);
+                    }
                 }
                 else if (launchIntent.equals(".options")){
                     if (optionsMenu){
                         changeOptionsMenu.menuClose(EternalMediaBar.this);
+                        optionsMenu = false;
                     }
                     else {
 
@@ -540,11 +537,8 @@ public class EternalMediaBar extends Activity {
             if (optionsMenu){
                 changeOptionsMenu.menuClose(EternalMediaBar.this);
             }
-            else if (appName.equals("hItem")){
-                listMove(index, true);
-            }
-            else {
-                listMove(index, false);
+            else{
+                listMove(index, appName.equals("hItem"));
             }
             changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName);
             return true;

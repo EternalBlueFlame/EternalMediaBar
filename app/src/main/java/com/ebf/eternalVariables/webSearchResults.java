@@ -1,4 +1,4 @@
-package com.ebf.eternalmediabar;
+package com.ebf.eternalVariables;
 
 import android.os.AsyncTask;
 

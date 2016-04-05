@@ -31,7 +31,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
     @Override
     protected Bitmap doInBackground(imgLoader... params) {
         //check if the icon is supposed to be internal or not
-        if(isInternal) {
+        if(!isInternal) {
             //run a switch to load an icon dependant on it's value.
             switch (ico) {
                 case ".colHeaderFont": {

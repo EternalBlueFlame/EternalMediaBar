@@ -4,6 +4,9 @@ package com.ebf.eternalmediabar;
 import android.content.Context;
 import android.util.Log;
 
+import com.ebf.eternalVariables.appDetail;
+import com.ebf.eternalVariables.categoryClass;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
