@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -88,7 +90,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     ///////////Intent receiver for search/////////////
     //////////////////////////////////////////////////
-    private void searchIntent(String query) {
+    private void searchIntent(String query, boolean isWeb) {
         //get the results view and be sure it's clear.
         LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
         if(searchView.getChildCount()>0){
@@ -101,14 +103,14 @@ public class EternalMediaBar extends Activity {
         //first, be sure there's actually something to search
         if (query.length()>0) {
 
-            if(query.length()>2) {
+            //because we don't want to use any data here, be sure wifi is being used before searching the web.
+            if(isWeb && query.length()>2 && ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
                 //search it online first
                 try {
-                    JSONObject mainObject = new JSONObject(new webSearchResults().execute(query).get());
-                    JSONObject subObject = mainObject.getJSONObject("responseData");
-                    JSONArray arrayObject = subObject.getJSONArray("results");
+                    JSONArray arrayObject = new JSONObject(new webSearchResults().execute(query).get()).getJSONObject("responseData").getJSONArray("results");
 
                     if(!arrayObject.isNull(0)) {
+                        //get the icon for the web tag
                     for (int i = 0; i < savedData.categories.size(); ) {
                         if (savedData.categories.get(i).categoryTags.contains("Web")) {
                             searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
@@ -116,13 +118,12 @@ public class EternalMediaBar extends Activity {
                         }
                         i++;
                     }
-
-                    for (int i=0;arrayObject.isNull(i);) {
-                            Log.d("EternalMediaBar", arrayObject.getJSONObject(i).getString("url"));
+                        //display the search results
+                    for (int i=0;!arrayObject.isNull(i);) {
+                        searchView.addView(searchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
                             i++;
                         }
                     }
-
                 }
                 catch (Exception e){e.printStackTrace();}
             }
@@ -141,7 +142,7 @@ public class EternalMediaBar extends Activity {
                             searchView.addView(createMenuEntry(R.layout.search_category, hli.get(i).label,-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
                             categoryListed=true;
                         }
-
+                        //display the actual search result
                         searchView.addView(createMenuEntry(R.layout.list_item, savedData.categories.get(i).appList.get(ii).label, -1, 0, true, savedData.categories.get(i).appList.get(ii).name, (String) savedData.categories.get(i).appList.get(ii).label));
                     }
                     ii++;
@@ -171,9 +172,7 @@ public class EternalMediaBar extends Activity {
     protected void onPause() {
         unregisterReceiver(mainReciever);
         onTrimMemory(TRIM_MEMORY_COMPLETE);
-
         super.onPause();
-
     }
 
     //////////////////////////////////////////////////
@@ -210,25 +209,13 @@ public class EternalMediaBar extends Activity {
         Log.d("Key Pressed: ", "" + keyCode);
         switch (keyCode) {
             //case event for down
-            case KeyEvent.KEYCODE_S: case KeyEvent.KEYCODE_DPAD_DOWN: case KeyEvent.KEYCODE_4: case KeyEvent.KEYCODE_NUMPAD_4: {
-                listMove(vItem + 1, false);
-                return true;
-            }
+            case KeyEvent.KEYCODE_S: case KeyEvent.KEYCODE_DPAD_DOWN: case KeyEvent.KEYCODE_4: case KeyEvent.KEYCODE_NUMPAD_4: {listMove(vItem + 1, false);return true;}
             //case event for up
-            case KeyEvent.KEYCODE_W: case KeyEvent.KEYCODE_DPAD_UP: case KeyEvent.KEYCODE_2: case KeyEvent.KEYCODE_NUMPAD_2:{
-                listMove(vItem - 1, false);
-                return true;
-            }
+            case KeyEvent.KEYCODE_W: case KeyEvent.KEYCODE_DPAD_UP: case KeyEvent.KEYCODE_2: case KeyEvent.KEYCODE_NUMPAD_2:{listMove(vItem - 1, false);return true;}
             //case event for right
-            case KeyEvent.KEYCODE_D: case KeyEvent.KEYCODE_DPAD_RIGHT: case KeyEvent.KEYCODE_6: case KeyEvent.KEYCODE_NUMPAD_6:{
-                listMove(hItem + 1, true);
-                return true;
-            }
+            case KeyEvent.KEYCODE_D: case KeyEvent.KEYCODE_DPAD_RIGHT: case KeyEvent.KEYCODE_6: case KeyEvent.KEYCODE_NUMPAD_6:{listMove(hItem + 1, true);return true;}
             //case event for left
-            case KeyEvent.KEYCODE_A: case KeyEvent.KEYCODE_DPAD_LEFT: case KeyEvent.KEYCODE_8: case KeyEvent.KEYCODE_NUMPAD_8: {
-                listMove(hItem - 1, true);
-                return true;
-            }
+            case KeyEvent.KEYCODE_A: case KeyEvent.KEYCODE_DPAD_LEFT: case KeyEvent.KEYCODE_8: case KeyEvent.KEYCODE_NUMPAD_8: {listMove(hItem - 1, true);return true;}
             //event for when enter/x/a is pressed
 			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
                 if (!optionsMenu) {
@@ -347,16 +334,15 @@ public class EternalMediaBar extends Activity {
             setContentView(R.layout.activity_eternal_media_bar);
         }
 
-        SearchView searchQuery = (SearchView) findViewById(R.id.searchView);
-        searchQuery.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchIntent(query, true);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchIntent(newText);
+                searchIntent(newText, false);
                 return false;
             }
         });
@@ -546,6 +532,37 @@ public class EternalMediaBar extends Activity {
         });
 
         //return the view value
+        return child;
+    }
+
+    public View searchItem(String title, final String url, String description){
+        View child = getLayoutInflater().inflate(R.layout.web_search_item, null);
+
+        TextView webLabel = (TextView) child.findViewById(R.id.item_title);
+        webLabel.setText(title);
+        webLabel.setTextColor(savedData.fontCol);
+        webLabel.setAlpha(Color.alpha(savedData.fontCol));
+        webLabel.setPaintFlags(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+
+        TextView webURL = (TextView) child.findViewById(R.id.item_url);
+        webURL.setText(url);
+        webURL.setTextColor(savedData.fontCol);
+        webURL.setAlpha(Color.alpha(savedData.fontCol));
+        webURL.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+
+        TextView webDescription = (TextView) child.findViewById(R.id.item_description);
+        webDescription.setText(description);
+        webDescription.setTextColor(savedData.fontCol);
+        webDescription.setAlpha(Color.alpha(savedData.fontCol));
+        webDescription.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+
+        child.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("https://", "http://"))));
+            }
+        });
+
         return child;
     }
 

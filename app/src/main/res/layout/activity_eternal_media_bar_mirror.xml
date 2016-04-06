@@ -93,23 +93,41 @@
             android:layout_weight="0.25" />
     </LinearLayout>
 
-    <ScrollView
-        android:orientation="vertical"
-        android:layout_width="192dp"
-        android:id="@+id/searchscroll"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout2"
         android:layout_below="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/search_view"
-            android:clickable="true"
-            android:background="@color/black">
+        android:layout_centerHorizontal="true">
 
-        </LinearLayout>
-    </ScrollView>
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0.15" />
+
+        <ScrollView
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.75"
+            android:id="@+id/searchscroll"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/search_view"
+                android:clickable="true"
+                android:background="@color/black">
+
+            </LinearLayout>
+        </ScrollView>
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_weight="0.15" />
+    </LinearLayout>
 
 
     <!-- This has to be last so it will render above everything else -->
