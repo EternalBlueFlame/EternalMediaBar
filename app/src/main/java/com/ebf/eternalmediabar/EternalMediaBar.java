@@ -8,14 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -45,6 +42,8 @@ public class EternalMediaBar extends Activity {
     public int optionVitem =1;
     public boolean[] warningToggle;
 
+    public static EternalMediaBar activity;
+
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
     intentReceiver mainReciever = new intentReceiver();
 
@@ -57,6 +56,7 @@ public class EternalMediaBar extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        activity = this;
         if (init){
             //load in the apps
             new initialization().loadData(this);
@@ -113,14 +113,14 @@ public class EternalMediaBar extends Activity {
                         //get the icon for the web tag
                     for (int i = 0; i < savedData.categories.size(); ) {
                         if (savedData.categories.get(i).categoryTags.contains("Web")) {
-                            searchView.addView(createMenuEntry(R.layout.search_category, "On The Internet",-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
+                            searchView.addView(new listItemLayout().searchCategoryItemView("On The Internet",savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
                             break;
                         }
                         i++;
                     }
                         //display the search results
                     for (int i=0;!arrayObject.isNull(i);) {
-                        searchView.addView(searchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
+                        searchView.addView(new listItemLayout().webSearchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
                             i++;
                         }
                     }
@@ -139,16 +139,19 @@ public class EternalMediaBar extends Activity {
                     if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(createMenuEntry(R.layout.search_category, hli.get(i).label,-1,0,false, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon,"hItem"));
+                            searchView.addView(new listItemLayout().searchCategoryItemView(hli.get(i).label, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
                             categoryListed=true;
                         }
                         //display the actual search result
-                        searchView.addView(createMenuEntry(R.layout.list_item, savedData.categories.get(i).appList.get(ii).label, -1, 0, true, savedData.categories.get(i).appList.get(ii).name, (String) savedData.categories.get(i).appList.get(ii).label));
+                        searchView.addView(new listItemLayout().appListItemView(savedData.categories.get(i).appList.get(ii).label, -1, 0, true, savedData.categories.get(i).appList.get(ii).name, (String) savedData.categories.get(i).appList.get(ii).label));
                     }
                     ii++;
                 }
                 i++;
             }
+        }
+        else{
+            searchView.invalidate();
         }
     }
 
@@ -161,7 +164,7 @@ public class EternalMediaBar extends Activity {
     ////////needed permissions in android 6+//////////
     //////////////////////////////////////////////////
     @TargetApi(Build.VERSION_CODES.M)
-    public void getPerms(){
+    public void getPerms() {
         requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
     }
 
@@ -241,7 +244,7 @@ public class EternalMediaBar extends Activity {
                     vLayout.getChildAt(vItem).performLongClick();
                 }
                 else{
-                    changeOptionsMenu.menuClose(EternalMediaBar.this);
+                    changeOptionsMenu.menuClose();
                 }
 				return true;
 			}
@@ -263,9 +266,9 @@ public class EternalMediaBar extends Activity {
                 //change the old item, if it exists
                 try {
                     //change the old font face
-                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                     //scale the icon back to normal
-                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.list_item_icon);
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
                 }
@@ -274,9 +277,9 @@ public class EternalMediaBar extends Activity {
                 vItem = move;
                 try {
                     //change the font face
-                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon larger
-                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.item_app_icon);
+                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.list_item_icon);
                     appIcon.setScaleX(1.25f);
                     appIcon.setScaleY(1.25f);
 
@@ -296,10 +299,10 @@ public class EternalMediaBar extends Activity {
                     //if you are trying to move within the actual list size then do so.
                     if (move >= 0 || move < vLayout.getChildCount()) {
                         //set the font face.
-                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                         //change OptionsVItem
                         optionVitem = move;
-                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                         //scroll to the new entry
                         vLayout.scrollTo(0, (int) vLayout.getChildAt(optionVitem).getX());
                     }
@@ -360,7 +363,7 @@ public class EternalMediaBar extends Activity {
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
             hMenuItem.label = savedData.categories.get(i).categoryName;
-            hMenuItem.icon = new imgLoader(this, savedData.categories.get(i).categoryIcon, manager, savedData.useGoogleIcons).doInBackground();
+            hMenuItem.icon = new imgLoader(savedData.categories.get(i).categoryIcon, savedData.useGoogleIcons).doInBackground();
             hli.add(hMenuItem);
             i++;
         }
@@ -378,19 +381,19 @@ public class EternalMediaBar extends Activity {
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<hli.size();) {
             if(!savedData.categories.get(ii).categoryName.equals("New Apps")) {
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon, "hItem"));
+                layout.addView(new listItemLayout().categoryListItemView(hli.get(ii).label, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
             else if (savedData.categories.get(ii).appList.size() >0){
-                layout.addView(createMenuEntry(R.layout.category_item, hli.get(ii).label, ii, 0, false, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon, "hItem"));
+                layout.addView(new listItemLayout().categoryListItemView(hli.get(ii).label, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
         ii++;
         }
         //change the display for the appropriate icon
         //change the font type
         try {
-            ((TextView) layout.getChildAt(hItem).findViewById(R.id.item_app_label)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+            ((TextView) layout.getChildAt(hItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
             //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
-            ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.item_app_icon);
+            ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.list_item_icon);
             appIcon.setScaleX(1.25f);
             appIcon.setScaleY(1.25f);
             appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
@@ -411,7 +414,7 @@ public class EternalMediaBar extends Activity {
 
         //set the list organization method
         if(savedData.categories.get(hItem).appList.size() >1) {
-            changeOptionsMenu.organizeList(this, 0);
+            changeOptionsMenu.organizeList(0);
         }
         //if we have it set to dim the background, dim it
         if(savedData.dimLists) {
@@ -421,149 +424,12 @@ public class EternalMediaBar extends Activity {
 
 
         for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {
-            vLayout.addView(createMenuEntry(R.layout.list_item, savedData.categories.get(hItem).appList.get(ii).label, ii, 0, true, savedData.categories.get(hItem).appList.get(ii).name, (String) savedData.categories.get(hItem).appList.get(ii).label));
+            vLayout.addView(new listItemLayout().appListItemView(savedData.categories.get(hItem).appList.get(ii).label, ii, 0, true, savedData.categories.get(hItem).appList.get(ii).name, (String) savedData.categories.get(hItem).appList.get(ii).label));
             ii++;
         }
 
         //make sure the vList item is selected
         listMove(0, false);
-    }
-
-    //////////////////////////////////////////////////
-    /////////Function for creating list items/////////
-    //////////////////////////////////////////////////
-    public View createMenuEntry(int inflater, CharSequence text, final int index, final int secondaryIndex, final Boolean isLaunchable, final String launchIntent, final String appName){
-        //initialize the views we know will be there
-        View child = getLayoutInflater().inflate(inflater, null);
-        TextView appLabel = (TextView) child.findViewById(R.id.item_app_label);
-        appLabel.setText(text);
-        appLabel.setTextColor(savedData.fontCol);
-        appLabel.setAlpha(Color.alpha(savedData.fontCol));
-        //if the launch intent exists try and add an icon from it
-        if (launchIntent.length()>1 && inflater!=R.layout.options_item) {
-            //if it's an options menu item the image view will fail and skip this
-            //attempt to add the icon from the launchIntent
-            if (appName.equals("hItem")){
-                String[] icons = launchIntent.split(":");
-                ((ImageView) child.findViewById(R.id.item_app_icon)).setImageBitmap(new imgLoader(this, icons[1].trim(), manager, savedData.useGoogleIcons).doInBackground());
-            }
-            else {
-                ((ImageView) child.findViewById(R.id.item_app_icon)).setImageBitmap(new imgLoader(this, launchIntent, manager, false).doInBackground());
-            }
-        }
-
-        //setup the onclick listener and button
-        child.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (appName.equals("hItem")){
-                    if (optionsMenu) {
-                        changeOptionsMenu.menuClose(EternalMediaBar.this);
-                        optionsMenu = false;
-                        listMove(index, true);
-                    }
-                    else{
-                        listMove(index, true);
-                    }
-                }
-                else if (launchIntent.equals(".options")){
-                    if (optionsMenu){
-                        changeOptionsMenu.menuClose(EternalMediaBar.this);
-                        optionsMenu = false;
-                    }
-                    else {
-
-                        listMove(index, false);
-                        //load the layout and make sure nothing is in it.
-                        changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName);
-                    }
-                }
-                else {
-                    if (isLaunchable) {
-                        if (secondaryIndex==1){
-                            changeOptionsMenu.menuOpen(EternalMediaBar.this, true, launchIntent, appName);
-                        }
-                        else {
-                            EternalMediaBar.this.startActivity(manager.getLaunchIntentForPackage(launchIntent));
-                        }
-                    }
-                    else {
-                        //choose which list to make dependant on the values given for the call.
-                        switch (index) {
-                            case -1:{/*/ Null Case /*/}
-                            //menu open and close
-                            case 0:{changeOptionsMenu.menuClose(EternalMediaBar.this); break;}
-                            case 1:{changeOptionsMenu.menuOpen(EternalMediaBar.this, false, launchIntent, appName);break;}
-                            //copy, hide and move menus
-                            case 2:{changeOptionsMenu.createCopyList(EternalMediaBar.this, launchIntent, appName);break;}
-                            case 3:{changeOptionsMenu.createMoveList(EternalMediaBar.this, launchIntent, appName);break;}
-                            case 4:{changeOptionsMenu.copyItem(EternalMediaBar.this, secondaryIndex);break;}
-                            case 5:{changeOptionsMenu.moveItem(EternalMediaBar.this, secondaryIndex);break;}
-                            case 6:{changeOptionsMenu.hideApp(EternalMediaBar.this);break;}
-                            //open app settings
-                            case 7:{startActivity(changeOptionsMenu.openAppSettings(EternalMediaBar.this, launchIntent));break;}
-                            //toggles
-                            case 8:{changeOptionsMenu.toggleGoogleIcons(EternalMediaBar.this);break;}
-                            case 9:{changeOptionsMenu.mirrorUI(EternalMediaBar.this);break;}
-                            case 13:{changeOptionsMenu.toggleDimLists(EternalMediaBar.this);break;}
-                            //list organize
-                            case 11:{changeOptionsMenu.listOrganizeSelect(EternalMediaBar.this,  secondaryIndex, launchIntent, appName);break;}
-                            case 12:{changeOptionsMenu.organizeList(EternalMediaBar.this, secondaryIndex);break;}
-                            //cases for changing colors
-                            case 10:{changeOptionsMenu.colorSelect(EternalMediaBar.this, appName, secondaryIndex);break;}
-                        }
-                    }
-                }
-            }
-        });
-
-        child.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-            if (optionsMenu){
-                changeOptionsMenu.menuClose(EternalMediaBar.this);
-            }
-            else{
-                listMove(index, appName.equals("hItem"));
-            }
-            changeOptionsMenu.menuOpen(EternalMediaBar.this, isLaunchable, launchIntent, appName);
-            return true;
-            }
-        });
-
-        //return the view value
-        return child;
-    }
-
-    public View searchItem(String title, final String url, String description){
-        View child = getLayoutInflater().inflate(R.layout.web_search_item, null);
-
-        TextView webLabel = (TextView) child.findViewById(R.id.item_title);
-        webLabel.setText(title);
-        webLabel.setTextColor(savedData.fontCol);
-        webLabel.setAlpha(Color.alpha(savedData.fontCol));
-        webLabel.setPaintFlags(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-
-        TextView webURL = (TextView) child.findViewById(R.id.item_url);
-        webURL.setText(url);
-        webURL.setTextColor(savedData.fontCol);
-        webURL.setAlpha(Color.alpha(savedData.fontCol));
-        webURL.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-
-        TextView webDescription = (TextView) child.findViewById(R.id.item_description);
-        webDescription.setText(description);
-        webDescription.setTextColor(savedData.fontCol);
-        webDescription.setAlpha(Color.alpha(savedData.fontCol));
-        webDescription.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-
-        child.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("https://", "http://"))));
-            }
-        });
-
-        return child;
     }
 
 }

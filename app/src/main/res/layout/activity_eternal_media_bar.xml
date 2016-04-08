@@ -18,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="84dp"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/options_displayscroll"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="64dp"
         android:layout_gravity="left">
@@ -31,15 +30,15 @@
             android:layout_gravity="left"/>
     </HorizontalScrollView>
 
-
     <ScrollView
         android:orientation="vertical"
-        android:layout_width="192dp"
+        android:layout_width="220dp"
         android:id="@+id/apps_displayscroll"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/categoriesscroll"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -52,7 +51,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:id="@+id/linearLayout">
+        android:id="@+id/toolbarScaler">
 
         <Space
             android:layout_width="20dp"
@@ -99,12 +98,12 @@
 
     <ScrollView
         android:orientation="vertical"
-        android:layout_width="144dp"
+        android:layout_width="145dp"
         android:id="@+id/options_displayscroll"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="-145dp"
-        android:layout_height="wrap_content"
+        android:layout_marginRight="-146dp"
+        android:layout_height="match_parent"
         android:background="@drawable/menu_bg">
         <LinearLayout
             android:orientation="vertical"
@@ -118,8 +117,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout2"
-        android:layout_below="@+id/linearLayout"
+        android:id="@+id/searchScaler"
+        android:layout_below="@+id/toolbarScaler"
         android:layout_centerHorizontal="true">
 
         <Space

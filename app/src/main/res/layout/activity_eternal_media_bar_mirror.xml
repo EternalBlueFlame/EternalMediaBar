@@ -29,10 +29,9 @@
             android:layout_gravity="right"/>
     </HorizontalScrollView>
 
-
     <ScrollView
         android:orientation="vertical"
-        android:layout_width="192dp"
+        android:layout_width="220dp"
         android:id="@+id/apps_displayscroll"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
@@ -51,7 +50,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:id="@+id/linearLayout">
+        android:id="@+id/toolbarScaler">
 
         <Space
             android:layout_width="20dp"
@@ -98,7 +97,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout2"
-        android:layout_below="@+id/linearLayout"
+        android:layout_below="@+id/toolbarScaler"
         android:layout_centerHorizontal="true">
 
         <Space
@@ -133,11 +132,11 @@
     <!-- This has to be last so it will render above everything else -->
     <ScrollView
         android:orientation="vertical"
-        android:layout_width="144dp"
+        android:layout_width="145dp"
         android:id="@+id/options_displayscroll"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="-145dp"
+        android:layout_marginLeft="-146dp"
         android:layout_below="@+id/categoriesscroll"
         android:layout_height="match_parent"
         android:background="@drawable/menu_bg"
