@@ -1,7 +1,5 @@
 package com.ebf.eternalVariables;
 
-import com.ebf.eternalVariables.appDetail;
-
 import java.util.ArrayList;
 import java.util.List;
 

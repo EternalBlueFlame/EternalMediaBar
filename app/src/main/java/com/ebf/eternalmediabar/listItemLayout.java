@@ -49,7 +49,7 @@ public class listItemLayout {
         //because of how dynamic text has to be, we define the text first, and everything else second.
         appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        appLabel.setX(58 * dpi);
+        appLabel.setX(62 * dpi);
         appLabel.setY((12 * dpi));
         appLabel.setId(R.id.list_item_text);
         appLabel.setWidth(Math.round(115 * dpi));

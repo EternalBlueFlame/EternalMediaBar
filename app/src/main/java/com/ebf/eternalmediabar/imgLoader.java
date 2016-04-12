@@ -81,44 +81,24 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             switch (ico){
                 //case 0 for no icon.
                 case "0":{
-                    return Bitmap.createBitmap(new int[]{-1}, 1, 1, Bitmap.Config.ARGB_8888);
+                    return Bitmap.createBitmap(new int[]{0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
                 }
                 //each case tries to load an icon from an app, if it fails, it falls back to internal icon.
                 case "1":{
                     try{return ((BitmapDrawable)EternalMediaBar.activity.manager.getApplicationIcon("com.android.contacts")).getBitmap();}
                     //if it fails, fallback to the built-in Social icon.
-                    catch (Exception e){BitmapFactory.decodeResource(EternalMediaBar.activity.getResources(),R.drawable.social_144px);}
+                    catch (Exception e){return BitmapFactory.decodeResource(EternalMediaBar.activity.getResources(),R.drawable.social_144px);}
                 }
                 case "2":{
-                    //this icon is composed of two different icons, so we make them as a list of drawables.
-                    Drawable[] layers = new Drawable[2];
-                    //load the base icon
-                    try {layers[0] = EternalMediaBar.activity.manager.getApplicationIcon("com.google.android.videos");}
-                    catch (Exception e) {}
-                    //load the other icon,
-                    try {
-                        layers[1] = new ScaleDrawable(EternalMediaBar.activity.manager.getApplicationIcon("com.google.android.music"), Gravity.CENTER, 1f, 1f);
-                        //now change the scale of it by changing the level
-                        layers[1].setLevel(7000);
-                    }
-                    catch (Exception e) {}
-                    //if the process didn't fail, load the list of icons and draw them as a Layered Drawable.
-                    if (layers != new Drawable[2]) {
-                        try {
-                            //because we are trying to combine multiple images to a single image, we have to create a bitmap, then draw the images to it as if it's a canvas.
-                            Bitmap bit = (Bitmap.createBitmap((int) (48 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f),(int) (48 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), Bitmap.Config.ARGB_8888));
-                            LayerDrawable layersDraw = new LayerDrawable(layers);
-                            layersDraw.setBounds(0,0, (int) (48 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f),(int) (48 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f));
-                            layersDraw.draw(new Canvas(bit));
-
-
-                            return bit;
-                        } catch (Exception e) {
+                    //try to return the google play movies icon.if that's not available, try to get the music icon. if all else fails, get the internal one.
+                    try{
+                        return ((BitmapDrawable)EternalMediaBar.activity.manager.getApplicationIcon("com.google.android.videos")).getBitmap();
+                    }catch (Exception e){
+                        try{
+                            return ((BitmapDrawable)EternalMediaBar.activity.manager.getApplicationIcon("com.google.android.music")).getBitmap();
+                        }catch (Exception ee){
                             return BitmapFactory.decodeResource(EternalMediaBar.activity.getResources(),R.drawable.media_144px);
                         }
-                    }
-                    else {
-                        return BitmapFactory.decodeResource(EternalMediaBar.activity.getResources(),R.drawable.media_144px);
                     }
                 }
                 case "3": {
