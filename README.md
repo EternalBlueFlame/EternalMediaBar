@@ -1,16 +1,24 @@
 This source is intended for development of Eternal Media Bar so that users may observe the progress of the program's development, report problems, request features, and even contribute directly to the development.
 
-<strong>This project requires Android Studio 1.5 or later<br/>
-The application is intended for all android devices 4.0.3 and later, however currently has only been tested on 5.0, 6.0 and 4.0.3 in x86, ARMv7, and ARMv9</strong>
+<strong>The code requires Android Studio 1.5 or later to compile, just import it like a standard gradle project.</strong>
 
-<strong><h3>WARNING: save files for RC1 are incompatable with other Builds. If you are upgrading and are experiencing issues, please clear the data of the app.</h3></strong>
-This can be done in your settings menu, under the apps category.
-Failing to do so may lead to crashing, instability, and/or missing shortcuts.
-The final Version of RC2, and all later revisions will have XML based save files implemented from the start, which will fix any future compatibility problems after and during RC2 final.
-<strong>If you previously ran RC2 please run the RC2 Final before upgrading to RC2.5 or later, if you wish to keep your configuration</strong>
-
+<strong>The app takes android 4.0.3 or later to use, you must have Unknown sources enabled on your device.</strong>
 
 <strong>APK builds will be generated after each new feature is added, assuming it appears stable.</strong>
+
+<hr>
+<h2>Downloads</h2>
+CURRENT VERSION:
+
+https://github.com/EternalBlueFlame/EternalMediaBar/raw/master/Eternal%20Media%20Bar%20RC2.5%20Alpha.apk
+
+OLDER VERSIONS, USE ONLY IF YOU KNOW WHAT YOU ARE DOING:
+
+https://github.com/EternalBlueFlame/EternalMediaBar/raw/master/Eternal%20Media%20Bar%20RC2%20Final.apk
+
+https://github.com/EternalBlueFlame/EternalMediaBar/raw/master/Eternal%20Media%20Bar%20RC1%20Final.apk
+</hr>
+
 
 <h2>Contact us</h2>
 Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respective blogs.
@@ -19,8 +27,8 @@ Alternatively, you may contact Eternal Blue Flame through Steam.
 
 Eternal Blue Flame's Blog: http://eternal-blue-flame.tumblr.com/ 
 Eternal Blue Flame's Steam: http://steamcommunity.com/id/eternal-blue-flame/
+Lunar Tales's Blog: http://lunar-tales.tumblr.com/
 
-Lunar Tales: No link available at this time. Just use Eternal as a mediator.
 <hr/>
 <h2> About us</h2>
 Eternal: I am a hobbyist programmer of over 8 years, I mainly use C# in Unity 3D to create games and tools, but I have an Android Launcher project in Java that I try and keep up, alongside working on my other programs. Sometimes a bit on an extrovert, as you will usually see on my blog.
@@ -43,22 +51,19 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	option to require double tap to open an app, good for when you have a hard time hitting the right app, also lets you make better use of custom app backgrounds without a controller.
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
+-	New icons have an invert theme.
 -	apps fade out and back in when changing categories.
 -	custom wallpaper for selected app from file, if file exists (use an async task).
 -	listview scroll snapping.
--	use the XML read to parse play.google.com for app categories.
--	List organizer, allow users to manually change positions of apps in the list, and sort them alphabetically (EMB apps stay topmost).
+-	parse google play through the market API for app categories.
 -	extra settings:
 -	option to change icon color with month like PSP.
--	change icon color //all internal icons.
--	new icons can be inverted before color change to make it a different style.
 -	color selector for the google now bar.
 -	change menu background color //effects icon background and slide out menu color.
 -	enable/disable custom app backgrounds.
--	download app backgrounds from google play (xml parse).
+-	download app backgrounds from google play (market API).
 -	un-hide hidden apps //selective menu.
 -	enable manufacturer icons //same as google icons, but instead uses the icons from HTC/Samgsung/Sony/etc apps.
--	disable app boot animation.
 -	expanded manual organization of lists.
 -	organization grouping dependant on developer //combines with other organization methods
 -	organize by date installed/updated //highly dependant on how the OS handles this sort of thing
@@ -69,6 +74,9 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <strong>RC3 plans:</strong>
 -	User defined app/menu icons?
 -	Widgets in the scroll list, or on the side?
+-	Folder lists for music.
+-	Folder lists for photos.
+-	Folder lists for Videos.
 -	built in music player //Separate activity for player //Separate activity for background player.
 -	save custom themes to file for sharing?
 </hr>
@@ -76,10 +84,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 <strong>RC4 plans:</strong>
 -	built in video player. //Built off VLC? //Separate Activity.
 -	Google Play Release?
-<hr/>
-<hr>
-<strong>RC5 plans:</strong>
--	Optional grid UI.
 <hr/>
 
 

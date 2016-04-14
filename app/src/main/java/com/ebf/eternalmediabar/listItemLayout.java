@@ -234,7 +234,38 @@ public class listItemLayout {
         //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //create the icon, be sure it's not made on options menus or the web search
-        if (launchIntent.equals(".colHeader") || launchIntent.equals(".radioUnCheck") || launchIntent.equals(".radioCheck") || appName.equals(".optionsHeader")) {
+        if (launchIntent.equals(".radioUnCheck") || launchIntent.equals(".radioCheck")) {
+            layout.setMinimumHeight(Math.round(60 * dpi));
+            //create the image and set its values
+            ImageView image = new ImageView(EternalMediaBar.activity);
+            //there ar two different sizes for icons, one for the search header, and another for everything else
+            image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(24 * dpi), Math.round(24 * dpi)));
+            image.setY(10 * dpi);
+            image.setX(16 * dpi);
+            image.setId(R.id.list_item_icon);
+            image.setAdjustViewBounds(true);
+            //now add the actual image
+            image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
+
+            layout.addView(image);
+
+            //now add the text
+            TextView appLabel = new TextView(EternalMediaBar.activity);
+            appLabel.setText(text);
+            appLabel.setLines(2);
+            //because of how dynamic text has to be, we define the text first, and everything else second.
+            appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
+            appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
+            appLabel.setX(26 * dpi);
+            appLabel.setY((2 * dpi));
+            appLabel.setId(R.id.list_item_text);
+            appLabel.setWidth(Math.round(90 * dpi));
+            appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            appLabel.setGravity(Gravity.CENTER);
+
+            layout.addView(appLabel);
+        }
+        else if(appName.equals(".optionsHeader")){
             layout.setMinimumHeight(Math.round(85 * dpi));
             //create the image and set its values
             ImageView image = new ImageView(EternalMediaBar.activity);
@@ -329,7 +360,7 @@ public class listItemLayout {
                         }
                         //toggles
                         case 8: {
-                            new optionsMenuChange().themeChange();
+                            new optionsMenuChange().themeChange(launchIntent, appName);
                             break;
                         }
                         case 9: {
