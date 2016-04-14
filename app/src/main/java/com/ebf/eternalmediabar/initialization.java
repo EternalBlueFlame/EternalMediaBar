@@ -32,11 +32,10 @@ public class initialization {
                     eternalMediaBar.savedData.categories.add(new categoryClass());
                     eternalMediaBar.savedData.categories.add(new categoryClass());
                     //we should initialize the other variables as well.
-                    eternalMediaBar.savedData.useGoogleIcons = false;
+                    eternalMediaBar.savedData.theme = "Google";
                     eternalMediaBar.savedData.mirrorMode = false;
                     eternalMediaBar.savedData.cleanCacheOnStart = false;
                     eternalMediaBar.savedData.gamingMode = false;
-                    eternalMediaBar.savedData.useManufacturerIcons = false;
                     eternalMediaBar.savedData.loadAppBG = true;
                     eternalMediaBar.savedData.fontCol = -1;
                     eternalMediaBar.savedData.menuCol = -1;

@@ -1,8 +1,10 @@
 package com.ebf.eternalmediabar;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.view.View;
 import android.view.animation.Animation;
@@ -118,7 +120,8 @@ public class optionsMenuChange {
         //now move the menu itself
         sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -128,14 +131,14 @@ public class optionsMenuChange {
                 //manually set position of menu off screen
                 if (!EternalMediaBar.activity.savedData.mirrorMode) {
                     sLayout.setX(EternalMediaBar.activity.getResources().getDisplayMetrics().widthPixels);
-                }
-                else{
+                } else {
                     sLayout.setX(-145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f);
                 }
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
         //save any changes and reload the view
         EternalMediaBar.activity.savedData.writeXML(EternalMediaBar.activity);
@@ -149,21 +152,14 @@ public class optionsMenuChange {
     public void loadAppOptionsMenu(String launchIntent, String appName){
         EternalMediaBar.activity.optionVitem = 1;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
-
         //add the app that's selected so the user knows for sure what they are messing with.
         lLayout.addView(new listItemLayout().optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-
-
-        //add all the extra options
-
         //copy the item to another category
         lLayout.addView(new listItemLayout().optionsListItemView("Copy to...", 2, 0, launchIntent, appName));
-
         //move the item to another category
         lLayout.addView(new listItemLayout().optionsListItemView("Move to...", 3, 0, launchIntent, appName));
-
         //first option is to remove an item from the list.
-        //in RC2 this will be modified to support hiding the icon even when it's only in one menu
+        //later this will be modified to support hiding the icon when it's only in one menu
         int i=0;
         for (int ii=0; ii< EternalMediaBar.activity.savedData.categories.size();){
             for (int iii=0; iii< EternalMediaBar.activity.savedData.categories.get(ii).appList.size();){
@@ -177,6 +173,22 @@ public class optionsMenuChange {
         if (i>1) {
             lLayout.addView(new listItemLayout().optionsListItemView("Remove From This List", 6, 0, launchIntent, "4"));
         }
+        else{
+            //hide the icon
+        }
+        // !!! ENABLE AFTER FIXED !!! //Auto Organize
+                        /*/Automatically get the category for this item from google play
+                        ConnectivityManager cm = (ConnectivityManager) EternalMediaBar.activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+                            //if there is Wifi, go ahead and try.
+                            if (cm.getActiveNetworkInfo() != null &&cm.getActiveNetworkInfo() == cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)) {
+                                //child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, i - 1, false, launchIntent, appName);
+                                //lLayout.addView(child);
+                            }
+                            //if there is no wifi but there is still internet
+                            else{
+                                //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, i - 1, false, launchIntent, appName);
+                               //lLayout.addView(child);
+                            }/*/
 
         //open the app's settings
         lLayout.addView(new listItemLayout().optionsListItemView("Application Settings", 7, 0, launchIntent, appName));
@@ -194,12 +206,7 @@ public class optionsMenuChange {
         //add the item for changing whether or not to use Google icons.
         EternalMediaBar.activity.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
-        if (EternalMediaBar.activity.savedData.useGoogleIcons){
-            lLayout.addView(new listItemLayout().optionsListItemView("Don't use Google Icons", 8, 0, ".", "."));
-        }
-        else{
-            lLayout.addView(new listItemLayout().optionsListItemView("Use Google Icons", 8, 0, ".", "."));
-        }
+        lLayout.addView(new listItemLayout().optionsListItemView("Choose Theme", 8, 0, ".", "."));
         if (EternalMediaBar.activity.savedData.dimLists){
             lLayout.addView(new listItemLayout().optionsListItemView("Don't Dim List Backgrounds", 13, 0, ".", "."));
         }
@@ -211,8 +218,8 @@ public class optionsMenuChange {
 
         //add the item for changing the font color
         lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
-        //lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, false, ".", "Icon"));
-        //lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, false, ".", "Menu"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
+        //lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
     }
 
 
@@ -253,26 +260,28 @@ public class optionsMenuChange {
             }
             i++;
         }
-        // !!! ENABLE AFTER FIXED !!!
-                        /*/Automatically get the category for this item from google play
-                        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                        if (cm.getActiveNetworkInfo() != null) {
-                            //if there is Wifi, go ahead and try.
-                            if (cm.getActiveNetworkInfo() == cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)) {
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", null, 9, i - 1, false, launchIntent, appName);
-                                //lLayout.addView(child);
-                            }
-                            //if there is no wifi but there is still internet
-                            else{
-                                //child = createMenuEntry(R.layout.options_item, "Auto Move", svgLoad(R.drawable.blank), 10, i - 1, false, launchIntent, appName);
-                               //lLayout.addView(child);
-                            }
-                        }/*/
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
+        lLayout.addView(spacer);
         //return to first settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
         //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
+
+    //////////////////////////////////////////////////
+    /////Load the settings menu for theme change//////
+    //////////////////////////////////////////////////
+    public void themeChange(){
+        EternalMediaBar.activity.optionVitem = 0;
+        LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
+        lLayout.removeAllViews();
+        lLayout.addView(new listItemLayout().optionsListItemView("Internal", 14, 0, radioCheck(null, EternalMediaBar.activity.savedData.theme, "Internal"), "Internal"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Google", 14, 0, radioCheck(null, EternalMediaBar.activity.savedData.theme, "Google"), "Google"));
+        //lLayout.addView(new listItemLayout().optionsListItemView("Material", 14, 0, radioCheck(null, EternalMediaBar.activity.savedData.theme, "Material"), "Material"));
+    }
+
 
     //////////////////////////////////////////////////
     /////Load the settings menu for customization/////
@@ -283,46 +292,56 @@ public class optionsMenuChange {
         if(secondaryIndex!=0){
             EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2] = secondaryIndex;
         }
-        //add the item for changing the organization method
+        //add the items for changing the organization method
         EternalMediaBar.activity.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
-        if (EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==1){
-            lLayout.addView(new listItemLayout().optionsListItemView( "Alphabetically", 11, 1, ".radioCheck", appName));
-        }
-        else{
-            lLayout.addView(new listItemLayout().optionsListItemView("Alphabetically", 11, 1, ".radioUnCheck", appName));
-        }
-        if (EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==2){
-            lLayout.addView(new listItemLayout().optionsListItemView("Reverse Alphabetically", 11, 2, ".radioCheck", appName));
-        }
-        else{
-            lLayout.addView(new listItemLayout().optionsListItemView("Reverse Alphabetically", 11, 2, ".radioUnCheck", appName));
-        }
-        if (EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==3){
-            lLayout.addView(new listItemLayout().optionsListItemView("No Organization", 11, 3, ".radioCheck", appName));
-        }
-        else{
-            lLayout.addView(new listItemLayout().optionsListItemView("No Organization", 11, 3, ".radioUnCheck", appName));
-        }
-
+        lLayout.addView(new listItemLayout().optionsListItemView( "Alphabetically", 11, 1, radioCheck(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==1, null, null), appName));
+        lLayout.addView(new listItemLayout().optionsListItemView("Reverse Alphabetically", 11, 2, radioCheck(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==2, null, null), appName));
+        lLayout.addView(new listItemLayout().optionsListItemView("No Organization", 11, 3, radioCheck(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]==3, null, null), appName));
+        //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
-        spacer.setMinimumHeight(Math.round(50*(EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
-
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
         lLayout.addView(spacer);
-
+        //check whether or not the organization is always applied, and make the apply options accordingly.
         if (EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[1] ==0) {
-            //add the item for only applying this once
             lLayout.addView(new listItemLayout().optionsListItemView("Apply once", 12, -1, ".radioCheck", appName));
-            //add the item for always applying this
             lLayout.addView(new listItemLayout().optionsListItemView("Always apply", 12, 1, ".radioUnCheck", appName));
         }
         else{
-            //add the item for only applying this once
             lLayout.addView(new listItemLayout().optionsListItemView("Apply once", 12, -1, ".radioUnCheck", appName));
-            //add the item for always applying this
             lLayout.addView(new listItemLayout().optionsListItemView("Always apply", 12, 1, ".radioCheck", appName));
 
+        }
+
+        //return to first settings menu
+        lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
+        //close settings menu
+        lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+    }
+
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    ///////////////Inner Functionality////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    private String radioCheck(Boolean choose, String string1, String string2){
+        //if the bool is null, decide based on the strings.
+        if (choose == null) {
+            if (string1.equals(string2)) {
+                return ".radioUnCheck";
+            } else {
+                return ".radioUnCheck";
+            }
+        }
+        //otherwise decide based on the bool
+        else{
+            if (choose) {
+                return ".radioUnCheck";
+            } else {
+                return ".radioUnCheck";
+            }
         }
     }
 
@@ -401,18 +420,21 @@ public class optionsMenuChange {
 
 
     //////////////////////////////////////////////////
-    ///////////Enable/Disable Google Icons////////////
+    ////////////////Change The Theme//////////////////
     //////////////////////////////////////////////////
-    public void toggleGoogleIcons(){
-        if (EternalMediaBar.activity.savedData.useGoogleIcons){
-            EternalMediaBar.activity.savedData.useGoogleIcons=false;
-        }
-        else{
-            EternalMediaBar.activity.savedData.useGoogleIcons = true;
-        }
+    public void setIconTheme(String theme){
+        EternalMediaBar.activity.savedData.theme = theme;
         menuClose();
+
     }
 
+    //////////////////////////////////////////////////
+    ////////////////Change The Theme//////////////////
+    //////////////////////////////////////////////////
+    public void organizeByGoogle(){
+
+
+    }
 
     //////////////////////////////////////////////////
     ////////////Enable/Disable Dim Lists//////////////

@@ -29,8 +29,7 @@ public class settingsClass implements Serializable {
     boolean cleanCacheOnStart;
     boolean loadAppBG;
     boolean gamingMode;
-    boolean useGoogleIcons;
-    boolean useManufacturerIcons;
+    String theme;
     boolean mirrorMode;
     boolean dimLists;
     List<appDetail> hiddenApps = new ArrayList<>();
@@ -51,9 +50,8 @@ public class settingsClass implements Serializable {
                                     eternalMediaBar.savedData.fontCol + "</fontCol>\n<cleanCacheOnStart>" +
                                     eternalMediaBar.savedData.cleanCacheOnStart + "</cleanCacheOnStart>\n<loadAppBG>" +
                                     eternalMediaBar.savedData.loadAppBG + "</loadAppBG>\n<gamingMode>" +
-                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<useGoogleIcons>" +
-                                    eternalMediaBar.savedData.useGoogleIcons + "</useGoogleIcons>\n<useManufacturerIcons>" +
-                                    eternalMediaBar.savedData.useManufacturerIcons + "</useManufacturerIcons>\n<mirrorMode>" +
+                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<theme>" +
+                                    eternalMediaBar.savedData.theme + "</theme>\n<mirrorMode>" +
                                     eternalMediaBar.savedData.mirrorMode + "</mirrorMode>\n<dimLists>" +
                                     eternalMediaBar.savedData.dimLists + "</dimLists>\n\n<vLists>\n" +
                                     appSavesToXML(eternalMediaBar.savedData) +
@@ -237,19 +235,11 @@ public class settingsClass implements Serializable {
             }
             try {
                 //get the bool for useGoogleIcons
-                SingularNode = doc.getElementsByTagName("useGoogleIcons");
-                savedData.useGoogleIcons = boolFromString(SingularNode.item(0).getTextContent());
+                SingularNode = doc.getElementsByTagName("theme");
+                savedData.theme = SingularNode.item(0).getTextContent();
             }
             catch (Exception e){
-                savedData.useGoogleIcons = false;
-            }
-            try {
-                //get the bool for useManufacturerIcons
-                SingularNode = doc.getElementsByTagName("useManufacturerIcons");
-                savedData.useManufacturerIcons = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.useManufacturerIcons = false;
+                savedData.theme = "Google";
             }
             try {
                 //get the bool for mirrorMode
@@ -392,10 +382,9 @@ public class settingsClass implements Serializable {
             savedData.categories.add(new categoryClass());
             savedData.categories.add(new categoryClass());
             //we should initialize the other variables as well.
-            savedData.useGoogleIcons = false;savedData.mirrorMode = false;
+            savedData.theme = "Google";
             savedData.cleanCacheOnStart = false;
             savedData.gamingMode = false;
-            savedData.useManufacturerIcons = false;
             savedData.loadAppBG = true;
             savedData.fontCol = -1;savedData.menuCol = -1;
             savedData.iconCol = -1;savedData.dimLists= true;

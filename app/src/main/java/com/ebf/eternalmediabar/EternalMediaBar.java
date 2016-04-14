@@ -363,7 +363,7 @@ public class EternalMediaBar extends Activity {
             hMenuItem.name = "hItem";
             hMenuItem.isPersistent = true;
             hMenuItem.label = savedData.categories.get(i).categoryName;
-            hMenuItem.icon = new imgLoader(savedData.categories.get(i).categoryIcon, savedData.useGoogleIcons).doInBackground();
+            hMenuItem.icon = new imgLoader(savedData.categories.get(i).categoryIcon).doInBackground();
             hli.add(hMenuItem);
             i++;
         }

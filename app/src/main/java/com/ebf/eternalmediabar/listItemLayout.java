@@ -39,7 +39,7 @@ public class listItemLayout {
             image.setId(R.id.list_item_icon);
             image.setAdjustViewBounds(true);
             //now add the actual image
-            image.setImageBitmap(new imgLoader(launchIntent, false).doInBackground());
+            image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
             layout.addView(image);
         }
         //now add the text
@@ -126,7 +126,7 @@ public class listItemLayout {
         image.setAdjustViewBounds(true);
         //now add the actual image
         String[] icons = launchIntent.split(":");
-        image.setImageBitmap(new imgLoader(icons[1].trim(), EternalMediaBar.activity.savedData.useGoogleIcons).doInBackground());
+        image.setImageBitmap(new imgLoader(icons[1].trim()).doInBackground());
         layout.addView(image);
 
         //now add the text
@@ -200,7 +200,7 @@ public class listItemLayout {
         image.setAdjustViewBounds(true);
         //now add the actual image
         String[] icons = launchIntent.split(":");
-        image.setImageBitmap(new imgLoader(icons[1].trim(), EternalMediaBar.activity.savedData.useGoogleIcons).doInBackground());
+        image.setImageBitmap(new imgLoader(icons[1].trim()).doInBackground());
         layout.addView(image);
 
         //now add the text
@@ -245,7 +245,7 @@ public class listItemLayout {
             image.setId(R.id.list_item_icon);
             image.setAdjustViewBounds(true);
             //now add the actual image
-            image.setImageBitmap(new imgLoader(launchIntent, false).doInBackground());
+            image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
 
             layout.addView(image);
 
@@ -329,7 +329,7 @@ public class listItemLayout {
                         }
                         //toggles
                         case 8: {
-                            new optionsMenuChange().toggleGoogleIcons();
+                            new optionsMenuChange().themeChange();
                             break;
                         }
                         case 9: {
@@ -340,6 +340,15 @@ public class listItemLayout {
                             new optionsMenuChange().toggleDimLists();
                             break;
                         }
+                        case 14:{
+                            new optionsMenuChange().setIconTheme(appName);
+                            break;
+                        }
+                        //cases for changing colors
+                        case 10: {
+                            new optionsMenuChange().colorSelect(appName, secondaryIndex);
+                            break;
+                        }
                         //list organize
                         case 11: {
                             new optionsMenuChange().listOrganizeSelect(secondaryIndex, launchIntent, appName);
@@ -347,11 +356,6 @@ public class listItemLayout {
                         }
                         case 12: {
                             new optionsMenuChange().organizeList(secondaryIndex);
-                            break;
-                        }
-                        //cases for changing colors
-                        case 10: {
-                            new optionsMenuChange().colorSelect(appName, secondaryIndex);
                             break;
                         }
                     }
