@@ -48,9 +48,10 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>
+-	make new method for adding apps to the new apps list, the current method seems to rarley let some random apps through.
 -	option to require double tap to open an app, good for when you have a hard time hitting the right app, also lets you make better use of custom app backgrounds without a controller.
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
--	Create a new set of icons, and a list item background for highlight. The design of the current ones are fine, but they are nowhere near as crisp or clear as necessary.
+-	finish the Lunar Tales icon theme.
 -	New icons have an invert theme.
 -	apps fade out and back in when changing categories.
 -	custom wallpaper for selected app from file, if file exists (use an async task).
@@ -59,7 +60,6 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	extra settings:
 -	option to change icon color with month like PSP.
 -	color selector for the google now bar.
--	change menu background color //effects icon background and slide out menu color.
 -	enable/disable custom app backgrounds.
 -	download app backgrounds from google play (market API).
 -	un-hide hidden apps //selective menu.

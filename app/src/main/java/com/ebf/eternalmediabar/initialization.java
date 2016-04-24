@@ -37,9 +37,9 @@ public class initialization {
                     eternalMediaBar.savedData.cleanCacheOnStart = false;
                     eternalMediaBar.savedData.gamingMode = false;
                     eternalMediaBar.savedData.loadAppBG = true;
-                    eternalMediaBar.savedData.fontCol = -1;
-                    eternalMediaBar.savedData.menuCol = -1;
-                    eternalMediaBar.savedData.iconCol = -1;
+                    eternalMediaBar.savedData.fontCol = 0xffffffff;
+                    eternalMediaBar.savedData.menuCol = 0xcc000000;
+                    eternalMediaBar.savedData.iconCol = 0xffffffff;
                     eternalMediaBar.savedData.dimLists = true;
                     eternalMediaBar.savedData.hiddenApps = new ArrayList<>();
                     int[] tempInt = new int[]{0, 1, 1};

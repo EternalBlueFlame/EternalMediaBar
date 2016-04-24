@@ -35,6 +35,7 @@ public class optionsMenuChange {
         EternalMediaBar.activity.optionVitem = 1;
         //load the layout and make sure nothing is in it.
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
+        sLayout.setBackgroundColor(EternalMediaBar.activity.savedData.menuCol);
         ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist)).removeAllViews();
         //animate the menu opening
         TranslateAnimation anim;
@@ -219,7 +220,7 @@ public class optionsMenuChange {
         //add the item for changing the font color
         lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
         lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
-        //lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
     }
 
 

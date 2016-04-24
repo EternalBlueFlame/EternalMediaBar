@@ -27,14 +27,14 @@ public class listItemLayout {
         float dpi =EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
         //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(60 * dpi));
+        layout.setMinimumHeight(Math.round(54 * dpi));
         //create the icon if we can, be sure its instantiated ahead of time so we can clean it out
         ImageView image = new ImageView(EternalMediaBar.activity);
         if (launchIntent.length() > 1 && (isLaunchable || launchIntent.equals(".options"))) {
             //create the image and set its values
             //there ar two different sizes for icons, one for the search header, and another for everything else
-            image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(48 * dpi), Math.round(48 * dpi)));
-            image.setY(6 * dpi);
+            image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(34 * dpi), Math.round(34 * dpi)));
+            image.setY(10 * dpi);
             image.setX(6 * dpi);
             image.setId(R.id.list_item_icon);
             image.setAdjustViewBounds(true);
@@ -49,10 +49,10 @@ public class listItemLayout {
         //because of how dynamic text has to be, we define the text first, and everything else second.
         appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        appLabel.setX(62 * dpi);
-        appLabel.setY((12 * dpi));
+        appLabel.setX(46 * dpi);
+        appLabel.setY((9 * dpi));
         appLabel.setId(R.id.list_item_text);
-        appLabel.setWidth(Math.round(115 * dpi));
+        appLabel.setWidth(Math.round(120 * dpi));
         appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 
         layout.addView(appLabel);
@@ -422,7 +422,7 @@ public class listItemLayout {
         webLabel.setX(2 * dpi);
         webLabel.setY((2 * dpi));
         webLabel.setLines(2);
-        webLabel.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.searchView).getWidth() - (2 * dpi)));
+        webLabel.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth()*(2 * dpi)));
         webLabel.setTextSize(8 * dpi);
         webLabel.setPaintFlags(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
         webLabel.setBackgroundColor(0xff333333);
@@ -434,10 +434,10 @@ public class listItemLayout {
         //because of how dynamic text has to be, we define the text first, and everything else second.
         webURL.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         webURL.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        webURL.setX(2 * dpi);
+        webURL.setX(0);
         webURL.setY(40 * dpi);
         webURL.setLines(2);
-        webURL.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.searchView).getWidth() - (2 * dpi)));
+        webURL.setWidth(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth());
         webURL.setTextSize(7*dpi);
         webURL.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
         layout.addView(webURL);
@@ -450,7 +450,7 @@ public class listItemLayout {
         webDescription.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
         webDescription.setX(2 * dpi);
         webDescription.setY(78 * dpi);
-        webDescription.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.searchView).getWidth() - (2 * dpi)));
+        webDescription.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth() * (2 * dpi)));
         webDescription.setTextSize(8 * dpi);
         webDescription.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
         layout.addView(webDescription);

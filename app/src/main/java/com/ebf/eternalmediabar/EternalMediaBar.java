@@ -280,8 +280,8 @@ public class EternalMediaBar extends Activity {
                     ((TextView) layout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon larger
                     ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.list_item_icon);
-                    appIcon.setScaleX(1.25f);
-                    appIcon.setScaleY(1.25f);
+                    appIcon.setScaleX(1.5f);
+                    appIcon.setScaleY(1.5f);
 
                     //scroll to the new entry
                     layout.scrollTo(0, (int) layout.getChildAt(vItem).getX());

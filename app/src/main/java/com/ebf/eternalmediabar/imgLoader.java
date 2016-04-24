@@ -45,29 +45,29 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "1": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_people_white_48dp);}
-                    case "Google":{return getBitmap(false, "com.android.contacts", R.drawable.social_144px);}
-                    default:{return getBitmap(true, "", R.drawable.social_144px);}
+                    case "Google":{return getBitmap(false, "com.android.contacts", R.drawable.lunar_social);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_social);}
                 }
             }
             case "2": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_play_circle_filled_white_48dp);}
-                    case "Google":{return getBitmap(false, "com.google.android.videos", R.drawable.media_144px);}
-                    default:{return getBitmap(true, "", R.drawable.media_144px);}
+                    case "Google":{return getBitmap(false, "com.google.android.videos", R.drawable.lunar_media);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_media);}
                 }
             }
             case "3": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_videogame_asset_white_48dp);}
-                    case "Google":{return getBitmap(false, "com.google.android.play.games", R.drawable.games_144px);}
-                    default:{return getBitmap(true, "", R.drawable.games_144px);}
+                    case "Google":{return getBitmap(false, "com.google.android.play.games", R.drawable.lunar_games);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_games);}
                 }
             }
             case "4": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_web_white_48dp);}
-                    case "Google":{return getBitmap(false, "com.android.chrome", R.drawable.web_144px);}
-                    default:{return getBitmap(true, "", R.drawable.web_144px);}
+                    case "Google":{return getBitmap(false, "com.android.chrome", R.drawable.lunar_web);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_web);}
                 }
             }
             case "5": {
@@ -88,7 +88,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_fiber_new_white_48dp);}
                     //no google case for this
-                    default:{return getBitmap(true, "", R.drawable.new_install_144px);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_new_apps);}
                 }
             }
             case".options": {

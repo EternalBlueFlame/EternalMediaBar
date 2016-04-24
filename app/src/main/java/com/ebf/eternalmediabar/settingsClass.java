@@ -197,6 +197,7 @@ public class settingsClass implements Serializable {
                 //get the menuCol
                 SingularNode = doc.getElementsByTagName("menuCol");
                 savedData.menuCol = Integer.parseInt(SingularNode.item(0).getTextContent());
+                if (savedData.menuCol==-1){savedData.menuCol=0xcc000000;}
             }
             catch (Exception e){
                 savedData.menuCol = -1;

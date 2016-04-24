@@ -103,8 +103,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="-146dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/menu_bg">
+        android:layout_height="match_parent">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"

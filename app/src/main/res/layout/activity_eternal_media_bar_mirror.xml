@@ -139,7 +139,6 @@
         android:layout_marginLeft="-146dp"
         android:layout_below="@+id/categoriesscroll"
         android:layout_height="match_parent"
-        android:background="@drawable/menu_bg"
         android:scaleX="-1">
         <!-- setting scale to -1 will mirror everything on and in the layout,
         we use this so we can easily mirror the bg, and again so we mirror the content back to normal.-->
