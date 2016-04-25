@@ -27,15 +27,20 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case ".colHeaderIcon": {
                 return Bitmap.createBitmap(new int[]{EternalMediaBar.activity.savedData.iconCol},1,1, Bitmap.Config.ARGB_8888);
             }
+            case ".colHeaderMenu": {
+                return Bitmap.createBitmap(new int[]{EternalMediaBar.activity.savedData.menuCol},1,1, Bitmap.Config.ARGB_8888);
+            }
             case ".radioCheck":{
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_radio_button_checked_white_24dp);}
+                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_radio_check);}
                     default:{return getBitmap(true, "", R.drawable.ic_radio_button_checked_white_24dp);}
                 }
             }
             case ".radioUnCheck":{
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_radio_button_unchecked_white_24dp);}
+                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_radio_uncheck);}
                     default:{return getBitmap(true, "", R.drawable.ic_radio_button_unchecked_white_24dp);}
                 }
             }
@@ -45,6 +50,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "1": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_people_white_48dp);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_social);}
                     case "Google":{return getBitmap(false, "com.android.contacts", R.drawable.lunar_social);}
                     default:{return getBitmap(true, "", R.drawable.lunar_social);}
                 }
@@ -52,6 +58,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "2": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_play_circle_filled_white_48dp);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_media);}
                     case "Google":{return getBitmap(false, "com.google.android.videos", R.drawable.lunar_media);}
                     default:{return getBitmap(true, "", R.drawable.lunar_media);}
                 }
@@ -59,6 +66,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "3": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_videogame_asset_white_48dp);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_games);}
                     case "Google":{return getBitmap(false, "com.google.android.play.games", R.drawable.lunar_games);}
                     default:{return getBitmap(true, "", R.drawable.lunar_games);}
                 }
@@ -66,6 +74,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "4": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_web_white_48dp);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_web);}
                     case "Google":{return getBitmap(false, "com.android.chrome", R.drawable.lunar_web);}
                     default:{return getBitmap(true, "", R.drawable.lunar_web);}
                 }
@@ -73,6 +82,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "5": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_assignment_white_48dp);}
+                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_utility);}
                     case "Google":{return getBitmap(false, "com.google.android.apps.docs", R.drawable.extras_144px);}
                     default:{return getBitmap(true, "", R.drawable.extras_144px);}
                 }
@@ -80,6 +90,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "6": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_settings_white_48dp);}
+                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_settings);}
                     case "Google":{return getBitmap(false, "com.android.settings", R.drawable.settings_144px);}
                     default:{return getBitmap(true, "", R.drawable.settings_144px);}
                 }
@@ -87,6 +98,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "7": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_fiber_new_white_48dp);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_new_apps);}
                     //no google case for this
                     default:{return getBitmap(true, "", R.drawable.lunar_new_apps);}
                 }
@@ -94,6 +106,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case".options": {
                 switch (EternalMediaBar.activity.savedData.theme) {
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_settings_applications_white_48dp);}
+                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_emb);}
                     //no google case for this
                     default: {
                         return getBitmap(true, "", R.drawable.sub_settings_144px);
@@ -107,6 +120,8 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
                 } catch (Exception e) {
                     switch (EternalMediaBar.activity.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
+                        case "MaterialInverse":{return getBitmap(true, "", R.drawable.material_ic_people_white_48dp);}
+                        //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_error);}
                         //no google case
                         default:{return getBitmap(true, "", R.drawable.error_144px);}
                     }

@@ -279,6 +279,7 @@ public class optionsMenuChange {
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         lLayout.addView(new listItemLayout().optionsListItemView("Internal", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Internal")), "Internal"));
+        lLayout.addView(new listItemLayout().optionsListItemView("LunarInverse", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("LunarInverse")), "LunarInverse"));
         lLayout.addView(new listItemLayout().optionsListItemView("Google", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Google")), "Google"));
         lLayout.addView(new listItemLayout().optionsListItemView("Material", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Material")), "Material"));
 

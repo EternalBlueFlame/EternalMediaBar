@@ -93,25 +93,6 @@
             android:layout_weight="0.25" />
     </LinearLayout>
 
-
-    <!-- This has to be last so it will render above everything else -->
-
-    <ScrollView
-        android:orientation="vertical"
-        android:layout_width="145dp"
-        android:id="@+id/options_displayscroll"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="-146dp"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/optionslist"
-            />
-    </ScrollView>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -147,6 +128,24 @@
             android:layout_height="20dp"
             android:layout_weight="0.15" />
     </LinearLayout>
+
+    <!-- This has to be last so it will render above everything else -->
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="145dp"
+        android:id="@+id/options_displayscroll"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="-146dp"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/optionslist"
+            />
+    </ScrollView>
 
 
 </RelativeLayout>
