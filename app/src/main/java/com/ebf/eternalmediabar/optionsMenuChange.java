@@ -42,12 +42,12 @@ public class optionsMenuChange {
         if (!EternalMediaBar.activity.savedData.mirrorMode) {
             //reset the position
             sLayout.setX(EternalMediaBar.activity.getResources().getDisplayMetrics().widthPixels);
-            anim = new TranslateAnimation(0, -(145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            anim = new TranslateAnimation(0, -(144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         else{
             //reset the position
-            sLayout.setX(-145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f);
-            anim = new TranslateAnimation(0, (145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            sLayout.setX(-144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f);
+            anim = new TranslateAnimation(0, (144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         anim.setDuration(200);
         anim.setInterpolator(new LinearInterpolator());
@@ -66,7 +66,7 @@ public class optionsMenuChange {
                 sLayout.clearAnimation();
                 //manually set position of menu
                 if (!EternalMediaBar.activity.savedData.mirrorMode) {
-                    sLayout.setX(EternalMediaBar.activity.getResources().getDisplayMetrics().widthPixels - (145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f));
+                    sLayout.setX(EternalMediaBar.activity.getResources().getDisplayMetrics().widthPixels - (144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f));
                 } else {
                     sLayout.setX(0);
                 }
@@ -90,8 +90,14 @@ public class optionsMenuChange {
         }
 
 
+        LinearLayout lLayout = (LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist);
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
+        lLayout.addView(spacer);
         //close settings menu, we put this here since it's on the menu without exception.
-        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist)).addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+        lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+        lLayout.addView(new listItemLayout().optionsListItemView("Homepage",16,0,"http://github.com/EternalBlueFlame/EternalMediaBar","."));
     }
 
 
@@ -109,10 +115,10 @@ public class optionsMenuChange {
         //animate menu closing
         TranslateAnimation anim;
         if (!EternalMediaBar.activity.savedData.mirrorMode) {
-            anim = new TranslateAnimation(0, (145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            anim = new TranslateAnimation(0, (144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         else{
-            anim = new TranslateAnimation(0, -(145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
+            anim = new TranslateAnimation(0, -(144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
         }
         anim.setDuration(200);
         anim.setInterpolator(new LinearInterpolator());
@@ -133,7 +139,7 @@ public class optionsMenuChange {
                 if (!EternalMediaBar.activity.savedData.mirrorMode) {
                     sLayout.setX(EternalMediaBar.activity.getResources().getDisplayMetrics().widthPixels);
                 } else {
-                    sLayout.setX(-145 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f);
+                    sLayout.setX(-144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f);
                 }
             }
 
@@ -208,6 +214,8 @@ public class optionsMenuChange {
         EternalMediaBar.activity.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.addView(new listItemLayout().optionsListItemView("Choose Theme", 8, 0, ".", "."));
+        //add the item for changing the theme colors
+        lLayout.addView(new listItemLayout().optionsListItemView("Theme Colors", 15,0,".","."));
         if (EternalMediaBar.activity.savedData.dimLists){
             lLayout.addView(new listItemLayout().optionsListItemView("Don't Dim List Backgrounds", 13, 0, ".", "."));
         }
@@ -217,10 +225,6 @@ public class optionsMenuChange {
         //add the item for mirroring the UI
         lLayout.addView(new listItemLayout().optionsListItemView("Mirror Layout", 9, 0, ".", "."));
 
-        //add the item for changing the font color
-        lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
-        lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
-        lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
     }
 
 
@@ -239,6 +243,10 @@ public class optionsMenuChange {
             }
             i++;
         }
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
+        lLayout.addView(spacer);
         //return to first settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
         //close settings menu
@@ -278,11 +286,38 @@ public class optionsMenuChange {
         EternalMediaBar.activity.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
-        lLayout.addView(new listItemLayout().optionsListItemView("Internal", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Internal")), "Internal"));
-        lLayout.addView(new listItemLayout().optionsListItemView("LunarInverse", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("LunarInverse")), "LunarInverse"));
+        //add the items for changing the theme
+        lLayout.addView(new listItemLayout().optionsListItemView("Lunar\nDefault", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Internal")), "Internal"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Lunar\nInverse", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("LunarInverse")), "LunarInverse"));
         lLayout.addView(new listItemLayout().optionsListItemView("Google", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Google")), "Google"));
         lLayout.addView(new listItemLayout().optionsListItemView("Material", 14, 0, radioCheck(EternalMediaBar.activity.savedData.theme.equals("Material")), "Material"));
 
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
+        lLayout.addView(spacer);
+        //return to first settings menu
+        lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
+        //close settings menu
+        lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+    }
+
+    //////////////////////////////////////////////////
+    /////Load the settings menu for theme change//////
+    //////////////////////////////////////////////////
+    public void themeColorChange(String launchIntent, String appName){
+        EternalMediaBar.activity.optionVitem = 0;
+        LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
+        lLayout.removeAllViews();
+        //add the items for changing the theme colors
+        lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
+
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
+        lLayout.addView(spacer);
         //return to first settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
         //close settings menu

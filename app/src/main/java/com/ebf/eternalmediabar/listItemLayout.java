@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
 public class listItemLayout {
 
 
@@ -221,7 +222,6 @@ public class listItemLayout {
         return layout.getRootView();
     }
 
-
     ////////////////////////////////////////////////////////////
     //////////////////// Options List Item /////////////////////
     ////////////////////////////////////////////////////////////
@@ -359,10 +359,6 @@ public class listItemLayout {
                             break;
                         }
                         //toggles
-                        case 8: {
-                            new optionsMenuChange().themeChange(launchIntent, appName);
-                            break;
-                        }
                         case 9: {
                             new optionsMenuChange().mirrorUI();
                             break;
@@ -371,13 +367,25 @@ public class listItemLayout {
                             new optionsMenuChange().toggleDimLists();
                             break;
                         }
+                        //cases for changing colors and theme
+                        case 8: {
+                            new optionsMenuChange().themeChange(launchIntent, appName);
+                            break;
+                        }
                         case 14:{
                             new optionsMenuChange().setIconTheme(appName);
                             break;
                         }
-                        //cases for changing colors
                         case 10: {
                             new optionsMenuChange().colorSelect(appName, secondaryIndex);
+                            break;
+                        }
+                        case 15: {
+                            new optionsMenuChange().themeColorChange(launchIntent, appName);
+                            break;
+                        }
+                        case 16: {
+                            EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(launchIntent)));
                             break;
                         }
                         //list organize
