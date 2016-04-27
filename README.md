@@ -25,9 +25,12 @@ Both Lunar Tales and Eternal Blue Flame may be found at our GitHub and our respe
 You may contact us through GitHub via message, Issue report, or by placing an ask on one of our blogs.
 Alternatively, you may contact Eternal Blue Flame through Steam.
 
-Eternal Blue Flame's Blog: http://eternal-blue-flame.tumblr.com/ 
-Eternal Blue Flame's Steam: http://steamcommunity.com/id/eternal-blue-flame/
-Lunar Tales's Blog: http://lunar-tales.tumblr.com/
+Eternal Blue Flame's G+: https://plus.google.com/u/0/102867947218797182229
+Steam: http://steamcommunity.com/id/eternal-blue-flame/
+Blogger: http://eternal-b-flame.blogspot.com/
+
+Lunar Tales's G+: https://plus.google.com/109038448812238247431
+Blogger: http://lunar-tales.blogspot.com/
 
 <hr/>
 <h2> About us</h2>
