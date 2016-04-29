@@ -29,9 +29,10 @@ public class settingsClass implements Serializable {
     boolean cleanCacheOnStart;
     boolean loadAppBG;
     boolean gamingMode;
+    boolean doubleTap;
     String theme;
     boolean mirrorMode;
-    boolean dimLists;
+    int dimCol;
     List<appDetail> hiddenApps = new ArrayList<>();
     List<categoryClass> categories = new ArrayList<>();
 
@@ -50,14 +51,15 @@ public class settingsClass implements Serializable {
                                     eternalMediaBar.savedData.fontCol + "</fontCol>\n<cleanCacheOnStart>" +
                                     eternalMediaBar.savedData.cleanCacheOnStart + "</cleanCacheOnStart>\n<loadAppBG>" +
                                     eternalMediaBar.savedData.loadAppBG + "</loadAppBG>\n<gamingMode>" +
-                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<theme>" +
+                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<doubleTap>" +
+                                    eternalMediaBar.savedData.doubleTap + "</doubleTap>\n<theme>" +
                                     eternalMediaBar.savedData.theme + "</theme>\n<mirrorMode>" +
                                     eternalMediaBar.savedData.mirrorMode + "</mirrorMode>\n<dimLists>" +
-                                    eternalMediaBar.savedData.dimLists + "</dimLists>\n\n<vLists>\n" +
+                                    eternalMediaBar.savedData.dimCol + "</dimLists>\n\n<vLists>\n" +
                                     appSavesToXML(eternalMediaBar.savedData) +
-                                    hiddenAppsToString(eternalMediaBar.savedData)+
+                                    hiddenAppsToString(eternalMediaBar.savedData) +
                                     "\n</xmlRoot>").getBytes()
-                    );
+            );
             //write a string to the stream
             //close the stream to save some RAM.
             fileStream.flush();
@@ -189,8 +191,8 @@ public class settingsClass implements Serializable {
                 savedData.iconCol = Integer.parseInt(SingularNode.item(0).getTextContent());
             }
             catch (Exception e) {
-                //if it fails to load, set the value to -1
-                savedData.iconCol = -1;
+                //if it fails to load, set the value to white
+                savedData.iconCol = 0xffffffff;
             }
             //we repeat this for every variable
             try {
@@ -200,7 +202,7 @@ public class settingsClass implements Serializable {
                 if (savedData.menuCol==-1){savedData.menuCol=0xcc000000;}
             }
             catch (Exception e){
-                savedData.menuCol = -1;
+                savedData.menuCol = 0xffffff;
             }
             try {
                 //get the fontCol
@@ -208,7 +210,7 @@ public class settingsClass implements Serializable {
                 savedData.fontCol = Integer.parseInt(SingularNode.item(0).getTextContent());
             }
             catch (Exception e){
-                savedData.fontCol = -1;
+                savedData.fontCol = 0xffffff;
             }
             try {
                 //get the bool for cleanCacheOnStart
@@ -252,11 +254,19 @@ public class settingsClass implements Serializable {
             }
             try {
                 //get the bool for mirrorMode
-                SingularNode = doc.getElementsByTagName("dimLists");
-                savedData.dimLists = boolFromString(SingularNode.item(0).getTextContent());
+                SingularNode = doc.getElementsByTagName("dimCol");
+                savedData.dimCol = Integer.parseInt(SingularNode.item(0).getTextContent());
             }
             catch (Exception e){
-                savedData.dimLists = true;
+                savedData.dimCol = 0x66000000;
+            }
+            try {
+                //get the bool for doubleTap
+                SingularNode = doc.getElementsByTagName("doubleTap");
+                savedData.doubleTap = boolFromString(SingularNode.item(0).getTextContent());
+            }
+            catch (Exception e){
+                savedData.doubleTap = false;
             }
 
 
@@ -387,8 +397,10 @@ public class settingsClass implements Serializable {
             savedData.cleanCacheOnStart = false;
             savedData.gamingMode = false;
             savedData.loadAppBG = true;
-            savedData.fontCol = -1;savedData.menuCol = -1;
-            savedData.iconCol = -1;savedData.dimLists= true;
+            savedData.fontCol = 0xffffffff;
+            savedData.menuCol = 0xcc000000;
+            savedData.iconCol = 0xffffffff;
+            savedData.dimCol = 0x66000000;
             savedData.hiddenApps = new ArrayList<>();
             int[] tempInt = new int[]{0, 1, 1};
             for(int i=0;i<savedData.categories.size();){

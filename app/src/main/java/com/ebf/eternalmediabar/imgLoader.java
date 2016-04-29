@@ -164,7 +164,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             //draw the icon to the bitmap via canvas
             Canvas canvas = new Canvas(bit);
             ico.draw(canvas);
-            //invalidate the now useless drawable and canvas before returning the image
+            //invalidate the now useless drawable and canvas before returning the image, so that the data can be cleaned by GC
             ico=null;
             canvas = null;
             return bit;

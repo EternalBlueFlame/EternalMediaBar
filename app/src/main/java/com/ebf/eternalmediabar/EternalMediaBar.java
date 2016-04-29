@@ -19,20 +19,15 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ebf.eternalVariables.appDetail;
 import com.ebf.eternalVariables.webSearchResults;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
-    public List<appDetail> hli = new ArrayList<>();
     public settingsClass savedData = new settingsClass();
 
     public int hItem = 0;
@@ -44,7 +39,9 @@ public class EternalMediaBar extends Activity {
 
     public static EternalMediaBar activity;
 
+    //we'll define options menu change ahead of time so we don't have to instance it over and over.
     private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
+    //we have to instance the event receiver so we can get rid of it when the app is not open.
     intentReceiver mainReciever = new intentReceiver();
 
 
@@ -56,34 +53,26 @@ public class EternalMediaBar extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        //be sure the activity variable references this script so we can have global access to it.
         activity = this;
+        //be sure to load the save data, and/or update any changes that may have happened while the app was out of focus.
+        new initialization().loadData(this);
+        //if this hasin't been initialized yet
         if (init){
-            //load in the apps
+            //do all the initialization
             new initialization().loadData(this);
 
             //make sure vItem isn't out of bounds
             if (vItem >= savedData.categories.get(hItem).appList.size()){
-                vItem = savedData.categories.get(hItem).appList.size();
-            }
-
-            //make sure that if the new apps list disappears, we aren't on it.
-            if (hItem == (savedData.categories.size()-1) && savedData.categories.get(savedData.categories.size()-1).appList.size()==0){
-                listMove(0, true);
-            }
-            //otherwise just load normally
-            else{
-                loadListView();
+                vItem=0;
             }
         }
-        else{
-            setContentView(R.layout.activity_eternal_media_bar);
-            new initialization().loadData(this);
-            loadListView();
-        }
+        //now load the list view normally
+        loadListView();
+        //now deal with the event receiver.
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mainReciever, filter);
-
     }
 
 
@@ -102,33 +91,32 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
-
             //because we don't want to use any data here, be sure wifi is being used before searching the web.
             if(isWeb && query.length()>2 && ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
                 //search it online first
                 try {
+                    //search the web for the query, and be sure it isn't null before we do something
                     JSONArray arrayObject = new JSONObject(new webSearchResults().execute(query).get()).getJSONObject("responseData").getJSONArray("results");
-
                     if(!arrayObject.isNull(0)) {
-                        //get the icon for the web tag
-                    for (int i = 0; i < savedData.categories.size(); ) {
-                        if (savedData.categories.get(i).categoryTags.contains("Web")) {
-                            searchView.addView(new listItemLayout().searchCategoryItemView("On The Internet",savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
-                            break;
-                        }
-                        i++;
-                    }
-                        //display the search results
-                    for (int i=0;!arrayObject.isNull(i);) {
-                        searchView.addView(new listItemLayout().webSearchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
+                        //setup the category for the result, to get the icon we have to search for the category with the correct tag.
+                        for (int i = 0; i < savedData.categories.size(); ) {
+                            if (savedData.categories.get(i).categoryTags.contains("Web")) {
+                                searchView.addView(new listItemLayout().searchCategoryItemView("On The Internet",savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
+                                break;
+                            }
                             i++;
                         }
+                        //display the actual web search result, a number of characters it displays aren't the actual character but rather the HTML code, so that has to be parsed manually.
+                        for (int i=0;!arrayObject.isNull(i);) {
+                            searchView.addView(new listItemLayout().webSearchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
+                                i++;
+                            }
                     }
                 }
                 catch (Exception e){e.printStackTrace();}
             }
 
-            //make sure the search is lower case, because searches are caps sensitive
+            //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
             query=query.toLowerCase();
             //iterate vLists
             for (int i = 0; i < savedData.categories.size(); ) {
@@ -139,7 +127,7 @@ public class EternalMediaBar extends Activity {
                     if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(new listItemLayout().searchCategoryItemView(hli.get(i).label, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
+                            searchView.addView(new listItemLayout().searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
                             categoryListed=true;
                         }
                         //display the actual search result
@@ -150,9 +138,8 @@ public class EternalMediaBar extends Activity {
                 i++;
             }
         }
-        else{
-            searchView.invalidate();
-        }
+        //if the search query is less than 3 characters, just invalidate the search results view to be sure it gets cleared.
+        else{searchView.invalidate();}
     }
 
 
@@ -222,26 +209,19 @@ public class EternalMediaBar extends Activity {
             //event for when enter/x/a is pressed
 			case KeyEvent.KEYCODE_ENTER: case KeyEvent.KEYCODE_NUMPAD_ENTER: case KeyEvent.KEYCODE_1: case KeyEvent.KEYCODE_5: case KeyEvent.KEYCODE_NUMPAD_5: case KeyEvent.KEYCODE_BUTTON_1: {
                 if (!optionsMenu) {
-                    //get the layout
-                    LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
-                    vLayout.getChildAt(vItem).performClick();
+                    ((LinearLayout)findViewById(R.id.apps_display)).getChildAt(vItem).performClick();
                 }
                 else{
-                    //get the layout
-                    LinearLayout lLayout = (LinearLayout)findViewById(R.id.optionslist);
-                    //get the item in the layout and activate its button function
-                    lLayout.getChildAt(optionVitem).performClick();
+                    ((LinearLayout)findViewById(R.id.optionslist)).getChildAt(optionVitem).performClick();
                 }
 				return true;
 			}
             //event for when E/Y/Triangle is pressed
 			case KeyEvent.KEYCODE_BUTTON_4: case KeyEvent.KEYCODE_E: case KeyEvent.KEYCODE_TAB: case KeyEvent.KEYCODE_0: case KeyEvent.KEYCODE_NUMPAD_0: {
                 if (!optionsMenu) {
-                    //get the layout
-                    LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
                     //get the item in the layout and activate its button function
-                    vLayout.getChildAt(vItem).performLongClick();
+                    ((LinearLayout)findViewById(R.id.apps_display)).getChildAt(vItem).performLongClick();
                 }
                 else{
                     changeOptionsMenu.menuClose();
@@ -330,12 +310,8 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     public void loadListView(){
 
-        if (savedData.mirrorMode){
-            setContentView(R.layout.activity_eternal_media_bar_mirror);
-        }
-        else{
-            setContentView(R.layout.activity_eternal_media_bar);
-        }
+        if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
+        else{setContentView(R.layout.activity_eternal_media_bar);}
 
         ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -354,57 +330,26 @@ public class EternalMediaBar extends Activity {
         //////////////////////
         //Draw the Categories
         //////////////////////
-        hli.clear();
-        //setup the horizontal bar, there's a pre-defined setting to ease the ability for custom options later down the road.most importantly it simplifies the code.
-
-
-        for (int i = 0; i < savedData.categories.size(); ) {
-            appDetail hMenuItem = new appDetail();
-            hMenuItem.name = "hItem";
-            hMenuItem.isPersistent = true;
-            hMenuItem.label = savedData.categories.get(i).categoryName;
-            hMenuItem.icon = new imgLoader(savedData.categories.get(i).categoryIcon).doInBackground();
-            hli.add(hMenuItem);
-            i++;
-        }
-
 
         manager = getPackageManager();
         LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
         //empty the list
         layout.removeAllViews();
-        //if we have it set to dim the background, dim it
-        if(savedData.dimLists) {
-            //we have to use the depreciated method to retain android 4.0 support, we don't have any need for the theme extension anyway.
-            layout.setBackgroundColor(getResources().getColor(R.color.dimColor));
-        }
+        //dim the color to the dimCol
+        layout.setBackgroundColor(savedData.dimCol);
         //loop to add all entries of hli to the list
-        for (int ii=0; (ii)<hli.size();) {
-            if(!savedData.categories.get(ii).categoryName.equals("New Apps")) {
-                layout.addView(new listItemLayout().categoryListItemView(hli.get(ii).label, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+        for (int ii=0; (ii)<savedData.categories.size();) {
+            if(!savedData.categories.get(ii).categoryTags.contains("Unorganized")) {
+                layout.addView(new listItemLayout().categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
             else if (savedData.categories.get(ii).appList.size() >0){
-                layout.addView(new listItemLayout().categoryListItemView(hli.get(ii).label, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+                layout.addView(new listItemLayout().categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
         ii++;
         }
-        //change the display for the appropriate icon
-        //change the font type
-        try {
-            ((TextView) layout.getChildAt(hItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-            //modify the icon to go be larger, and go under the text so it appears even bigger and doesn't scale out of the view.
-            ImageView appIcon = (ImageView) layout.getChildAt(hItem).findViewById(R.id.list_item_icon);
-            appIcon.setScaleX(1.25f);
-            appIcon.setScaleY(1.25f);
-            appIcon.setY(3 * getResources().getDisplayMetrics().density + 0.5f);
-            //scroll to the new entry
-            layout.scrollTo(0, (int) layout.getChildAt(hItem).getY());
-        }
-        catch(Exception e){}
         listMove(0, false);
 
-
-        //copy category method but with the vList
+        //now define the apps list
         LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
         for(int i=0; i<vLayout.getChildCount();){
             vLayout.getChildAt(i).invalidate();
@@ -416,11 +361,8 @@ public class EternalMediaBar extends Activity {
         if(savedData.categories.get(hItem).appList.size() >1) {
             changeOptionsMenu.organizeList(0);
         }
-        //if we have it set to dim the background, dim it
-        if(savedData.dimLists) {
-            //we have to use the depreciated method to retain android 4.0 support, we don't have any need for the theme extension anyway.
-            vLayout.setBackgroundColor(getResources().getColor(R.color.dimColor));
-        }
+        //dim the list background to the dim color
+        vLayout.setBackgroundColor(savedData.dimCol);
 
 
         for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {

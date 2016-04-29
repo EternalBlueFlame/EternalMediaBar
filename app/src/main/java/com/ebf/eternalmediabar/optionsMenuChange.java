@@ -77,17 +77,11 @@ public class optionsMenuChange {
             }
         });
 
-
         //if the program can be launched open the app options menu
-        if (isLaunchable) {
-            loadAppOptionsMenu(launchIntent, appName);
-            EternalMediaBar.activity.optionVitem=1;
-        }
+        if (isLaunchable) {loadAppOptionsMenu(launchIntent, appName);}
         //otherwise load the normal options menu
-        else{
-            loadMainOptionsItems();
-            EternalMediaBar.activity.optionVitem=1;
-        }
+        else{loadMainOptionsItems();}
+        EternalMediaBar.activity.optionVitem=1;
 
 
         LinearLayout lLayout = (LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist);
@@ -97,7 +91,6 @@ public class optionsMenuChange {
         lLayout.addView(spacer);
         //close settings menu, we put this here since it's on the menu without exception.
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
-        lLayout.addView(new listItemLayout().optionsListItemView("Homepage",16,0,"http://github.com/EternalBlueFlame/EternalMediaBar","."));
     }
 
 
@@ -114,21 +107,15 @@ public class optionsMenuChange {
         EternalMediaBar.activity.optionVitem=1;
         //animate menu closing
         TranslateAnimation anim;
-        if (!EternalMediaBar.activity.savedData.mirrorMode) {
-            anim = new TranslateAnimation(0, (144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-        }
-        else{
-            anim = new TranslateAnimation(0, -(144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);
-        }
+        if (!EternalMediaBar.activity.savedData.mirrorMode) {anim = new TranslateAnimation(0, (144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);}
+        else{anim = new TranslateAnimation(0, -(144 * EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f), 0, 0);}
         anim.setDuration(200);
         anim.setInterpolator(new LinearInterpolator());
         anim.setFillEnabled(false);
         sLayout.setAnimation(anim);
         //now move the menu itself
         sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
+            @Override public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -143,9 +130,7 @@ public class optionsMenuChange {
                 }
             }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
+            @Override public void onAnimationRepeat(Animation animation) {}
         });
         //save any changes and reload the view
         EternalMediaBar.activity.savedData.writeXML(EternalMediaBar.activity);
@@ -161,12 +146,9 @@ public class optionsMenuChange {
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         //add the app that's selected so the user knows for sure what they are messing with.
         lLayout.addView(new listItemLayout().optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-        //copy the item to another category
         lLayout.addView(new listItemLayout().optionsListItemView("Copy to...", 2, 0, launchIntent, appName));
-        //move the item to another category
         lLayout.addView(new listItemLayout().optionsListItemView("Move to...", 3, 0, launchIntent, appName));
-        //first option is to remove an item from the list.
-        //later this will be modified to support hiding the icon when it's only in one menu
+        //if the app is in other lists, add an option remove item from this list.
         int i=0;
         for (int ii=0; ii< EternalMediaBar.activity.savedData.categories.size();){
             for (int iii=0; iii< EternalMediaBar.activity.savedData.categories.get(ii).appList.size();){
@@ -181,9 +163,9 @@ public class optionsMenuChange {
             lLayout.addView(new listItemLayout().optionsListItemView("Remove From This List", 6, 0, launchIntent, "4"));
         }
         else{
-            //hide the icon
+            //later this will be modified to support hiding the icon when it's only in one list.
         }
-        // !!! ENABLE AFTER FIXED !!! //Auto Organize
+        // !!! ENABLE AFTER FIXED !!! //Auto Categorize
                         /*/Automatically get the category for this item from google play
                         ConnectivityManager cm = (ConnectivityManager) EternalMediaBar.activity.getSystemService(Context.CONNECTIVITY_SERVICE);
                             //if there is Wifi, go ahead and try.
@@ -197,10 +179,8 @@ public class optionsMenuChange {
                                //lLayout.addView(child);
                             }/*/
 
-        //open the app's settings
-        lLayout.addView(new listItemLayout().optionsListItemView("Application Settings", 7, 0, launchIntent, appName));
 
-        //open the organization menu
+        lLayout.addView(new listItemLayout().optionsListItemView("Application Settings", 7, 0, launchIntent, appName));
         lLayout.addView(new listItemLayout().optionsListItemView("Reorganize This Category", 11, 0, launchIntent, appName));
 
     }
@@ -210,20 +190,12 @@ public class optionsMenuChange {
     /////Load the settings menu for customization/////
     //////////////////////////////////////////////////
     public void loadMainOptionsItems(){
-        //add the item for changing whether or not to use Google icons.
         EternalMediaBar.activity.optionVitem = 0;
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.addView(new listItemLayout().optionsListItemView("Choose Theme", 8, 0, ".", "."));
-        //add the item for changing the theme colors
         lLayout.addView(new listItemLayout().optionsListItemView("Theme Colors", 15,0,".","."));
-        if (EternalMediaBar.activity.savedData.dimLists){
-            lLayout.addView(new listItemLayout().optionsListItemView("Don't Dim List Backgrounds", 13, 0, ".", "."));
-        }
-        else{
-            lLayout.addView(new listItemLayout().optionsListItemView("Dim List Backgrounds", 13, 0, ".", "."));
-        }
-        //add the item for mirroring the UI
         lLayout.addView(new listItemLayout().optionsListItemView("Mirror Layout", 9, 0, ".", "."));
+        lLayout.addView(new listItemLayout().optionsListItemView("Homepage",16,0,"http://github.com/EternalBlueFlame/EternalMediaBar","."));
 
     }
 
@@ -236,10 +208,10 @@ public class optionsMenuChange {
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         lLayout.addView(new listItemLayout().optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-
+        //add the options for copying the menu item, skip the one for the current menu
         for (int i=0; i < EternalMediaBar.activity.savedData.categories.size()-1; ) {
             if (i != EternalMediaBar.activity.hItem) {
-                lLayout.addView(new listItemLayout().optionsListItemView("Copy to " + EternalMediaBar.activity.hli.get(i).label, 4, i, ".", "3"));
+                lLayout.addView(new listItemLayout().optionsListItemView("Copy to " + EternalMediaBar.activity.savedData.categories.get(i).categoryName, 4, i, ".", "3"));
             }
             i++;
         }
@@ -247,9 +219,8 @@ public class optionsMenuChange {
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
         lLayout.addView(spacer);
-        //return to first settings menu
+
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
-        //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
 
@@ -262,10 +233,10 @@ public class optionsMenuChange {
         LinearLayout lLayout = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         lLayout.addView(new listItemLayout().optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-
+        //add the options for moving the menu item, skip the one for the current menu
         for (int i=0; i < EternalMediaBar.activity.savedData.categories.size()-1; ) {
             if (i != EternalMediaBar.activity.hItem) {
-                lLayout.addView(new listItemLayout().optionsListItemView("Move to " + EternalMediaBar.activity.hli.get(i).label, 5, i, ".", ""));
+                lLayout.addView(new listItemLayout().optionsListItemView("Move to " + EternalMediaBar.activity.savedData.categories.get(i).categoryName, 5, i, ".", ""));
             }
             i++;
         }
@@ -273,9 +244,8 @@ public class optionsMenuChange {
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
         lLayout.addView(spacer);
-        //return to first settings menu
+
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
-        //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
 
@@ -296,9 +266,8 @@ public class optionsMenuChange {
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
         lLayout.addView(spacer);
-        //return to first settings menu
+
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
-        //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
 
@@ -313,14 +282,14 @@ public class optionsMenuChange {
         lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
         lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
         lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
+        //lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "App Backgrounds"));
 
         //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f)));
         lLayout.addView(spacer);
-        //return to first settings menu
+
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
-        //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
 
@@ -353,12 +322,9 @@ public class optionsMenuChange {
         else{
             lLayout.addView(new listItemLayout().optionsListItemView("Apply once", 12, -1, ".radioUnCheck", appName));
             lLayout.addView(new listItemLayout().optionsListItemView("Always apply", 12, 1, ".radioCheck", appName));
-
         }
 
-        //return to first settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Go Back", 1, 1, launchIntent, appName));
-        //close settings menu
         lLayout.addView(new listItemLayout().optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
     }
 
@@ -390,7 +356,6 @@ public class optionsMenuChange {
     //////////////Copy an app menu item///////////////
     //////////////////////////////////////////////////
     public void copyItem(int secondaryIndex){
-        //create a copy of the selected item in another list
         EternalMediaBar.activity.savedData.categories.get(secondaryIndex).appList.add(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).appList.get(EternalMediaBar.activity.vItem));
         menuClose();
     }
@@ -427,8 +392,6 @@ public class optionsMenuChange {
     ////////////Open application Settings/////////////
     //////////////////////////////////////////////////
     public Intent openAppSettings(String launchIntent){
-
-        //open application settings
         Intent intent = new Intent();
         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
@@ -441,12 +404,8 @@ public class optionsMenuChange {
     ////////////////////Mirror UI/////////////////////
     //////////////////////////////////////////////////
     public void mirrorUI(){
-        if (EternalMediaBar.activity.savedData.mirrorMode){
-            EternalMediaBar.activity.savedData.mirrorMode=false;
-        }
-        else{
-            EternalMediaBar.activity.savedData.mirrorMode = true;
-        }
+        if (EternalMediaBar.activity.savedData.mirrorMode){EternalMediaBar.activity.savedData.mirrorMode=false;}
+        else{EternalMediaBar.activity.savedData.mirrorMode = true;}
         menuClose();
     }
 
@@ -460,44 +419,19 @@ public class optionsMenuChange {
 
     }
 
-    //////////////////////////////////////////////////
-    ////////////////Change The Theme//////////////////
-    //////////////////////////////////////////////////
-    public void organizeByGoogle(){
-
-
-    }
-
-    //////////////////////////////////////////////////
-    ////////////Enable/Disable Dim Lists//////////////
-    //////////////////////////////////////////////////
-    public void toggleDimLists(){
-        if (EternalMediaBar.activity.savedData.dimLists){
-            EternalMediaBar.activity.savedData.dimLists=false;
-        }
-        else{
-            EternalMediaBar.activity.savedData.dimLists = true;
-        }
-        menuClose();
-    }
 
     //////////////////////////////////////////////////
     //////////////////Organize List///////////////////
     //////////////////////////////////////////////////
     public void organizeList(int secondaryIndex){
         //we want to define the organization method when we load this menu.
-        if (secondaryIndex ==1){
-            EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[1] =1;
-        }
-        else if (secondaryIndex ==-1){
-            EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[1] =0;
-        }
+        //toggle for if the organize is used every time the list is loaded.
+        if (secondaryIndex ==1){EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[1] =1;}
+        else if (secondaryIndex ==-1){EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[1] =0;}
 
         switch(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).organizeMode[2]){
             //no organization
-            case 0:case 3:{
-                break;
-            }
+            case 0:case 3:{break;}
             //alphabetical
             case 1:{
                 Collections.sort(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).appList, new Comparator<appDetail>() {
@@ -506,9 +440,6 @@ public class optionsMenuChange {
                         return lhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });
-                if (EternalMediaBar.activity.optionsMenu) {
-                    menuClose();
-                }
                 break;
             }
             //reverse alphabetical
@@ -519,15 +450,13 @@ public class optionsMenuChange {
                         return -lhs.label.toString().compareTo(rhs.label.toString());
                     }
                 });
-                if (EternalMediaBar.activity.optionsMenu) {
-                    menuClose();
-                }
                 break;
             }
             //Most used
-            case 4:{
-
-            }
+            case 4:{break;}
+        }
+        if (EternalMediaBar.activity.optionsMenu) {
+            menuClose();
         }
     }
 
@@ -549,11 +478,11 @@ public class optionsMenuChange {
                 case "Font":{EternalMediaBar.activity.savedData.fontCol = secondaryIndex;break;}
                 case "Icon":{EternalMediaBar.activity.savedData.iconCol = secondaryIndex;break;}
                 case "Menu":{EternalMediaBar.activity.savedData.menuCol = secondaryIndex;break;}
+                case "App Backgrounds":{EternalMediaBar.activity.savedData.dimCol = secondaryIndex;break;}
             }
             menuClose();
             return;
         }
-        int col = 0;
         LinearLayout lLayout = (LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist);
         lLayout.removeAllViews();
         //load the header that contains the current color
@@ -566,45 +495,31 @@ public class optionsMenuChange {
         SeekBar seekerBlue = (SeekBar) child.findViewById(R.id.blueSeek);
         SeekBar seekerAlpha = (SeekBar) child.findViewById(R.id.alphaSeek);
         EditText hexText = (EditText) child.findViewById(R.id.hexText);
+        //set the currentCol int to define the value of what the color was when we started, also use it so we can quicklyset the initial positions of the values.
+        int currentCol = 0xffffffff;
         switch (colorName){
-            case "Font":{
-                seekerRed.setProgress(Color.red(EternalMediaBar.activity.savedData.fontCol));
-                seekerGreen.setProgress(Color.green(EternalMediaBar.activity.savedData.fontCol));
-                seekerBlue.setProgress(Color.blue(EternalMediaBar.activity.savedData.fontCol));
-                seekerAlpha.setProgress(Color.alpha(EternalMediaBar.activity.savedData.fontCol) - 25);
-                hexText.setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.fontCol));
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.fontCol));
-                col=EternalMediaBar.activity.savedData.fontCol;break;
-            }
-            case "Icon":{
-                seekerRed.setProgress(Color.red(EternalMediaBar.activity.savedData.iconCol));
-                seekerGreen.setProgress(Color.green(EternalMediaBar.activity.savedData.iconCol));
-                seekerBlue.setProgress(Color.blue(EternalMediaBar.activity.savedData.iconCol));
-                seekerAlpha.setProgress(Color.alpha(EternalMediaBar.activity.savedData.iconCol) - 25);
-                hexText.setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.iconCol));
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.iconCol));
-                col=EternalMediaBar.activity.savedData.iconCol;break;
-            }
-            case "Menu":{
-                seekerRed.setProgress(Color.red(EternalMediaBar.activity.savedData.menuCol));
-                seekerGreen.setProgress(Color.green(EternalMediaBar.activity.savedData.menuCol));
-                seekerBlue.setProgress(Color.blue(EternalMediaBar.activity.savedData.menuCol));
-                seekerAlpha.setProgress(Color.alpha(EternalMediaBar.activity.savedData.menuCol) - 25);
-                hexText.setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.menuCol));
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.menuCol));
-                col=EternalMediaBar.activity.savedData.menuCol;break;
-            }
+            case "Font":{currentCol=EternalMediaBar.activity.savedData.fontCol;break;}
+            case "Icon":{currentCol=EternalMediaBar.activity.savedData.iconCol;break;}
+            case "Menu":{currentCol=EternalMediaBar.activity.savedData.menuCol;break;}
+            case "App Backgrounds":{currentCol=EternalMediaBar.activity.savedData.dimCol;break;}
         }
+        seekerRed.setProgress(Color.red(currentCol));
+        seekerGreen.setProgress(Color.green(currentCol));
+        seekerBlue.setProgress(Color.blue(currentCol));
+        seekerAlpha.setProgress(Color.alpha(currentCol) - 25);
+        hexText.setText("#" + Integer.toHexString(currentCol));
+        ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(currentCol));
 
 
 
-        //lastly change the listener for the Red seek bar
+
+        //change the listener for the Red seek bar
         seekerRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
                 //when the bar is moved, change the value of the font color, then update the image accordingly.
                 switch (colorName) {
+                    //each of these act generally the same, but because we need them to modify the actual values of the color in the save data, there is little we can do to simplify this.
                     case "Font": {
                         EternalMediaBar.activity.savedData.fontCol = Color.argb(Color.alpha(EternalMediaBar.activity.savedData.fontCol), progress, Color.green(EternalMediaBar.activity.savedData.fontCol), Color.blue(EternalMediaBar.activity.savedData.fontCol));
                         ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.fontCol));
@@ -632,7 +547,6 @@ public class optionsMenuChange {
         seekerGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
                 switch (colorName) {
                     case "Font": {
                         EternalMediaBar.activity.savedData.fontCol = Color.argb(Color.alpha(EternalMediaBar.activity.savedData.fontCol), Color.red(EternalMediaBar.activity.savedData.fontCol), progress, Color.blue(EternalMediaBar.activity.savedData.fontCol));
@@ -652,7 +566,6 @@ public class optionsMenuChange {
                 }
             }
 
-            //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -661,7 +574,6 @@ public class optionsMenuChange {
         seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
                 switch (colorName) {
                     case "Font": {
                         EternalMediaBar.activity.savedData.fontCol = Color.argb(Color.alpha(EternalMediaBar.activity.savedData.fontCol), Color.red(EternalMediaBar.activity.savedData.fontCol), Color.green(EternalMediaBar.activity.savedData.fontCol), progress);
@@ -681,7 +593,6 @@ public class optionsMenuChange {
                 }
             }
 
-            //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -690,7 +601,6 @@ public class optionsMenuChange {
         seekerAlpha.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //when the bar is moved, change the value of the font color, then update the image accordingly.
                 switch (colorName) {
                     case "Font":{
                         EternalMediaBar.activity.savedData.fontCol = Color.argb(progress+25, Color.red(EternalMediaBar.activity.savedData.fontCol), Color.green(EternalMediaBar.activity.savedData.fontCol), Color.blue(EternalMediaBar.activity.savedData.fontCol));
@@ -709,7 +619,6 @@ public class optionsMenuChange {
                     }
                 }
             }
-            //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -718,25 +627,22 @@ public class optionsMenuChange {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 try {
+                    //we attempt to parse the given hex color, we don't have to push it directly to the variable here because changing the sliver values does that for us anyway.
                     int col = Color.parseColor(((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).getText().toString());
                     ((SeekBar) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.redSeek)).setProgress(Color.red(col));
                     ((SeekBar) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.greenSeek)).setProgress(Color.green(col));
                     ((SeekBar) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.blueSeek)).setProgress(Color.blue(col));
                     ((SeekBar) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.alphaSeek)).setProgress(Color.alpha(col));
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
                 return false;
             }
         });
 
 
-                //and finally add the view
-                lLayout.addView(child);
-        //add the item for save and quit
+        lLayout.addView(child);
         lLayout.addView(new listItemLayout().optionsListItemView("Save and close", 0, 0, ".", "."));
-
-        //add the item for cancel changes
-        lLayout.addView(new listItemLayout().optionsListItemView("Close without saving", 10, col, ".", colorName));
+        //if the user decides to cancel, this is where we use the value of the color before changes that we stored earlier.
+        lLayout.addView(new listItemLayout().optionsListItemView("Close without saving", 10, currentCol, ".", colorName));
     }
 
 }
