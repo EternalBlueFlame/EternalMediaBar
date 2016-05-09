@@ -182,104 +182,47 @@ public class settingsClass implements Serializable {
             Document doc = dbFactory.newDocumentBuilder().parse(fs);
             fs.close();
             //try to load the individual elements, it is possible one or more could be missing, so we have to compensate for that.
-            //make a node list to re-use.
-            NodeList SingularNode;
-            //try to get the iconCol
+            //get the variable for the icon color
+            try {savedData.iconCol = Integer.parseInt(doc.getElementsByTagName("iconCol").item(0).getTextContent());}
+            catch (Exception e) {savedData.iconCol = 0xffffffff;}
+            //get the menuCol
             try {
-                //get the variable for the icon color
-                SingularNode = doc.getElementsByTagName("iconCol");
-                savedData.iconCol = Integer.parseInt(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e) {
-                //if it fails to load, set the value to white
-                savedData.iconCol = 0xffffffff;
-            }
-            //we repeat this for every variable
-            try {
-                //get the menuCol
-                SingularNode = doc.getElementsByTagName("menuCol");
-                savedData.menuCol = Integer.parseInt(SingularNode.item(0).getTextContent());
+                savedData.menuCol = Integer.parseInt(doc.getElementsByTagName("menuCol").item(0).getTextContent());
                 if (savedData.menuCol==-1){savedData.menuCol=0xcc000000;}
             }
-            catch (Exception e){
-                savedData.menuCol = 0xffffff;
-            }
-            try {
-                //get the fontCol
-                SingularNode = doc.getElementsByTagName("fontCol");
-                savedData.fontCol = Integer.parseInt(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.fontCol = 0xffffff;
-            }
-            try {
-                //get the bool for cleanCacheOnStart
-                SingularNode = doc.getElementsByTagName("cleanCacheOnStart");
-                savedData.cleanCacheOnStart = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.cleanCacheOnStart = false;
-            }
-            try {
-                //get the bool for loadAppBG
-                SingularNode = doc.getElementsByTagName("loadAppBG");
-                savedData.loadAppBG = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.loadAppBG = false;
-            }
-            try{
-                //get the bool for gamingMode
-                SingularNode = doc.getElementsByTagName("gamingMode");
-                savedData.gamingMode = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch(Exception e){
-                savedData.gamingMode = false;
-            }
-            try {
-                //get the bool for useGoogleIcons
-                SingularNode = doc.getElementsByTagName("theme");
-                savedData.theme = SingularNode.item(0).getTextContent();
-            }
-            catch (Exception e){
-                savedData.theme = "Google";
-            }
-            try {
-                //get the bool for mirrorMode
-                SingularNode = doc.getElementsByTagName("mirrorMode");
-                savedData.mirrorMode = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.mirrorMode = false;
-            }
-            try {
-                //get the bool for mirrorMode
-                SingularNode = doc.getElementsByTagName("dimCol");
-                savedData.dimCol = Integer.parseInt(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.dimCol = 0x66000000;
-            }
-            try {
-                //get the bool for doubleTap
-                SingularNode = doc.getElementsByTagName("doubleTap");
-                savedData.doubleTap = boolFromString(SingularNode.item(0).getTextContent());
-            }
-            catch (Exception e){
-                savedData.doubleTap = false;
-            }
+            catch (Exception e){savedData.menuCol = 0xffffff;}
+            //get the fontCol
+            try {savedData.fontCol = Integer.parseInt(doc.getElementsByTagName("fontCol").item(0).getTextContent());}
+            catch (Exception e){savedData.fontCol = 0xffffff;}
+            //get the bool for cleanCacheOnStart
+            try {savedData.cleanCacheOnStart = boolFromString(doc.getElementsByTagName("cleanCacheOnStart").item(0).getTextContent());}
+            catch (Exception e){savedData.cleanCacheOnStart = false;}
+            //get the bool for loadAppBG
+            try {savedData.loadAppBG = boolFromString(doc.getElementsByTagName("loadAppBG").item(0).getTextContent());}
+            catch (Exception e){savedData.loadAppBG = false;}
+            //get the bool for gamingMode
+            try{savedData.gamingMode = boolFromString(doc.getElementsByTagName("gamingMode").item(0).getTextContent());}
+            catch(Exception e){savedData.gamingMode = false;}
+            //get the bool for useGoogleIcons
+            try {savedData.theme = doc.getElementsByTagName("theme").item(0).getTextContent();}
+            catch (Exception e){savedData.theme = "Google";}
+            //get the bool for mirrorMode
+            try {savedData.mirrorMode = boolFromString(doc.getElementsByTagName("mirrorMode").item(0).getTextContent());}
+            catch (Exception e){savedData.mirrorMode = false;}
+            //get the bool for mirrorMode
+            try {savedData.dimCol = Integer.parseInt(doc.getElementsByTagName("dimCol").item(0).getTextContent());}
+            catch (Exception e){savedData.dimCol = 0x66000000;}
+            //get the bool for doubleTap
+            try {savedData.doubleTap = boolFromString(doc.getElementsByTagName("doubleTap").item(0).getTextContent());}
+            catch (Exception e){savedData.doubleTap = false;}
 
 
             //////////////////////////////////////////////////
             //////////////////Load a vLists///////////////////
             //////////////////////////////////////////////////
             try {
-                // grab the vLists tag
-                NodeList categoryList = doc.getElementsByTagName("vLists");
-                Element categoryNode = (Element) categoryList.item(0);
-
                 //iterate through  VList tags
-                NodeList vListList = categoryNode.getElementsByTagName("vList");
+                NodeList vListList = ((Element) doc.getElementsByTagName("vLists").item(0)).getElementsByTagName("vList");
                 for (int categoriesInXML = 0; categoriesInXML < vListList.getLength();) {
                     categoryClass newCategory = new categoryClass();
                     Element appElements = (Element) vListList.item(categoriesInXML);
@@ -352,12 +295,8 @@ public class settingsClass implements Serializable {
             ///////////////Load the hidden apps///////////////
             //////////////////////////////////////////////////
             try{
-                //enter the hiddenApps list
-                NodeList oldAppsList = doc.getElementsByTagName("hiddenApps");
-                Element appElements = (Element) oldAppsList.item(0);
-
                 // iterate through AppData tags
-                NodeList appsList = appElements.getElementsByTagName("AppData");
+                NodeList appsList = ((Element) doc.getElementsByTagName("hiddenApps").item(0)).getElementsByTagName("AppData");
                 for (int currentApp = 0; currentApp < appsList.getLength();) {
                     try {
                         Element appElement = (Element) appsList.item(currentApp);
