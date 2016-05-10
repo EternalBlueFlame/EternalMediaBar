@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,11 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.ebf.eternalVariables.webSearchResults;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 
 public class EternalMediaBar extends Activity {
@@ -79,7 +73,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     ///////////Intent receiver for search/////////////
     //////////////////////////////////////////////////
-    private void searchIntent(String query, boolean isWeb) {
+    private void searchIntent(String query) {
         //get the results view and be sure it's clear.
         LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
         if(searchView.getChildCount()>0){
@@ -91,30 +85,7 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
-            //because we don't want to use any data here, be sure wifi is being used before searching the web.
-            if(isWeb && query.length()>2 && ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
-                //search it online first
-                try {
-                    //search the web for the query, and be sure it isn't null before we do something
-                    JSONArray arrayObject = new JSONObject(new webSearchResults().execute(query).get()).getJSONObject("responseData").getJSONArray("results");
-                    if(!arrayObject.isNull(0)) {
-                        //setup the category for the result, to get the icon we have to search for the category with the correct tag.
-                        for (int i = 0; i < savedData.categories.size(); ) {
-                            if (savedData.categories.get(i).categoryTags.contains("Web")) {
-                                searchView.addView(new listItemLayout().searchCategoryItemView("On The Internet",savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
-                                break;
-                            }
-                            i++;
-                        }
-                        //display the actual web search result, a number of characters it displays aren't the actual character but rather the HTML code, so that has to be parsed manually.
-                        for (int i=0;!arrayObject.isNull(i);) {
-                            searchView.addView(new listItemLayout().webSearchItem(arrayObject.getJSONObject(i).getString("titleNoFormatting").replace("&#39;","'"), arrayObject.getJSONObject(i).getString("url"), arrayObject.getJSONObject(i).getString("content").replace("<b>", "").replace("</b>", "").replace("&#39;","'")));
-                                i++;
-                            }
-                    }
-                }
-                catch (Exception e){e.printStackTrace();}
-            }
+            searchView.addView(new listItemLayout().appListItemView("Search " +query + "On Google", -1, 0, true, ".webSearch", query));
 
             //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
             query=query.toLowerCase();
@@ -316,12 +287,11 @@ public class EternalMediaBar extends Activity {
         ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchIntent(query, true);
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchIntent(newText, false);
+                searchIntent(newText);
                 return false;
             }
         });

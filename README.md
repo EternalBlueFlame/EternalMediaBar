@@ -51,9 +51,7 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>
--	Option to change color of the list dim
 -	make new method for adding apps to the new apps list, the current method seems to rarley let some random apps through.
--	option to require double tap to open an app, good for when you have a hard time hitting the right app, also lets you make better use of custom app backgrounds without a controller. -IN PROGRESS
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	finish the Lunar Tales icon theme, and it's invert theme.
 -	add manufacturer themes (using HTC/Samgsung/Sony/etc apps).

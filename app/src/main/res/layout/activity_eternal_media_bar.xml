@@ -69,16 +69,8 @@
             android:layout_height="48dp"
             android:id="@+id/searchView"
             android:background="@drawable/searchcenter_144px"
-            android:layout_weight="0.25"
+            android:layout_weight="0"
             android:textSize="13sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:id="@+id/button"
-            android:background="@drawable/searchcenter_144px"
-            android:text="Search"
-            android:layout_weight="0" />
 
         <ImageView
             android:layout_width="24dp"

@@ -1,5 +1,6 @@
 package com.ebf.eternalmediabar;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -76,7 +77,13 @@ public class listItemLayout {
                         if (launchIntent.equals(".options")) {
                             EternalMediaBar.activity.listMove(index, false);
                             new optionsMenuChange().menuOpen(false, launchIntent, appName);
-                        } else {
+                        }
+                        else if(launchIntent.equals(".webSearch")){
+                            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                            intent.putExtra(SearchManager.QUERY, appName);
+                            EternalMediaBar.activity.startActivity(intent);
+                        }
+                        else {
                             //if it's not the options menu then try to open the app
                             EternalMediaBar.activity.startActivity(EternalMediaBar.activity.manager.getLaunchIntentForPackage(launchIntent));
                         }
@@ -303,7 +310,8 @@ public class listItemLayout {
                         //open a URL
                         case 16: {EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(launchIntent)));break;}
                         //toggles
-                        case 9: {new optionsMenuChange().mirrorUI();break;}
+                        case 9: {EternalMediaBar.activity.savedData.mirrorMode = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.mirrorMode);break;}
+                        case 13: {EternalMediaBar.activity.savedData.doubleTap = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.doubleTap);break;}
                         //cases for changing theme
                         case 8: {new optionsMenuChange().themeChange(launchIntent, appName);break;}
                         case 14:{new optionsMenuChange().setIconTheme(appName);break;}
@@ -321,67 +329,4 @@ public class listItemLayout {
 
         return layout.getRootView();
     }
-
-
-    ////////////////////////////////////////////////////////////
-    ////////////////// Web Search List Item ////////////////////
-    ////////////////////////////////////////////////////////////
-
-
-    public View webSearchItem(String title, final String url, String description) {
-
-        float dpi = EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
-        RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(180 * dpi));
-
-        //this item is a little different, there is no image, but instead theres 3 text views, one for the title, one for the URL and one for the website description.
-        TextView webLabel = new TextView(EternalMediaBar.activity);
-        webLabel.setText(title);
-        webLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
-        webLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        webLabel.setX(2 * dpi);
-        webLabel.setY((2 * dpi));
-        webLabel.setLines(2);
-        webLabel.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth()*(2 * dpi)));
-        webLabel.setTextSize(8 * dpi);
-        webLabel.setPaintFlags(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-        webLabel.setBackgroundColor(0xff333333);
-        layout.addView(webLabel);
-
-        //now add the text
-        TextView webURL = new TextView(EternalMediaBar.activity);
-        webURL.setText(url);
-        webURL.setTextColor(EternalMediaBar.activity.savedData.fontCol);
-        webURL.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        webURL.setX(0);
-        webURL.setY(40 * dpi);
-        webURL.setLines(2);
-        webURL.setWidth(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth());
-        webURL.setTextSize(7*dpi);
-        webURL.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-        layout.addView(webURL);
-
-        //now add the text
-        TextView webDescription = new TextView(EternalMediaBar.activity);
-        webDescription.setText(description);
-        webDescription.setTextColor(EternalMediaBar.activity.savedData.fontCol);
-        webDescription.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        webDescription.setX(2 * dpi);
-        webDescription.setY(78 * dpi);
-        webDescription.setWidth(Math.round(EternalMediaBar.activity.findViewById(R.id.search_view).getWidth() * (2 * dpi)));
-        webDescription.setTextSize(8 * dpi);
-        webDescription.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-        layout.addView(webDescription);
-
-        //on click open the URL. remember that android's URL parse does not usually support HTTPS so we have to compensate for that.
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("https://", "http://"))));
-            }
-        });
-
-        return layout.getRootView();
-    }
-
 }

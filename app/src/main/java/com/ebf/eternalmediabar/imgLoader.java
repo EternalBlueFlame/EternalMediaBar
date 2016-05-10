@@ -44,6 +44,9 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.ic_radio_button_unchecked_white_24dp);}
                 }
             }
+            case ".webSearch":{
+                return getBitmap(false, "com.google.android.googlequicksearchbox", R.drawable.lunar_web);
+            }
             case "0": {
                 return Bitmap.createBitmap(new int[]{-1},1,1, Bitmap.Config.ALPHA_8);
             }
@@ -120,7 +123,6 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
                 } catch (Exception e) {
                     switch (EternalMediaBar.activity.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
-                        case "MaterialInverse":{return getBitmap(true, "", R.drawable.material_ic_people_white_48dp);}
                         //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_error);}
                         //no google case
                         default:{return getBitmap(true, "", R.drawable.error_144px);}
