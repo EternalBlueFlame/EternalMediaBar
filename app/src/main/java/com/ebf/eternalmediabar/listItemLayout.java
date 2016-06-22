@@ -74,18 +74,28 @@ public class listItemLayout {
                     } else {
                         //if double tap is off, or this is the position for the app, or both, open it.
                         //if its the options button, open the options menu
-                        if (launchIntent.equals(".options")) {
-                            EternalMediaBar.activity.listMove(index, false);
-                            new optionsMenuChange().menuOpen(false, launchIntent, appName);
-                        }
-                        else if(launchIntent.equals(".webSearch")){
-                            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                            intent.putExtra(SearchManager.QUERY, appName);
-                            EternalMediaBar.activity.startActivity(intent);
-                        }
-                        else {
-                            //if it's not the options menu then try to open the app
-                            EternalMediaBar.activity.startActivity(EternalMediaBar.activity.manager.getLaunchIntentForPackage(launchIntent));
+                        switch (launchIntent){
+                            case ".options":{
+                                EternalMediaBar.activity.listMove(index, false);
+                                new optionsMenuChange().menuOpen(false, launchIntent, appName);
+                                break;
+                            }
+                            case ".webSearch":{
+                                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                                intent.putExtra(SearchManager.QUERY, appName);
+                                EternalMediaBar.activity.startActivity(intent);
+                                break;
+                            }
+                            case ".storeSearch":{
+                                Intent storeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=" + appName +"&c=apps"));
+                                EternalMediaBar.activity.startActivity(storeIntent);
+                                break;
+                            }
+                            default:{
+                                //if it's not the options menu then try to open the app
+                                EternalMediaBar.activity.startActivity(EternalMediaBar.activity.manager.getLaunchIntentForPackage(launchIntent));
+                                break;
+                            }
                         }
                     }
                 }

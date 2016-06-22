@@ -47,6 +47,9 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case ".webSearch":{
                 return getBitmap(false, "com.google.android.googlequicksearchbox", R.drawable.lunar_web);
             }
+            case ".storeSearch":{
+                return getBitmap(false, "com.android.vending", R.drawable.lunar_web);
+            }
             case "0": {
                 return Bitmap.createBitmap(new int[]{-1},1,1, Bitmap.Config.ALPHA_8);
             }
@@ -85,17 +88,17 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             case "5": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_assignment_white_48dp);}
-                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_utility);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_utility);}
                     case "Google":{return getBitmap(false, "com.google.android.apps.docs", R.drawable.extras_144px);}
-                    default:{return getBitmap(true, "", R.drawable.extras_144px);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_utility);}
                 }
             }
             case "6": {
                 switch (EternalMediaBar.activity.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_settings_white_48dp);}
-                    //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_settings);}
+                    case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_settings);}
                     case "Google":{return getBitmap(false, "com.android.settings", R.drawable.settings_144px);}
-                    default:{return getBitmap(true, "", R.drawable.settings_144px);}
+                    default:{return getBitmap(true, "", R.drawable.lunar_settings);}
                 }
             }
             case "7": {

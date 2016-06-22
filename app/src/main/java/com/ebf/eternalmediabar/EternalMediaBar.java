@@ -85,7 +85,8 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
-            searchView.addView(new listItemLayout().appListItemView("Search " +query + "On Google", -1, 0, true, ".webSearch", query));
+            searchView.addView(new listItemLayout().appListItemView("Search \"" +query + "\" on the web", -1, 0, true, ".webSearch", query));
+            searchView.addView(new listItemLayout().appListItemView("Search \"" +query + "\" on the Apps Store ", -1, 0, true, ".storeSearch", query));
 
             //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
             query=query.toLowerCase();

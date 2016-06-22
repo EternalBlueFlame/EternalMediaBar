@@ -18,6 +18,7 @@ import android.widget.Space;
 import android.widget.TextView;
 
 import com.ebf.eternalVariables.appDetail;
+import com.ebf.eternalVariables.categoryClass;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -152,16 +153,19 @@ public class optionsMenuChange {
         lLayout.addView(new listItemLayout().optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
         lLayout.addView(new listItemLayout().optionsListItemView("Copy to...", 2, 0, launchIntent, appName));
         lLayout.addView(new listItemLayout().optionsListItemView("Move to...", 3, 0, launchIntent, appName));
+
         //if the app is in other lists, add an option remove item from this list.
         int i=0;
-        for (int ii=0; ii< EternalMediaBar.activity.savedData.categories.size();){
-            for (int iii=0; iii< EternalMediaBar.activity.savedData.categories.get(ii).appList.size();){
-                if (EternalMediaBar.activity.savedData.categories.get(ii).appList.get(iii).name.equals(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).appList.get(EternalMediaBar.activity.vItem).name)){
+        for (categoryClass category : EternalMediaBar.activity.savedData.categories){
+            for (appDetail app: category.appList){
+                if (app.name.equals(EternalMediaBar.activity.savedData.categories.get(EternalMediaBar.activity.hItem).appList.get(EternalMediaBar.activity.vItem).name)){
                     i++;
+                    break;
                 }
-                iii++;
             }
-            ii++;
+            if (i>0){
+                break;
+            }
         }
         if (i>1) {
             lLayout.addView(new listItemLayout().optionsListItemView("Remove From This List", 6, 0, launchIntent, "4"));
@@ -263,7 +267,7 @@ public class optionsMenuChange {
     }
 
     //////////////////////////////////////////////////
-    /////Load the settings menu for theme change//////
+    ///Load the settings menu for theme color change//
     //////////////////////////////////////////////////
     public void themeColorChange(String launchIntent, String appName){
         EternalMediaBar.activity.optionVitem = 0;
@@ -349,8 +353,8 @@ public class optionsMenuChange {
     //////////////////////////////////////////////////
 
     public Boolean toggleBool(Boolean bool){
-        if (bool){return false;}
-        else{return true;}
+        menuClose();
+        return !bool;
     }
 
 
@@ -408,7 +412,6 @@ public class optionsMenuChange {
     public void setIconTheme(String theme){
         EternalMediaBar.activity.savedData.theme = theme;
         menuClose();
-
     }
 
 

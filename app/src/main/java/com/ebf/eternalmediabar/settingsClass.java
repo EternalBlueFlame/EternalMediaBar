@@ -42,24 +42,33 @@ public class settingsClass implements Serializable {
     //we can't manage files from this class due to permissions, but we can handle processing the variables
     public void writeXML(EternalMediaBar eternalMediaBar){
         try {
-
             FileOutputStream fileStream = eternalMediaBar.openFileOutput("data.xml", Context.MODE_PRIVATE);
-            fileStream.write((
-                            "<xmlRoot>\n<iconCol>" +
-                                    eternalMediaBar.savedData.iconCol + "</iconCol>\n<menuCol>" +
-                                    eternalMediaBar.savedData.menuCol + "</menuCol>\n<fontCol>" +
-                                    eternalMediaBar.savedData.fontCol + "</fontCol>\n<cleanCacheOnStart>" +
-                                    eternalMediaBar.savedData.cleanCacheOnStart + "</cleanCacheOnStart>\n<loadAppBG>" +
-                                    eternalMediaBar.savedData.loadAppBG + "</loadAppBG>\n<gamingMode>" +
-                                    eternalMediaBar.savedData.gamingMode + "</gamingMode>\n<doubleTap>" +
-                                    eternalMediaBar.savedData.doubleTap + "</doubleTap>\n<theme>" +
-                                    eternalMediaBar.savedData.theme + "</theme>\n<mirrorMode>" +
-                                    eternalMediaBar.savedData.mirrorMode + "</mirrorMode>\n<dimLists>" +
-                                    eternalMediaBar.savedData.dimCol + "</dimLists>\n\n<vLists>\n" +
-                                    appSavesToXML(eternalMediaBar.savedData) +
-                                    hiddenAppsToString(eternalMediaBar.savedData) +
-                                    "\n</xmlRoot>").getBytes()
-            );
+            StringBuilder sB = new StringBuilder();
+            sB.append("<xmlRoot>\n" + "<iconCol>");
+            sB.append(eternalMediaBar.savedData.iconCol);
+            sB.append("</iconCol>\n<menuCol>");
+            sB.append(eternalMediaBar.savedData.menuCol);
+            sB.append("</menuCol>\n<fontCol>");
+            sB.append(eternalMediaBar.savedData.fontCol);
+            sB.append("</fontCol>\n<cleanCacheOnStart>");
+            sB.append(eternalMediaBar.savedData.cleanCacheOnStart);
+            sB.append("</cleanCacheOnStart>\n<loadAppBG>");
+            sB.append(eternalMediaBar.savedData.loadAppBG);
+            sB.append("</loadAppBG>\n<gamingMode>");
+            sB.append(eternalMediaBar.savedData.gamingMode);
+            sB.append("</gamingMode>\n<doubleTap>");
+            sB.append(eternalMediaBar.savedData.doubleTap);
+            sB.append("</doubleTap>\n<theme>");
+            sB.append(eternalMediaBar.savedData.theme);
+            sB.append("</theme>\n<mirrorMode>");
+            sB.append(eternalMediaBar.savedData.mirrorMode);
+            sB.append("</mirrorMode>\n<dimLists>");
+            sB.append(eternalMediaBar.savedData.dimCol);
+            sB.append("</dimLists>\n\n<vLists>\n");
+            sB.append(appSavesToXML(eternalMediaBar.savedData));
+            sB.append(hiddenAppsToString(eternalMediaBar.savedData));
+            sB.append("\n</xmlRoot>");
+            fileStream.write(sB.toString().getBytes());
             //write a string to the stream
             //close the stream to save some RAM.
             fileStream.flush();
@@ -88,18 +97,23 @@ public class settingsClass implements Serializable {
 
         StringBuilder bytes= new StringBuilder();
 
-        for (int i=0; i< saveData.categories.size();) {
+        for (categoryClass category : saveData.categories) {
             //include this list of names as part of the save file. Also use a string to define icon.
-            bytes.append("\n     <vList>\n          <listName>" +
-                    saveData.categories.get(i).categoryName + "</listName>\n          <listIcon>" +
-                    saveData.categories.get(i).categoryIcon + "</listIcon>\n          <listGoogleIcon>" +
-                    saveData.categories.get(i).categoryGoogleIcon + "</listGoogleIcon>\n");
+            bytes.append("\n     <vList>\n          <listName>");
+            bytes.append(category.categoryName);
+            bytes.append("</listName>\n          <listIcon>");
+            bytes.append(category.categoryIcon);
+            bytes.append("</listIcon>\n          <listGoogleIcon>");
+            bytes.append(category.categoryGoogleIcon);
+            bytes.append("</listGoogleIcon>\n");
 
             try{
                 bytes.append("          <categoryTags>");
-                for (int ii=0;ii<saveData.categories.get(i).categoryTags.size();){
-                    if (saveData.categories.get(i).categoryTags.get(ii).matches(".*[a-zA-Z]+.*")) {
-                        bytes.append("\n               <tag>" + saveData.categories.get(i).categoryTags.get(ii) + "</tag>");
+                for (int ii=0;ii<category.categoryTags.size();){
+                    if (category.categoryTags.get(ii).matches(".*[a-zA-Z]+.*")) {
+                        bytes.append("\n               <tag>");
+                        bytes.append(category.categoryTags.get(ii));
+                        bytes.append("</tag>");
                     }
                     ii++;
                 }
@@ -109,23 +123,27 @@ public class settingsClass implements Serializable {
             //due to the way the variable is managed, this may fail, so we need to compensate for that.
             try {
                 //while we do this we can also define the organize mode to save some time and effort.
-                bytes.append("          <organizeMode>\n               <sub>" +
-                        saveData.categories.get(i).organizeMode[0] + "</sub>\n               <repeat>" +
-                        saveData.categories.get(i).organizeMode[1] + "</repeat>\n               <main>" +
-                        saveData.categories.get(i).organizeMode[2] + "</main>\n          </organizeMode>\n\n");
+                bytes.append("          <organizeMode>\n               <sub>");
+                bytes.append(category.organizeMode[0]);
+                bytes.append("</sub>\n               <repeat>");
+                bytes.append(category.organizeMode[1]);
+                bytes.append("</repeat>\n               <main>");
+                bytes.append(category.organizeMode[2]);
+                bytes.append("</main>\n          </organizeMode>\n\n");
             } catch (Exception e) {}
             //now load the actual apps in the list
-            for (int ii=0; ii<saveData.categories.get(i).appList.size();){
+            for (appDetail app : category.appList){
                 //Similar to HTML we will use the same syntax to declare the variables, this makes it easy to parse later on.
                 //we will add the whitespace as well, just in case for some odd reason we actually need to be able to read the save file for debugging purposes.
-                bytes.append("\n          <AppData>\n               <label>"+
-                        saveData.categories.get(i).appList.get(ii).label.toString().replace("&", "andabcd")+"</label>\n               <name>"+
-                        saveData.categories.get(i).appList.get(ii).name+"</name>\n               <persistent>"+
-                        saveData.categories.get(i).appList.get(ii).isPersistent+"</persistent>\n          </AppData>");
-                ii++;
+                bytes.append("\n          <AppData>\n               <label>");
+                bytes.append(app.label.toString().replace("&", "andabcd"));
+                bytes.append("</label>\n               <name>");
+                bytes.append(app.name);
+                bytes.append("</name>\n               <persistent>");
+                bytes.append(app.isPersistent);
+                bytes.append("</persistent>\n          </AppData>");
             }
             bytes.append("\n     </vList>\n");
-            i++;
         }
         bytes.append("</vLists>\n");
 
@@ -138,10 +156,15 @@ public class settingsClass implements Serializable {
         //the same way we did it for the vLists, we'll do it again for the hidden apps
         StringBuilder bytes= new StringBuilder("\n<hiddenApps>\n");
         for (int i=0; i<saveData.hiddenApps.size();){
-            bytes.append("\n     <AppData>\n          <label>"+
-                    saveData.hiddenApps.get(i).label.toString().replace("&", "andabcd")+"</label>\n          <name>"+
-                    saveData.hiddenApps.get(i).name+"</name>\n          <persistent>"+
-                    saveData.hiddenApps.get(i).isPersistent+"</persistent>\n     </AppData>");
+            bytes.append("\n     <AppData>\n          <label>");
+            bytes.append(saveData.hiddenApps.get(i).label.toString().replace("&", "andabcd"));
+            bytes.append("</label>\n          <name>");
+            bytes.append(saveData.hiddenApps.get(i).name);
+            bytes.append("</name>\n          <persistent>");
+            bytes.append(saveData.hiddenApps.get(i).isPersistent);
+            bytes.append("</persistent>\n     </AppData>");
+            bytes.append(saveData.hiddenApps.get(i).isPersistent);
+            bytes.append("</persistent>\n     </AppData>");
             i++;
         }
         bytes.append("\n</hiddenApps>\n");
