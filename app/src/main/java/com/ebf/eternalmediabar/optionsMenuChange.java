@@ -277,7 +277,7 @@ public class optionsMenuChange {
         lLayout.addView(new listItemLayout().optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
         lLayout.addView(new listItemLayout().optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
         lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
-        lLayout.addView(new listItemLayout().optionsListItemView("Change Menu Color", 10, 0, ".", "App Backgrounds"));
+        lLayout.addView(new listItemLayout().optionsListItemView("Change List Color", 10, 0, ".", "App Backgrounds"));
 
         goBackItems(lLayout, launchIntent, appName);
     }
@@ -574,6 +574,7 @@ public class optionsMenuChange {
                 ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.fontCol));
                 //changing the hex box will automatically change the scroll bars accordingly.
                 ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.fontCol));
+                break;
             }
             case "Icon":{
                 if (a==0){a=Color.alpha(EternalMediaBar.activity.savedData.iconCol);}
@@ -583,6 +584,7 @@ public class optionsMenuChange {
                 EternalMediaBar.activity.savedData.iconCol = Color.argb(a, r, g, b);
                 ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.iconCol));
                 ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.iconCol));
+                break;
             }
             case "Menu":{
                 if (a==0){a=Color.alpha(EternalMediaBar.activity.savedData.menuCol);}
@@ -592,6 +594,7 @@ public class optionsMenuChange {
                 EternalMediaBar.activity.savedData.menuCol = Color.argb(a, r, g, b);
                 ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.menuCol));
                 ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.menuCol));
+                break;
             }
             case "App Backgrounds":{
                 if (a==0){a=Color.alpha(EternalMediaBar.activity.savedData.dimCol);}
@@ -601,6 +604,7 @@ public class optionsMenuChange {
                 EternalMediaBar.activity.savedData.dimCol = Color.argb(a, r, g, b);
                 ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.activity.savedData.dimCol));
                 ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.activity.savedData.dimCol));
+                break;
             }
         }
     }

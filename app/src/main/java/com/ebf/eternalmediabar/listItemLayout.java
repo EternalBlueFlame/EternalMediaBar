@@ -320,7 +320,7 @@ public class listItemLayout {
                         //open a URL
                         case 16: {EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(launchIntent)));break;}
                         //toggles
-                        case 9: {EternalMediaBar.activity.savedData.mirrorMode = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.mirrorMode);break;}
+                        case 9: {EternalMediaBar.activity.savedData.mirrorMode = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.mirrorMode); EternalMediaBar.activity.loadListView();break;}
                         case 13: {EternalMediaBar.activity.savedData.doubleTap = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.doubleTap);break;}
                         //cases for changing theme
                         case 8: {new optionsMenuChange().themeChange(launchIntent, appName);break;}

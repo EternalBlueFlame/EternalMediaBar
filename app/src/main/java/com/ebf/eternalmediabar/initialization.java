@@ -106,18 +106,19 @@ public class initialization {
         Boolean[] sysApps = new Boolean[]{false};
 
         //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
-        for (int i = 0; i < eternalMediaBar.savedData.categories.size(); ) {
-            for (appDetail app : eternalMediaBar.savedData.categories.get(i).appList) {
+        for (int i = 0; i < eternalMediaBar.savedData.categories.size();) {
+            for (int ii=0; ii < eternalMediaBar.savedData.categories.get(i).appList.size();) {
                 //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
                 try {
                     //this will fail if the app is not valid, and then be handled by the catch.
-                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(app.name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
-                        eternalMediaBar.savedData.categories.get(i).appList.remove(app);
+                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(eternalMediaBar.savedData.categories.get(i).appList.get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
+                        eternalMediaBar.savedData.categories.get(i).appList.remove(ii);
+                        ii--;
                     }
                     //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
                     else {
                         for (ResolveInfo activity : availableActivities ) {
-                            if (activity.activityInfo.packageName.equals(app.name)) {
+                            if (activity.activityInfo.packageName.equals(eternalMediaBar.savedData.categories.get(i).appList.get(ii).name)) {
                                 availableActivities.remove(activity);
                                 //now set the index of iii to break the loop, since we already found what we were looking for.
                                 break;
@@ -125,12 +126,14 @@ public class initialization {
                         }
                     }
                 } catch (Exception e) {
-                    if (app.name.equals(".options")) {
+                    if (eternalMediaBar.savedData.categories.get(i).appList.get(ii).name.equals(".options")) {
                         sysApps[0] = true;
-                    } else if (!app.isPersistent) {
-                        eternalMediaBar.savedData.categories.get(i).appList.remove(app);
+                    } else if (!eternalMediaBar.savedData.categories.get(i).appList.get(ii).isPersistent) {
+                        eternalMediaBar.savedData.categories.get(i).appList.remove(ii);
+                        ii--;
                     }
                 }
+                ii++;
             }
             i++;
         }
