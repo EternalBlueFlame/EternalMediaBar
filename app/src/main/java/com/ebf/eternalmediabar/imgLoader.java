@@ -5,22 +5,30 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.view.View;
 
+import com.ebf.eternalVariables.AsyncImageView;
 
-public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
+public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
 
-    public String ico;
-
-
-    public imgLoader(String ico){
-        this.ico = ico;
-    }
+    private AsyncImageView v;
 
 
     @Override
-    protected Bitmap doInBackground(imgLoader... params) {
+    protected void onPostExecute(Bitmap result) {
+        super.onPostExecute(result);
+            // If this item hasn't been recycled already, hide the
+            // progress and set and show the image
+            v.progress.setVisibility(View.GONE);
+            v.icon.setVisibility(View.VISIBLE);
+            v.icon.setImageBitmap(result);
+    }
+
+    @Override
+    protected Bitmap doInBackground(AsyncImageView... params) {
+        v=params[0];
         //run a switch to load an icon dependant on it's value.
-        switch (ico) {
+        switch (v.ico) {
             case ".colHeaderFont": {
                 return Bitmap.createBitmap(new int[]{EternalMediaBar.activity.savedData.fontCol},1,1, Bitmap.Config.ARGB_8888);
             }
@@ -122,7 +130,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
             default: {
                 //try to load app icon, if it fails, get the error icon
                 try {
-                    return ((BitmapDrawable)EternalMediaBar.activity.manager.getApplicationIcon(ico)).getBitmap();
+                    return ((BitmapDrawable)EternalMediaBar.activity.manager.getApplicationIcon(v.ico)).getBitmap();
                 } catch (Exception e) {
                     switch (EternalMediaBar.activity.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
@@ -135,7 +143,7 @@ public class imgLoader extends AsyncTask<imgLoader, Integer, Bitmap>{
         }
     }
 
-    public Bitmap getBitmap(boolean internal, String launchIntent, int internalImage){
+    public static Bitmap getBitmap(boolean internal, String launchIntent, int internalImage){
         if(!internal) {
             try {
                 return ((BitmapDrawable) EternalMediaBar.activity.manager.getApplicationIcon(launchIntent)).getBitmap();

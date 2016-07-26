@@ -3,6 +3,7 @@
 
     <item name="list_item_icon" type="id"/>
     <item name="list_item_text" type="id"/>
+    <item name="list_item_progress" type="id"/>
 
 
 

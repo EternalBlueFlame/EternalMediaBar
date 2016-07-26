@@ -6,15 +6,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
-import com.ebf.eternalVariables.appDetail;
-import com.ebf.eternalVariables.categoryClass;
+import com.ebf.eternalVariables.AppDetail;
+import com.ebf.eternalVariables.CategoryClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
-public class initialization {
+public class Initialization {
 
     public Boolean loadData(EternalMediaBar eternalMediaBar) {
         if (eternalMediaBar.savedData.categories.size() < 1) {
@@ -22,15 +23,16 @@ public class initialization {
                 eternalMediaBar.savedData = eternalMediaBar.savedData.returnSettings(eternalMediaBar);
             } catch (Exception e) {
                 //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
-                eternalMediaBar.savedData.categories.add(new categoryClass());
+                int[] organize = new int[]{0, 1, 1};
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Social", "1", "1", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Media", "2", "2",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Games", "3", "3", Collections.singletonList("Games")));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Web", "4", "4", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Utility", "5", "5", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Settings", "6", "6", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
+                eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "New Apps", "7", "7", Collections.singletonList("Unorganized")));
                 //we should initialize the other variables as well.
-                eternalMediaBar.savedData.theme = "Google";
+                eternalMediaBar.savedData.theme = "Internal";
                 eternalMediaBar.savedData.mirrorMode = false;
                 eternalMediaBar.savedData.cleanCacheOnStart = false;
                 eternalMediaBar.savedData.gamingMode = false;
@@ -40,51 +42,7 @@ public class initialization {
                 eternalMediaBar.savedData.menuCol = 0xcc000000;
                 eternalMediaBar.savedData.iconCol = 0xffffffff;
                 eternalMediaBar.savedData.dimCol = 0x66000000;
-                eternalMediaBar.savedData.hiddenApps = new ArrayList<>();
-                int[] tempInt = new int[]{0, 1, 1};
-                for (int i = 0; i < eternalMediaBar.savedData.categories.size(); ) {
-                    eternalMediaBar.savedData.categories.get(i).organizeMode = tempInt;
-                    switch (i) {
-                        case 0: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Social";
-                            break;
-                        }
-                        case 1: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Media";
-                            break;
-                        }
-                        case 2: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Games"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Games";
-                            break;
-                        }
-                        case 3: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Web";
-                            break;
-                        }
-                        case 4: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Utility";
-                            break;
-                        }
-                        case 5: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "Settings";
-                            break;
-                        }
-                        case 6: {
-                            eternalMediaBar.savedData.categories.get(i).categoryTags = new ArrayList<>(Arrays.asList("Unorganized"));
-                            eternalMediaBar.savedData.categories.get(i).categoryName = "New Apps";
-                            break;
-                        }
-                    }
-                    eternalMediaBar.savedData.categories.get(i).categoryIcon = "" + (i + 1);
-                    eternalMediaBar.savedData.categories.get(i).categoryGoogleIcon = "" + (i + 1);
-                    i++;
-                }
+                eternalMediaBar.savedData.hiddenApps = Collections.emptyList();
             }
             //setup the warning variable
             eternalMediaBar.warningToggle = new boolean[1];
@@ -111,14 +69,14 @@ public class initialization {
                 //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
                 try {
                     //this will fail if the app is not valid, and then be handled by the catch.
-                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(eternalMediaBar.savedData.categories.get(i).appList.get(ii).name), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
+                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(eternalMediaBar.savedData.categories.get(i).appList.get(ii).URI), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
                         eternalMediaBar.savedData.categories.get(i).appList.remove(ii);
                         ii--;
                     }
                     //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
                     else {
                         for (ResolveInfo activity : availableActivities ) {
-                            if (activity.activityInfo.packageName.equals(eternalMediaBar.savedData.categories.get(i).appList.get(ii).name)) {
+                            if (activity.activityInfo.packageName.equals(eternalMediaBar.savedData.categories.get(i).appList.get(ii).URI)) {
                                 availableActivities.remove(activity);
                                 //now set the index of iii to break the loop, since we already found what we were looking for.
                                 break;
@@ -126,7 +84,7 @@ public class initialization {
                         }
                     }
                 } catch (Exception e) {
-                    if (eternalMediaBar.savedData.categories.get(i).appList.get(ii).name.equals(".options")) {
+                    if (eternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".options")) {
                         sysApps[0] = true;
                     } else if (!eternalMediaBar.savedData.categories.get(i).appList.get(ii).isPersistent) {
                         eternalMediaBar.savedData.categories.get(i).appList.remove(ii);
@@ -140,10 +98,7 @@ public class initialization {
 
         //now check the list of bools and add any missing system apps.
         if (!sysApps[0]) {
-            appDetail eternalSettings = new appDetail();
-            eternalSettings.isPersistent = true;
-            eternalSettings.label = "Eternal Media Bar - Settings";
-            eternalSettings.name = ".options";
+            AppDetail eternalSettings = new AppDetail("Eternal Media Bar - Settings", ".options", true);
             for (int i = 0; i < eternalMediaBar.savedData.categories.size(); ) {
                 if (eternalMediaBar.savedData.categories.get(i).categoryTags.contains("Tools")) {
                     eternalMediaBar.savedData.categories.get(i).appList.add(eternalSettings);
@@ -155,11 +110,7 @@ public class initialization {
         //now add any remaining apps to the newly installed list
         if (availableActivities.size() > 0) {
             for (ResolveInfo ri : availableActivities) {
-                appDetail appRI = new appDetail();
-                appRI.label = ri.loadLabel(manager);
-                appRI.name = ri.activityInfo.packageName;
-                appRI.isPersistent = false;
-                appRI.icon = null;
+                AppDetail appRI = new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false, null);
                 for (int i = 0; i < eternalMediaBar.savedData.categories.size(); ) {
                     if (eternalMediaBar.savedData.categories.get(i).categoryTags.contains("Unorganized")) {
                         eternalMediaBar.savedData.categories.get(i).appList.add(appRI);

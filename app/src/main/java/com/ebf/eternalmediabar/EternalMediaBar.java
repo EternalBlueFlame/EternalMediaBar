@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
@@ -22,7 +23,7 @@ import android.widget.Toast;
 public class EternalMediaBar extends Activity {
 
     public PackageManager manager;
-    public settingsClass savedData = new settingsClass();
+    public SettingsClass savedData = new SettingsClass();
 
     public int hItem = 0;
     public boolean init = false;
@@ -30,11 +31,11 @@ public class EternalMediaBar extends Activity {
     public int vItem = 0;
     public int optionVitem =1;
     public boolean[] warningToggle;
-
+    //static instance of the activity
     public static EternalMediaBar activity;
 
-    //we'll define options menu change ahead of time so we don't have to instance it over and over.
-    private optionsMenuChange changeOptionsMenu = new optionsMenuChange();
+    public static DisplayMetrics dpi = new DisplayMetrics();
+
     //we have to instance the event receiver so we can get rid of it when the app is not open.
     intentReceiver mainReciever = new intentReceiver();
 
@@ -50,11 +51,11 @@ public class EternalMediaBar extends Activity {
         //be sure the activity variable references this script so we can have global access to it.
         activity = this;
         //be sure to load the save data, and/or update any changes that may have happened while the app was out of focus.
-        new initialization().loadData(this);
+        new Initialization().loadData(this);
         //if this hasin't been initialized yet
         if (init){
-            //do all the initialization
-            new initialization().loadData(this);
+            //do all the Initialization
+            new Initialization().loadData(this);
 
             //make sure vItem isn't out of bounds
             if (vItem >= savedData.categories.get(hItem).appList.size()){
@@ -85,8 +86,8 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
-            searchView.addView(new listItemLayout().appListItemView("Search \"" +query + "\" on the web", -1, 0, true, ".webSearch", query));
-            searchView.addView(new listItemLayout().appListItemView("Search \"" +query + "\" on the Apps Store ", -1, 0, true, ".storeSearch", query));
+            searchView.addView(ListItemLayout.appListItemView("Search \"" + query + "\" on the web", -1, true, ".webSearch", query, true));
+            searchView.addView(ListItemLayout.appListItemView("Search \"" + query + "\" on the Apps Store ", -1, true, ".storeSearch", query, true));
 
             //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
             query=query.toLowerCase();
@@ -99,11 +100,11 @@ public class EternalMediaBar extends Activity {
                     if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(new listItemLayout().searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
+                            searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
                             categoryListed=true;
                         }
                         //display the actual search result
-                        searchView.addView(new listItemLayout().appListItemView(savedData.categories.get(i).appList.get(ii).label, -1, 0, true, savedData.categories.get(i).appList.get(ii).name, (String) savedData.categories.get(i).appList.get(ii).label));
+                        searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii).label, -1, true, savedData.categories.get(i).appList.get(ii).URI, (String) savedData.categories.get(i).appList.get(ii).label, true));
                     }
                     ii++;
                 }
@@ -196,7 +197,7 @@ public class EternalMediaBar extends Activity {
                     ((LinearLayout)findViewById(R.id.apps_display)).getChildAt(vItem).performLongClick();
                 }
                 else{
-                    changeOptionsMenu.menuClose();
+                    OptionsMenuChange.menuClose();
                 }
 				return true;
 			}
@@ -281,7 +282,7 @@ public class EternalMediaBar extends Activity {
     ///////Function to draw all the information///////
     //////////////////////////////////////////////////
     public void loadListView(){
-
+        getWindowManager().getDefaultDisplay().getMetrics(dpi);
         if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
         else{setContentView(R.layout.activity_eternal_media_bar);}
 
@@ -311,10 +312,10 @@ public class EternalMediaBar extends Activity {
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<savedData.categories.size();) {
             if(!savedData.categories.get(ii).categoryTags.contains("Unorganized")) {
-                layout.addView(new listItemLayout().categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
             else if (savedData.categories.get(ii).appList.size() >0){
-                layout.addView(new listItemLayout().categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
             }
         ii++;
         }
@@ -330,14 +331,14 @@ public class EternalMediaBar extends Activity {
 
         //set the list organization method
         if(savedData.categories.get(hItem).appList.size() >1) {
-            changeOptionsMenu.organizeList(0);
+            OptionsMenuChange.organizeList(0);
         }
         //dim the list background to the dim color
         vLayout.setBackgroundColor(savedData.dimCol);
 
 
         for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {
-            vLayout.addView(new listItemLayout().appListItemView(savedData.categories.get(hItem).appList.get(ii).label, ii, 0, true, savedData.categories.get(hItem).appList.get(ii).name, (String) savedData.categories.get(hItem).appList.get(ii).label));
+            vLayout.addView(ListItemLayout.appListItemView(savedData.categories.get(hItem).appList.get(ii).label, ii, true, savedData.categories.get(hItem).appList.get(ii).URI, (String) savedData.categories.get(hItem).appList.get(ii).label, false));
             ii++;
         }
 

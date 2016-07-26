@@ -3,18 +3,18 @@ package com.ebf.eternalmediabar;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ebf.eternalVariables.AsyncImageView;
 
-public class listItemLayout {
+
+public class ListItemLayout {
 
 
 
@@ -23,25 +23,20 @@ public class listItemLayout {
     ////////////////////////////////////////////////////////////
 
     //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
-    public View appListItemView (CharSequence text, final int index, final int secondaryIndex, final Boolean isLaunchable, final String launchIntent, final String appName){
+    public static View appListItemView (CharSequence text, final int index, final Boolean isLaunchable, final String launchIntent, final String appName, boolean isSearch){
 
         final int position = ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildCount();
-        //create dpi as a variable ahead of time so we dont have to calculate this over and over. This is because we scale things by DPI rather than pixels.
-        float dpi =EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
+        //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
         //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(54 * dpi));
-        //create the icon base
-        ImageView image = new ImageView(EternalMediaBar.activity);
-        //setup the image values like size and position.
-        image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(34 * dpi), Math.round(34 * dpi)));
-        image.setY(10 * dpi);
-        image.setX(6 * dpi);
-        image.setId(R.id.list_item_icon);
-        image.setAdjustViewBounds(true);
-        //now add the actual image and add it to the root view
-        image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
-        layout.addView(image);
+        layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
+        //create the icon base using the async image loader
+        AsyncImageView image = new AsyncImageView(launchIntent, new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+                10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        //now add the progress view to the display, then process the image view and add it to the display.
+        layout.addView(image.progress);
+        new ImgLoader().execute(image);
+        layout.addView(image.icon);
 
         //now add the text similar to the image
         TextView appLabel = new TextView(EternalMediaBar.activity);
@@ -50,10 +45,14 @@ public class listItemLayout {
         //because of how dynamic text has to be, we define the text first, and everything else second.
         appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        appLabel.setX(46 * dpi);
-        appLabel.setY((9 * dpi));
+        appLabel.setX(54 * EternalMediaBar.dpi.scaledDensity);
+        appLabel.setY((9 * EternalMediaBar.dpi.scaledDensity));
         appLabel.setId(R.id.list_item_text);
-        appLabel.setWidth(Math.round(120 * dpi));
+        if (!isSearch) {
+            appLabel.setWidth(Math.round(120 * EternalMediaBar.dpi.scaledDensity));
+        } else{
+            appLabel.setWidth(Math.round(EternalMediaBar.dpi.widthPixels * 0.65f));
+        }
         //set the font size then add the text to the root view
         appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         layout.addView(appLabel);
@@ -64,7 +63,7 @@ public class listItemLayout {
             public void onClick(View v) {
                 //if the options menu is closed, then close the menu
                 if (EternalMediaBar.activity.optionsMenu) {
-                    new optionsMenuChange().menuClose();
+                    OptionsMenuChange.menuClose();
                     EternalMediaBar.activity.optionsMenu = false;
                 } else {
                     //otherwise act normally.
@@ -77,7 +76,7 @@ public class listItemLayout {
                         switch (launchIntent){
                             case ".options":{
                                 EternalMediaBar.activity.listMove(index, false);
-                                new optionsMenuChange().menuOpen(false, launchIntent, appName);
+                                OptionsMenuChange.menuOpen(false, launchIntent, appName);
                                 break;
                             }
                             case ".webSearch":{
@@ -107,12 +106,12 @@ public class listItemLayout {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.activity.optionsMenu) {
-                    new optionsMenuChange().menuClose();
+                    OptionsMenuChange.menuClose();
                     EternalMediaBar.activity.optionsMenu = false;
                 } else {
                     EternalMediaBar.activity.listMove(index, false);
                 }
-                new optionsMenuChange().menuOpen(isLaunchable, launchIntent, appName);
+                OptionsMenuChange.menuOpen(isLaunchable, launchIntent, appName);
                 return true;
             }
         });
@@ -127,30 +126,29 @@ public class listItemLayout {
     //////////////////// Category List Item ////////////////////
     ////////////////////////////////////////////////////////////
 
-    public View categoryListItemView (CharSequence text, final int index, final String launchIntent){
+    public static View categoryListItemView (CharSequence text, final int index, final String launchIntent){
 
-        float dpi =EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(62 * dpi));
-        ImageView image = new ImageView(EternalMediaBar.activity);
-        image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(50 * dpi), Math.round(50 * dpi)));
-        image.setY(4 * dpi);
-        image.setX(16 * dpi);
-        image.setId(R.id.list_item_icon);
-        image.setAdjustViewBounds(true);
+        layout.setMinimumHeight(Math.round(75 * EternalMediaBar.dpi.scaledDensity));
+
         String[] icons = launchIntent.split(":");
-        image.setImageBitmap(new imgLoader(icons[1].trim()).doInBackground());
-        layout.addView(image);
+        //create the icon base using the async image loader
+        AsyncImageView image = new AsyncImageView(icons[1].trim(), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
+                4 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        //now add the progress view to the display, then process the image view and add it to the display.
+        layout.addView(image.progress);
+        new ImgLoader().execute(image);
+        layout.addView(image.icon);
 
         TextView appLabel = new TextView(EternalMediaBar.activity);
         appLabel.setText(text);
-        appLabel.setLines(2);
+        appLabel.setSingleLine(true);
         appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        appLabel.setY((35 * dpi));
+        appLabel.setY((50 * EternalMediaBar.dpi.scaledDensity));
         appLabel.setId(R.id.list_item_text);
         appLabel.setGravity(Gravity.CENTER);
-        appLabel.setWidth(Math.round(80 * dpi));
+        appLabel.setWidth(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
         appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         layout.addView(appLabel);
 
@@ -159,7 +157,7 @@ public class listItemLayout {
             @Override
             public void onClick(View v) {
                 if (EternalMediaBar.activity.optionsMenu) {
-                    new optionsMenuChange().menuClose();
+                    OptionsMenuChange.menuClose();
                     EternalMediaBar.activity.optionsMenu = false;
                     EternalMediaBar.activity.listMove(index, true);
                 } else {
@@ -172,7 +170,7 @@ public class listItemLayout {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.activity.optionsMenu) {
-                    new optionsMenuChange().menuClose();
+                    OptionsMenuChange.menuClose();
                     EternalMediaBar.activity.optionsMenu = false;
                 }
                 return true;
@@ -190,32 +188,30 @@ public class listItemLayout {
     ////////////////////////////////////////////////////////////
 
 
-    public View searchCategoryItemView (CharSequence text, final String launchIntent){
+    public static View searchCategoryItemView (CharSequence text, final String launchIntent){
 
-        float dpi =EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
-        layout.setMinimumHeight(Math.round(28 * dpi));
-        ImageView image = new ImageView(EternalMediaBar.activity);
-        image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(24 * dpi), Math.round(24 * dpi)));
-        image.setY(4 * dpi);
-        image.setX(4 * dpi);
-        image.setId(R.id.list_item_icon);
-        image.setAdjustViewBounds(true);
+        layout.setMinimumHeight(Math.round(28 * EternalMediaBar.dpi.scaledDensity));
         String[] icons = launchIntent.split(":");
-        image.setImageBitmap(new imgLoader(icons[1].trim()).doInBackground());
-        layout.addView(image);
+        //create the icon base using the async image loader
+        AsyncImageView image = new AsyncImageView(icons[1].trim(), new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
+                4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        //now add the progress view to the display, then process the image view and add it to the display.
+        layout.addView(image.progress);
+        new ImgLoader().execute(image);
+        layout.addView(image.icon);
 
         TextView appLabel = new TextView(EternalMediaBar.activity);
         appLabel.setText(text);
         appLabel.setLines(2);
         appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
         appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-        appLabel.setX(30 * dpi);
-        appLabel.setY((6 * dpi));
+        appLabel.setX(34 * EternalMediaBar.dpi.scaledDensity);
+        appLabel.setY((6 * EternalMediaBar.dpi.scaledDensity));
         appLabel.setId(R.id.list_item_text);
-        appLabel.setWidth(Math.round(115 * dpi));
+        appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
         appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         layout.addView(appLabel);
 
@@ -226,21 +222,20 @@ public class listItemLayout {
     //////////////////// Options List Item /////////////////////
     ////////////////////////////////////////////////////////////
 
-    public View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final String launchIntent, final String appName){
+    public static View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final String launchIntent, final String appName){
 
-        float dpi =EternalMediaBar.activity.getResources().getDisplayMetrics().density + 0.5f;
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the options menu, besides the header, only radio buttons have icons, so check if it's a radio button before worrying about adding an icon
         if (launchIntent.equals(".radioUnCheck") || launchIntent.equals(".radioCheck")) {
-            layout.setMinimumHeight(Math.round(60 * dpi));
-            ImageView image = new ImageView(EternalMediaBar.activity);
-            image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(24 * dpi), Math.round(24 * dpi)));
-            image.setY(10 * dpi);
-            image.setX(16 * dpi);
-            image.setId(R.id.list_item_icon);
-            image.setAdjustViewBounds(true);
-            image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
-            layout.addView(image);
+            layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
+
+            //create the icon base using the async image loader
+            AsyncImageView image = new AsyncImageView(launchIntent, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
+                    10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+            //now add the progress view to the display, then process the image view and add it to the display.
+            layout.addView(image.progress);
+            new ImgLoader().execute(image);
+            layout.addView(image.icon);
 
             //the text also has to be repositioned with a radio item, so we have to define that stuff here as well.
             TextView appLabel = new TextView(EternalMediaBar.activity);
@@ -248,35 +243,35 @@ public class listItemLayout {
             appLabel.setLines(2);
             appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
             appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-            appLabel.setX(26 * dpi);
-            appLabel.setY((2 * dpi));
+            appLabel.setX(26 * EternalMediaBar.dpi.scaledDensity);
+            appLabel.setY((2 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setId(R.id.list_item_text);
-            appLabel.setWidth(Math.round(90 * dpi));
+            appLabel.setWidth(Math.round(90 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             appLabel.setGravity(Gravity.CENTER);
             layout.addView(appLabel);
         }
         //if it is the header this also has a different layout and an image. so we have to define that accordingly, similar to the above.
         else if(appName.equals(".optionsHeader")){
-            layout.setMinimumHeight(Math.round(85 * dpi));
-            ImageView image = new ImageView(EternalMediaBar.activity);
-            image.setLayoutParams(new LinearLayout.LayoutParams(Math.round(48 * dpi), Math.round(48 * dpi)));
-            image.setY(6 * dpi);
-            image.setX(36 * dpi);
-            image.setId(R.id.list_item_icon);
-            image.setAdjustViewBounds(true);
-            image.setImageBitmap(new imgLoader(launchIntent).doInBackground());
-            layout.addView(image);
+            layout.setMinimumHeight(Math.round(85 * EternalMediaBar.dpi.scaledDensity));
+
+            //create the icon base using the async image loader
+            AsyncImageView image = new AsyncImageView(launchIntent, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
+                    6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+            //now add the progress view to the display, then process the image view and add it to the display.
+            layout.addView(image.progress);
+            new ImgLoader().execute(image);
+            layout.addView(image.icon);
 
             TextView appLabel = new TextView(EternalMediaBar.activity);
             appLabel.setText(text);
             appLabel.setLines(2);
             appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
             appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-            appLabel.setX(2 * dpi);
-            appLabel.setY((48 * dpi));
+            appLabel.setX(2 * EternalMediaBar.dpi.scaledDensity);
+            appLabel.setY((48 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setId(R.id.list_item_text);
-            appLabel.setWidth(Math.round(115 * dpi));
+            appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             appLabel.setGravity(Gravity.CENTER);
 
@@ -284,16 +279,16 @@ public class listItemLayout {
         }
         else {
             //if it's not either of the above, we won't need to deal with the image, just the text.
-            layout.setMinimumHeight(Math.round(60 * dpi));
+            layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
             TextView appLabel = new TextView(EternalMediaBar.activity);
             appLabel.setText(text);
             appLabel.setLines(2);
             appLabel.setTextColor(EternalMediaBar.activity.savedData.fontCol);
             appLabel.setAlpha(Color.alpha(EternalMediaBar.activity.savedData.fontCol));
-            appLabel.setX(12 * dpi);
-            appLabel.setY((24 * dpi));
+            appLabel.setX(12 * EternalMediaBar.dpi.scaledDensity);
+            appLabel.setY((24 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setId(R.id.list_item_text);
-            appLabel.setWidth(Math.round(115 * dpi));
+            appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
             appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             layout.addView(appLabel);
         }
@@ -307,30 +302,43 @@ public class listItemLayout {
                     switch (index) {
                         case -1: {/*/ Null Case /*/}
                         //menu open and close
-                        case 0: {new optionsMenuChange().menuClose();break;}
-                        case 1: {new optionsMenuChange().menuOpen(false, launchIntent, appName);break;}
+                        case 0: {
+                            OptionsMenuChange.menuClose();break;}
+                        case 1: {
+                            OptionsMenuChange.menuOpen(false, launchIntent, appName);break;}
                         //copy, hide and move menus
-                        case 2: {new optionsMenuChange().createCopyList(launchIntent, appName);break;}
-                        case 3: {new optionsMenuChange().createMoveList(launchIntent, appName);break;}
-                        case 4: {new optionsMenuChange().copyItem(secondaryIndex);break;}
-                        case 5: {new optionsMenuChange().moveItem(secondaryIndex);break;}
-                        case 6: {new optionsMenuChange().hideApp();break;}
+                        case 2: {
+                            OptionsMenuChange.createCopyList(launchIntent, appName);break;}
+                        case 3: {
+                            OptionsMenuChange.createMoveList(launchIntent, appName);break;}
+                        case 4: {
+                            OptionsMenuChange.copyItem(secondaryIndex);break;}
+                        case 5: {
+                            OptionsMenuChange.moveItem(secondaryIndex);break;}
+                        case 6: {
+                            OptionsMenuChange.hideApp();break;}
                         //open app settings
-                        case 7: {EternalMediaBar.activity.startActivity( new optionsMenuChange().openAppSettings(launchIntent));break;}
+                        case 7: {EternalMediaBar.activity.startActivity(OptionsMenuChange.openAppSettings(launchIntent));break;}
                         //open a URL
                         case 16: {EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(launchIntent)));break;}
                         //toggles
-                        case 9: {EternalMediaBar.activity.savedData.mirrorMode = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.mirrorMode); EternalMediaBar.activity.loadListView();break;}
-                        case 13: {EternalMediaBar.activity.savedData.doubleTap = new optionsMenuChange().toggleBool(EternalMediaBar.activity.savedData.doubleTap);break;}
+                        case 9: {EternalMediaBar.activity.savedData.mirrorMode = OptionsMenuChange.toggleBool(EternalMediaBar.activity.savedData.mirrorMode); EternalMediaBar.activity.loadListView();break;}
+                        case 13: {EternalMediaBar.activity.savedData.doubleTap = OptionsMenuChange.toggleBool(EternalMediaBar.activity.savedData.doubleTap);break;}
                         //cases for changing theme
-                        case 8: {new optionsMenuChange().themeChange(launchIntent, appName);break;}
-                        case 14:{new optionsMenuChange().setIconTheme(appName);break;}
+                        case 8: {
+                            OptionsMenuChange.themeChange(launchIntent, appName);break;}
+                        case 14:{
+                            OptionsMenuChange.setIconTheme(appName);break;}
                         //cases for changing colors
-                        case 10: {new optionsMenuChange().colorSelect(appName, secondaryIndex);break;}
-                        case 15: {new optionsMenuChange().themeColorChange(launchIntent, appName);break;}
+                        case 10: {
+                            OptionsMenuChange.colorSelect(appName, secondaryIndex);break;}
+                        case 15: {
+                            OptionsMenuChange.themeColorChange(launchIntent, appName);break;}
                         //list organize
-                        case 11: {new optionsMenuChange().listOrganizeSelect(secondaryIndex, launchIntent, appName);break;}
-                        case 12: {new optionsMenuChange().organizeList(secondaryIndex);break;}
+                        case 11: {
+                            OptionsMenuChange.listOrganizeSelect(secondaryIndex, launchIntent, appName);break;}
+                        case 12: {
+                            OptionsMenuChange.organizeList(secondaryIndex);break;}
                     }
                 }
             });
