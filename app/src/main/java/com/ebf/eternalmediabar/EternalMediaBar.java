@@ -19,22 +19,33 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class EternalMediaBar extends Activity {
 
-    public PackageManager manager;
-    public SettingsClass savedData = new SettingsClass();
+    public static PackageManager manager;
+    public static SettingsClass savedData = new SettingsClass();
 
-    public int hItem = 0;
-    public boolean init = false;
-    public boolean optionsMenu = false;
-    public int vItem = 0;
-    public int optionVitem =1;
-    public boolean[] warningToggle;
+    public static int hItem = 0;
+    public static boolean init = false;
+    public static boolean optionsMenu = false;
+    public static int vItem = 0;
+    public static int optionVitem =1;
+    public static boolean[] warningToggle;
     //static instance of the activity
+
     public static EternalMediaBar activity;
 
+    public static LinearLayout optionsLayout;
+
     public static DisplayMetrics dpi = new DisplayMetrics();
+
+    public static final List<String> innerURI = Arrays.asList(".options", ".music");
+
+    public static List<String> selectedApps = new ArrayList<>();
 
     //we have to instance the event receiver so we can get rid of it when the app is not open.
     intentReceiver mainReciever = new intentReceiver();
@@ -48,15 +59,11 @@ public class EternalMediaBar extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        //be sure the activity variable references this script so we can have global access to it.
         activity = this;
         //be sure to load the save data, and/or update any changes that may have happened while the app was out of focus.
-        new Initialization().loadData(this);
+        Initialization.loadData(this);
         //if this hasin't been initialized yet
         if (init){
-            //do all the Initialization
-            new Initialization().loadData(this);
-
             //make sure vItem isn't out of bounds
             if (vItem >= savedData.categories.get(hItem).appList.size()){
                 vItem=0;
@@ -276,8 +283,6 @@ public class EternalMediaBar extends Activity {
 
 
 
-
-
     //////////////////////////////////////////////////
     ///////Function to draw all the information///////
     //////////////////////////////////////////////////
@@ -285,6 +290,8 @@ public class EternalMediaBar extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dpi);
         if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
         else{setContentView(R.layout.activity_eternal_media_bar);}
+        optionVitem = 0;
+        optionsLayout = (LinearLayout)findViewById(R.id.optionslist);
 
         ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

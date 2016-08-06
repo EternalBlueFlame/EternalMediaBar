@@ -46,28 +46,28 @@ public class SettingsClass implements Serializable {
             FileOutputStream fileStream = eternalMediaBar.openFileOutput("data.xml", Context.MODE_PRIVATE);
             StringBuilder sB = new StringBuilder();
             sB.append("<xmlRoot>\n" + "<iconCol>");
-            sB.append(eternalMediaBar.savedData.iconCol);
+            sB.append(EternalMediaBar.savedData.iconCol);
             sB.append("</iconCol>\n<menuCol>");
-            sB.append(eternalMediaBar.savedData.menuCol);
+            sB.append(EternalMediaBar.savedData.menuCol);
             sB.append("</menuCol>\n<fontCol>");
-            sB.append(eternalMediaBar.savedData.fontCol);
+            sB.append(EternalMediaBar.savedData.fontCol);
             sB.append("</fontCol>\n<cleanCacheOnStart>");
-            sB.append(eternalMediaBar.savedData.cleanCacheOnStart);
+            sB.append(EternalMediaBar.savedData.cleanCacheOnStart);
             sB.append("</cleanCacheOnStart>\n<loadAppBG>");
-            sB.append(eternalMediaBar.savedData.loadAppBG);
+            sB.append(EternalMediaBar.savedData.loadAppBG);
             sB.append("</loadAppBG>\n<gamingMode>");
-            sB.append(eternalMediaBar.savedData.gamingMode);
+            sB.append(EternalMediaBar.savedData.gamingMode);
             sB.append("</gamingMode>\n<doubleTap>");
-            sB.append(eternalMediaBar.savedData.doubleTap);
+            sB.append(EternalMediaBar.savedData.doubleTap);
             sB.append("</doubleTap>\n<theme>");
-            sB.append(eternalMediaBar.savedData.theme);
+            sB.append(EternalMediaBar.savedData.theme);
             sB.append("</theme>\n<mirrorMode>");
-            sB.append(eternalMediaBar.savedData.mirrorMode);
+            sB.append(EternalMediaBar.savedData.mirrorMode);
             sB.append("</mirrorMode>\n<dimLists>");
-            sB.append(eternalMediaBar.savedData.dimCol);
+            sB.append(EternalMediaBar.savedData.dimCol);
             sB.append("</dimLists>\n\n<vLists>\n");
-            sB.append(appSavesToXML(eternalMediaBar.savedData));
-            sB.append(hiddenAppsToString(eternalMediaBar.savedData));
+            sB.append(appSavesToXML(EternalMediaBar.savedData));
+            sB.append(hiddenAppsToString(EternalMediaBar.savedData));
             sB.append("\n</xmlRoot>");
             fileStream.write(sB.toString().getBytes());
             //write a string to the stream
@@ -177,19 +177,15 @@ public class SettingsClass implements Serializable {
     //////////////////////////////////////////////////
     //////////Create Boolean from a String////////////
     //////////////////////////////////////////////////
-    private Boolean boolFromString(String s){
-        if (s.equals("false")) {
-            return false;
-        } else {
-            return true;
-        }
+    private static Boolean boolFromString(String s){
+            return !(s.equals("false"));
     }
 
     //////////////////////////////////////////////////
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
     // this function is so huge I have to separate it as if it's multiple functions or we'll all be lost.
-    public SettingsClass returnSettings(EternalMediaBar eternalMediaBar) {
+    public static SettingsClass returnSettings(EternalMediaBar eternalMediaBar) {
         SettingsClass savedData= new SettingsClass();
         //catch with below by initializing vLists properly
         //we should initialize the other variables as well.
@@ -341,29 +337,29 @@ public class SettingsClass implements Serializable {
 
             }
         catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
 
             //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
             int[] organize = new int[]{0, 1, 1};
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Social", "1", "1", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Media", "2", "2",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Games", "3", "3", Collections.singletonList("Games")));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Web", "4", "4", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Utility", "5", "5", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "Settings", "6", "6", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
-            eternalMediaBar.savedData.categories.add(new CategoryClass(organize, "New Apps", "7", "7", Collections.singletonList("Unorganized")));
+            savedData.categories.add(new CategoryClass(organize, "Social", "1", "1", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
+            savedData.categories.add(new CategoryClass(organize, "Media", "2", "2",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
+            savedData.categories.add(new CategoryClass(organize, "Games", "3", "3", Collections.singletonList("Games")));
+            savedData.categories.add(new CategoryClass(organize, "Web", "4", "4", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
+            savedData.categories.add(new CategoryClass(organize, "Utility", "5", "5", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
+            savedData.categories.add(new CategoryClass(organize, "Settings", "6", "6", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
+            savedData.categories.add(new CategoryClass(organize, "New Apps", "7", "7", Collections.singletonList("Unorganized")));
             //we should initialize the other variables as well.
-            eternalMediaBar.savedData.theme = "Internal";
-            eternalMediaBar.savedData.mirrorMode = false;
-            eternalMediaBar.savedData.cleanCacheOnStart = false;
-            eternalMediaBar.savedData.gamingMode = false;
-            eternalMediaBar.savedData.loadAppBG = true;
-            eternalMediaBar.savedData.doubleTap = false;
-            eternalMediaBar.savedData.fontCol = 0xffffffff;
-            eternalMediaBar.savedData.menuCol = 0xcc000000;
-            eternalMediaBar.savedData.iconCol = 0xffffffff;
-            eternalMediaBar.savedData.dimCol = 0x66000000;
-            eternalMediaBar.savedData.hiddenApps = Collections.emptyList();
+            savedData.theme = "Internal";
+            savedData.mirrorMode = false;
+            savedData.cleanCacheOnStart = false;
+            savedData.gamingMode = false;
+            savedData.loadAppBG = true;
+            savedData.doubleTap = false;
+            savedData.fontCol = 0xffffffff;
+            savedData.menuCol = 0xcc000000;
+            savedData.iconCol = 0xffffffff;
+            savedData.dimCol = 0x66000000;
+            savedData.hiddenApps = Collections.emptyList();
         }
 
         return savedData;
