@@ -31,9 +31,10 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        final AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(launchIntent) , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+        final AsyncImageView image = new AsyncImageView(launchIntent , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
+        new ImgLoader().execute(image);
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
@@ -137,10 +138,9 @@ public class ListItemLayout {
 
         String[] icons = launchIntent.split(":");
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(icons[1].trim(), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(icons[1].trim()), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
-        new ImgLoader().execute(image);
         layout.addView(image.icon);
 
         TextView appLabel = new TextView(EternalMediaBar.activity);
