@@ -31,6 +31,22 @@ public class OptionsMenuChange {
     /////////////////Open the menu////////////////////
     //////////////////////////////////////////////////
     public static void menuOpen(final boolean isLaunchable, final String launchIntent, final String appName){
+        //just in case the user happened to hit "go back" on the copy or move page.
+        if (EternalMediaBar.copyingOrMoving){
+            EternalMediaBar.copyingOrMoving = false;
+            //clear selected apps
+            for (String uri : EternalMediaBar.selectedApps){
+                for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
+                    if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
+                        EternalMediaBar.optionsLayout.getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                        break;
+                    }
+                    i++;
+                }
+            }
+            EternalMediaBar.selectedApps.clear();
+        }
+
         //set the variables for the menu
         EternalMediaBar.optionsMenu = true;
         EternalMediaBar.optionVitem = 1;
@@ -80,7 +96,6 @@ public class OptionsMenuChange {
 
         //if the program can be launched open the app options menu
         if (isLaunchable) {loadAppOptionsMenu(launchIntent, appName);}
-        else if (appName.equals(".category")){loadCategoryOptionsItems();}
         //otherwise load the normal options menu
         else{loadMainOptionsItems();}
         EternalMediaBar.optionVitem=1;
@@ -101,6 +116,7 @@ public class OptionsMenuChange {
         //load the layouts
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
         //empty the one that has content
+        EternalMediaBar.copyingOrMoving = false;
         ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist)).removeAllViews();
         //set the variables in the main activity
         EternalMediaBar.optionsMenu = false;
@@ -136,6 +152,19 @@ public class OptionsMenuChange {
             public void onAnimationRepeat(Animation animation) {
             }
         });
+        //clear selected apps
+        for (String uri : EternalMediaBar.selectedApps){
+            for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
+                if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
+                    ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                    break;
+                }
+                i++;
+            }
+        }
+        EternalMediaBar.selectedApps.clear();
+
+
         //save any changes and reload the view
         EternalMediaBar.savedData.writeXML(EternalMediaBar.activity);
         EternalMediaBar.activity.loadListView();
@@ -151,7 +180,7 @@ public class OptionsMenuChange {
         //add the app that's selected so the user knows for sure what they are messing with.
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to...", 2, 0, launchIntent, appName));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to...", 3, 0, launchIntent, appName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to...", 2, 1, launchIntent, appName));
 
         //if the app is in other lists, add an option remove item from this list.
         int i=0;
@@ -198,69 +227,26 @@ public class OptionsMenuChange {
 
     }
 
-    //////////////////////////////////////////////////
-    //////Load the settings menu for categories///////
-    //////////////////////////////////////////////////
-    public static void loadCategoryOptionsItems(){
-        EternalMediaBar.optionVitem = 0;
-        EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).categoryName, 17, 0, EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).categoryIcon, ".optionsHeader"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move multiple apps", 17, 0, ".", "."));
-        goBackItems(".", ".");
-
-    }
 
     //////////////////////////////////////////////////
-    //////////////Move an app menu item///////////////
+    ///////////Copy/move an app menu item/////////////
     //////////////////////////////////////////////////
-    public static void createMultipleMoveList(){
-        EternalMediaBar.optionVitem = 0;
-        EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).categoryName, 17, 0, EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).categoryIcon, ".optionsHeader"));
-        goBackItems(".", ".category");
-
-
-        for (int i=0; i< EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).label, 18, 0, EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI, i+""));
-            i++;
-        }
-        goBackItems(".", ".category");
-    }
-    public static void moveMultipleItems(int secondaryIndex){
-
-    }
-
-    //////////////////////////////////////////////////
-    //////////////Copy an app menu item///////////////
-    //////////////////////////////////////////////////
-    public static void createCopyList(String launchIntent, String appName){
+    public static void createCopyList(String launchIntent, String appName, boolean isMove){
         EternalMediaBar.optionVitem=0;
+        EternalMediaBar.copyingOrMoving = true;
+
+        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.VISIBLE);
 
         EternalMediaBar.optionsLayout.removeAllViews();
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
         //add the options for copying the menu item, skip the one for the current menu
         for (int i=0; i < EternalMediaBar.savedData.categories.size()-1; ) {
             if (i != EternalMediaBar.hItem) {
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, 4, i, ".", "3"));
-            }
-            i++;
-        }
-        goBackItems(launchIntent, appName);
-    }
-
-
-    //////////////////////////////////////////////////
-    //////////////Move an app menu item///////////////
-    //////////////////////////////////////////////////
-    public static void createMoveList(String launchIntent, String appName){
-        EternalMediaBar.optionVitem = 0;
-
-        EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-        //add the options for moving the menu item, skip the one for the current menu
-        for (int i=0; i < EternalMediaBar.savedData.categories.size()-1; ) {
-            if (i != EternalMediaBar.hItem) {
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to " + EternalMediaBar.savedData.categories.get(i).categoryName, 5, i, ".", ""));
+                if (isMove){
+                    EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to " + EternalMediaBar.savedData.categories.get(i).categoryName, 4, i, ".", "t"));
+                } else {
+                    EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, 4, i, ".", ""));
+                }
             }
             i++;
         }
@@ -381,28 +367,32 @@ public class OptionsMenuChange {
 
 
     //////////////////////////////////////////////////
-    //////////////Copy an app menu item///////////////
+    ///////////Copy/move an app menu item/////////////
     //////////////////////////////////////////////////
-    public static void copyItem(int secondaryIndex){
-        EternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem));
-        menuClose();
-    }
+    public static void copyItem(int secondaryIndex, boolean isRemove){
 
-
-    //////////////////////////////////////////////////
-    //////////////Move an app menu item///////////////
-    //////////////////////////////////////////////////
-    public static void moveItem(int secondaryIndex) {
-        EternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem));
-        EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
-        menuClose();
-        //make sure that if the new apps list disappears, we aren't on it.
-        if (EternalMediaBar.hItem == (EternalMediaBar.savedData.categories.size()-1) && EternalMediaBar.savedData.categories.get(EternalMediaBar.savedData.categories.size()-1).appList.size()==0){
-            EternalMediaBar.activity.listMove(0, true);
+        if (!EternalMediaBar.selectedApps.contains(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI)){
+            EternalMediaBar.selectedApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI);
         }
-        else{
+
+        for (String uri : EternalMediaBar.selectedApps){
+            for (int i =0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
+                if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI.equals(uri)){
+                    EternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
+                    if (isRemove){
+                        EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);
+                    }
+                    break;
+                }
+                i++;
+            }
+        }
+        menuClose();
+
+        if (isRemove){
             EternalMediaBar.activity.loadListView();
         }
+
     }
 
 

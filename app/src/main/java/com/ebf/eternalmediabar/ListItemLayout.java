@@ -31,10 +31,11 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(launchIntent) , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+        final AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(launchIntent) , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
         layout.addView(image.icon);
+        layout.addView(image.selectedIcon);
 
         //now add the text similar to the image
         TextView appLabel = new TextView(EternalMediaBar.activity);
@@ -60,10 +61,15 @@ public class ListItemLayout {
             @Override
             public void onClick(View v) {
                 //if the options menu is closed, then close the menu
-                if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose();
-                    EternalMediaBar.optionsMenu = false;
-                } else {
+                if (EternalMediaBar.copyingOrMoving) {
+                    if (EternalMediaBar.selectedApps.contains(launchIntent)){
+                        EternalMediaBar.selectedApps.remove(launchIntent);
+                        image.selectedIcon.setVisibility(View.INVISIBLE);
+                    } else {
+                        EternalMediaBar.selectedApps.add(launchIntent);
+                        image.selectedIcon.setVisibility(View.VISIBLE);
+                    }
+                } else if (!EternalMediaBar.optionsMenu) {
                     //otherwise act normally.
                     //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
                     if (EternalMediaBar.vItem != position && EternalMediaBar.savedData.doubleTap) {
@@ -304,13 +310,9 @@ public class ListItemLayout {
                             OptionsMenuChange.menuOpen(secondaryIndex==1, launchIntent, appName);break;}
                         //copy, hide and move menus
                         case 2: {
-                            OptionsMenuChange.createCopyList(launchIntent, appName);break;}
-                        case 3: {
-                            OptionsMenuChange.createMoveList(launchIntent, appName);break;}
+                            OptionsMenuChange.createCopyList(launchIntent, appName, secondaryIndex == 1);break;}
                         case 4: {
-                            OptionsMenuChange.copyItem(secondaryIndex);break;}
-                        case 5: {
-                            OptionsMenuChange.moveItem(secondaryIndex);break;}
+                            OptionsMenuChange.copyItem(secondaryIndex, appName.equals("t"));break;}
                         case 6: {
                             OptionsMenuChange.hideApp();break;}
                         //open app settings
@@ -335,8 +337,6 @@ public class ListItemLayout {
                             OptionsMenuChange.listOrganizeSelect(secondaryIndex, launchIntent, appName);break;}
                         case 12: {
                             OptionsMenuChange.organizeList(secondaryIndex);break;}
-                        case 17:{EternalMediaBar.selectedApps.add(appName);}
-                        case 18:{}//TODO copy move list then for selected apps, move each app, in reverse order.
                     }
                 }
             });

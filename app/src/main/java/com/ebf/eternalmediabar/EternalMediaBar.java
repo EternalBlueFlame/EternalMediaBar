@@ -32,6 +32,7 @@ public class EternalMediaBar extends Activity {
     public static int hItem = 0;
     public static boolean init = false;
     public static boolean optionsMenu = false;
+    public static boolean copyingOrMoving;
     public static int vItem = 0;
     public static int optionVitem =1;
     public static boolean[] warningToggle;
