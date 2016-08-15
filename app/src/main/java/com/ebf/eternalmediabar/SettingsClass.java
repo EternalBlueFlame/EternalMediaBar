@@ -104,9 +104,7 @@ public class SettingsClass implements Serializable {
             bytes.append(category.categoryName);
             bytes.append("</listName>\n          <listIcon>");
             bytes.append(category.categoryIcon);
-            bytes.append("</listIcon>\n          <listGoogleIcon>");
-            bytes.append(category.categoryGoogleIcon);
-            bytes.append("</listGoogleIcon>\n");
+            bytes.append("</listIcon>\n");
 
             try{
                 bytes.append("          <categoryTags>");
@@ -249,7 +247,16 @@ public class SettingsClass implements Serializable {
                     try {
                         newCategory.categoryName = appElements.getElementsByTagName("listName").item(0).getTextContent();
                         newCategory.categoryIcon = appElements.getElementsByTagName("listIcon").item(0).getTextContent();
-                        newCategory.categoryGoogleIcon = appElements.getElementsByTagName("listGoogleIcon").item(0).getTextContent();
+                        //TODO compatibility switch for older save files, remove at next major revision.
+                        switch (newCategory.categoryIcon){
+                            case "1":{ newCategory.categoryIcon = "icon.social"; break;}
+                            case "2":{ newCategory.categoryIcon = "icon.media"; break;}
+                            case "3":{ newCategory.categoryIcon = "icon.games"; break;}
+                            case "4":{ newCategory.categoryIcon = "icon.web"; break;}
+                            case "5":{ newCategory.categoryIcon = "icon.utility"; break;}
+                            case "6":{ newCategory.categoryIcon = "icon.settings"; break;}
+                            case "7":{ newCategory.categoryIcon = "icon.new"; break;}
+                        }
                     }
                     catch(Exception e){
                         switch (categoriesInXML){
@@ -262,7 +269,6 @@ public class SettingsClass implements Serializable {
                             case 6:{newCategory.categoryName = "New Apps"; break;}
                         }
                         newCategory.categoryIcon = vListList.toString();
-                        newCategory.categoryGoogleIcon = vListList.toString();
                     }
                     //Get the category tags
                     try{
@@ -341,13 +347,13 @@ public class SettingsClass implements Serializable {
 
             //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
             int[] organize = new int[]{0, 1, 1};
-            savedData.categories.add(new CategoryClass(organize, "Social", "1", "1", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
-            savedData.categories.add(new CategoryClass(organize, "Media", "2", "2",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
-            savedData.categories.add(new CategoryClass(organize, "Games", "3", "3", Collections.singletonList("Games")));
-            savedData.categories.add(new CategoryClass(organize, "Web", "4", "4", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
-            savedData.categories.add(new CategoryClass(organize, "Utility", "5", "5", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
-            savedData.categories.add(new CategoryClass(organize, "Settings", "6", "6", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
-            savedData.categories.add(new CategoryClass(organize, "New Apps", "7", "7", Collections.singletonList("Unorganized")));
+            savedData.categories.add(new CategoryClass(organize, "Social", "icon.social", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
+            savedData.categories.add(new CategoryClass(organize, "Media", "icon.media",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
+            savedData.categories.add(new CategoryClass(organize, "Games", "icon.games", Collections.singletonList("Games")));
+            savedData.categories.add(new CategoryClass(organize, "Web", "icon.web", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
+            savedData.categories.add(new CategoryClass(organize, "Utility", "icon.utility", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
+            savedData.categories.add(new CategoryClass(organize, "Settings", "icon.settings", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
+            savedData.categories.add(new CategoryClass(organize, "New Apps", "icon.new", Collections.singletonList("Unorganized")));
             //we should initialize the other variables as well.
             savedData.theme = "Internal";
             savedData.mirrorMode = false;

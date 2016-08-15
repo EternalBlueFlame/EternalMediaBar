@@ -108,7 +108,7 @@ public class EternalMediaBar extends Activity {
                     if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                         //check if this category has a header, if not make one and note that there is one.
                         if(!categoryListed){
-                            searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon + " : " + savedData.categories.get(i).categoryGoogleIcon));
+                            searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon));
                             categoryListed=true;
                         }
                         //display the actual search result
@@ -320,10 +320,10 @@ public class EternalMediaBar extends Activity {
         //loop to add all entries of hli to the list
         for (int ii=0; (ii)<savedData.categories.size();) {
             if(!savedData.categories.get(ii).categoryTags.contains("Unorganized")) {
-                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon));
             }
             else if (savedData.categories.get(ii).appList.size() >0){
-                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon + " : " + savedData.categories.get(ii).categoryGoogleIcon));
+                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon));
             }
         ii++;
         }

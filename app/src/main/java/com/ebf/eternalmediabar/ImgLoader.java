@@ -64,7 +64,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
             case "0": {
                 return Bitmap.createBitmap(new int[]{-1},1,1, Bitmap.Config.ALPHA_8);
             }
-            case "1": {
+            case "icon.social": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_people_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_social);}
@@ -72,7 +72,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_social);}
                 }
             }
-            case "2": {
+            case "icon.media": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_play_circle_filled_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_media);}
@@ -80,7 +80,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_media);}
                 }
             }
-            case "3": {
+            case "icon.games": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_videogame_asset_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_games);}
@@ -88,7 +88,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_games);}
                 }
             }
-            case "4": {
+            case "icon.web": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_web_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_web);}
@@ -96,7 +96,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_web);}
                 }
             }
-            case "5": {
+            case "icon.utility": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_assignment_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_utility);}
@@ -104,7 +104,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_utility);}
                 }
             }
-            case "6": {
+            case "icon.settings": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_settings_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_settings);}
@@ -112,7 +112,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_settings);}
                 }
             }
-            case "7": {
+            case "icon.new": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_fiber_new_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_new_apps);}

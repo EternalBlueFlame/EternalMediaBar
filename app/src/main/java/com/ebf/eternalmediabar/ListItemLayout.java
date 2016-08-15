@@ -135,10 +135,8 @@ public class ListItemLayout {
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(75 * EternalMediaBar.dpi.scaledDensity));
-
-        String[] icons = launchIntent.split(":");
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(icons[1].trim()), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput(launchIntent), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         layout.addView(image.icon);
