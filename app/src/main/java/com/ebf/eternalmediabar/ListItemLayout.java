@@ -197,9 +197,8 @@ public class ListItemLayout {
         //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
         layout.setMinimumHeight(Math.round(28 * EternalMediaBar.dpi.scaledDensity));
-        String[] icons = launchIntent.split(":");
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(icons[1].trim(), new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView(launchIntent, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         new ImgLoader().execute(image);
