@@ -31,6 +31,15 @@
 
         </activity>
 
+
+        <!--<activity
+            android:name="com.ebf.EternalMediaPlayer"
+            android:label="Eternal Media Player"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"/>-->
+
+
     </application>
 
 </manifest>

@@ -1,15 +1,23 @@
 package com.ebf.eternalmediabar;
 
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Paint;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,9 +27,14 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ebf.eternalVariables.AppDetail;
+
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 
 public class EternalMediaBar extends Activity {
@@ -76,13 +89,14 @@ public class EternalMediaBar extends Activity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mainReciever, filter);
+        getPerms();
     }
 
 
     //////////////////////////////////////////////////
     ///////////Intent receiver for search/////////////
     //////////////////////////////////////////////////
-    private void searchIntent(String query) {
+    public void searchIntent(String query) {
         //get the results view and be sure it's clear.
         LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
         if(searchView.getChildCount()>0){
@@ -94,29 +108,46 @@ public class EternalMediaBar extends Activity {
         }
         //first, be sure there's actually something to search
         if (query.length()>0) {
-            searchView.addView(ListItemLayout.appListItemView("Search \"" + query + "\" on the web", -1, true, ".webSearch", query, true));
-            searchView.addView(ListItemLayout.appListItemView("Search \"" + query + "\" on the Apps Store ", -1, true, ".storeSearch", query, true));
+            if (query.contains(":audio:")){
+                final String search = query.replace(":audio:","");
+                System.out.println("searching for music: " + search );
+                final List<AppDetail> songs = recrusiveSearch(search);
 
-            //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
-            query=query.toLowerCase();
-            //iterate vLists
-            for (int i = 0; i < savedData.categories.size(); ) {
-                //set the bool for if there is a header on the category then iterate through the apps in the category
-                Boolean categoryListed =false;
-                for (int ii = 0; ii < savedData.categories.get(i).appList.size(); ) {
-                    //make sure the labels are lowercase, and if it finds something
-                    if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
-                        //check if this category has a header, if not make one and note that there is one.
-                        if(!categoryListed){
-                            searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon));
-                            categoryListed=true;
-                        }
-                        //display the actual search result
-                        searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii).label, -1, true, savedData.categories.get(i).appList.get(ii).URI, (String) savedData.categories.get(i).appList.get(ii).label, true));
+                if (songs.size() >0){
+                    System.out.println("there are songs");
+                    for (AppDetail song : songs){
+                        System.out.println("found song" + song.internalCommand);
+                        searchView.addView(ListItemLayout.appListItemView(song, -1, true));
+                        //songs.remove(song);
                     }
-                    ii++;
                 }
-                i++;
+
+            } else {
+                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" on the web", "", ".webSearch", query), -1, true));
+                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" on the Apps Store ",",",".storeSearch", query), -1, true));
+                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" in your Music ","",".musicSearch", query), -1, true));
+
+                //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
+                query = query.toLowerCase();
+                //iterate vLists
+                for (int i = 0; i < savedData.categories.size(); ) {
+                    //set the bool for if there is a header on the category then iterate through the apps in the category
+                    Boolean categoryListed = false;
+                    for (int ii = 0; ii < savedData.categories.get(i).appList.size(); ) {
+                        //make sure the labels are lowercase, and if it finds something
+                        if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
+                            //check if this category has a header, if not make one and note that there is one.
+                            if (!categoryListed) {
+                                searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon));
+                                categoryListed = true;
+                            }
+                            //display the actual search result
+                            searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii), -1, true));
+                        }
+                        ii++;
+                    }
+                    i++;
+                }
             }
         }
         //if the search query is less than 3 characters, just invalidate the search results view to be sure it gets cleared.
@@ -124,7 +155,33 @@ public class EternalMediaBar extends Activity {
     }
 
 
+    private List<AppDetail> recrusiveSearch(final String search){
+        final List<AppDetail> output = new ArrayList<AppDetail>();
 
+        ContentResolver cr = this.getContentResolver();
+
+        Cursor cur = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
+        int count = 0;
+
+        if(cur != null) {
+            count = cur.getCount();
+            if(count > 0) {
+                while(cur.moveToNext()) {
+                    if ( cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase()) ){
+                        System.out.println("found song" + cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
+                        output.add(new AppDetail(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)),
+                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),".audio",
+                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
+                        ));
+                    }
+                }
+            }
+        }
+        cur.close();
+        return output;
+
+
+    }
 
 
     //////////////////////////////////////////////////
@@ -133,7 +190,10 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     @TargetApi(Build.VERSION_CODES.M)
     public void getPerms() {
-        requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 100);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -346,7 +406,7 @@ public class EternalMediaBar extends Activity {
 
 
         for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {
-            vLayout.addView(ListItemLayout.appListItemView(savedData.categories.get(hItem).appList.get(ii).label, ii, true, savedData.categories.get(hItem).appList.get(ii).URI, (String) savedData.categories.get(hItem).appList.get(ii).label, false));
+            vLayout.addView(ListItemLayout.appListItemView(savedData.categories.get(hItem).appList.get(ii), ii, false));
             ii++;
         }
 

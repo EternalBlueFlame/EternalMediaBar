@@ -30,7 +30,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////////////////Open the menu////////////////////
     //////////////////////////////////////////////////
-    public static void menuOpen(final boolean isLaunchable, final String launchIntent, final String appName){
+    public static void menuOpen(final boolean isLaunchable, final String launchIntent, final CharSequence appName){
         //just in case the user happened to hit "go back" on the copy or move page.
         if (EternalMediaBar.copyingOrMoving){
             EternalMediaBar.copyingOrMoving = false;
@@ -174,7 +174,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////Load the settings menu for a selected app////
     //////////////////////////////////////////////////
-    public static void loadAppOptionsMenu(String launchIntent, String appName){
+    public static void loadAppOptionsMenu(String launchIntent, CharSequence appName){
         EternalMediaBar.optionVitem = 1;
 
         //add the app that's selected so the user knows for sure what they are messing with.
@@ -231,7 +231,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     ///////////Copy/move an app menu item/////////////
     //////////////////////////////////////////////////
-    public static void createCopyList(String launchIntent, String appName, boolean isMove){
+    public static void createCopyList(String launchIntent, CharSequence appName, boolean isMove){
         EternalMediaBar.optionVitem=0;
         EternalMediaBar.copyingOrMoving = true;
 
@@ -256,7 +256,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////Load the settings menu for theme change//////
     //////////////////////////////////////////////////
-    public static void themeChange(String launchIntent, String appName){
+    public static void themeChange(String launchIntent, CharSequence appName){
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
@@ -272,7 +272,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     ///Load the settings menu for theme color change//
     //////////////////////////////////////////////////
-    public static void themeColorChange(String launchIntent, String appName){
+    public static void themeColorChange(String launchIntent, CharSequence appName){
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
@@ -289,7 +289,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////Load the settings menu for customization/////
     //////////////////////////////////////////////////
-    public static void listOrganizeSelect(int secondaryIndex, String launchIntent, String appName){
+    public static void listOrganizeSelect(int secondaryIndex, String launchIntent, CharSequence appName){
 
         //we have to reload this menu every time we change it because we're using a radio button system, so we might as well make use of that by changing the variable from its own function.
         if(secondaryIndex!=0){
@@ -333,7 +333,7 @@ public class OptionsMenuChange {
         }
     }
 
-    private static void goBackItems(String launchIntent, String appName){
+    private static void goBackItems(String launchIntent, CharSequence appName){
         //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
@@ -421,8 +421,8 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     ////////////////Change The Theme//////////////////
     //////////////////////////////////////////////////
-    public static void setIconTheme(String theme){
-        EternalMediaBar.savedData.theme = theme;
+    public static void setIconTheme(CharSequence theme){
+        EternalMediaBar.savedData.theme = theme.toString();
         menuClose();
     }
 

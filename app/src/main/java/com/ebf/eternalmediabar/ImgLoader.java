@@ -1,9 +1,14 @@
 package com.ebf.eternalmediabar;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
 
@@ -25,13 +30,13 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
     @Override
     protected Bitmap doInBackground(AsyncImageView... params) {
         v=params[0];
-        return ProcessInput(v.ico);
+        return ProcessInput(v.internalCommand, v.URI);
     }
 
 
-    public static Bitmap ProcessInput(String view){
+    public static Bitmap ProcessInput(String internalCommand, String uri){
         //run a switch to load an icon dependant on it's value.
-        switch (view) {
+        switch (uri) {
             case ".colHeaderFont": {
                 return Bitmap.createBitmap(new int[]{EternalMediaBar.savedData.fontCol},1,1, Bitmap.Config.ARGB_8888);
             }
@@ -72,7 +77,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     default:{return getBitmap(true, "", R.drawable.lunar_social);}
                 }
             }
-            case "icon.media": {
+            case "icon.media":case ".musicSearch": {
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_play_circle_filled_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_media);}
@@ -100,7 +105,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_assignment_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_utility);}
-                    case "Google":{return getBitmap(false, "com.google.android.apps.docs", R.drawable.extras_144px);}
+                    case "Google":{return getBitmap(false, "com.google.android.apps.docs", R.drawable.lunar_utility);}
                     default:{return getBitmap(true, "", R.drawable.lunar_utility);}
                 }
             }
@@ -108,7 +113,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                 switch (EternalMediaBar.savedData.theme){
                     case "Material":{return getBitmap(true, "", R.drawable.material_ic_settings_white_48dp);}
                     case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_settings);}
-                    case "Google":{return getBitmap(false, "com.android.settings", R.drawable.settings_144px);}
+                    case "Google":{return getBitmap(false, "com.android.settings", R.drawable.lunar_settings);}
                     default:{return getBitmap(true, "", R.drawable.lunar_settings);}
                 }
             }
@@ -130,16 +135,30 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                     }
                 }
             }
+            case ".audio":{
+                MediaMetadataRetriever mData=new MediaMetadataRetriever();
+                try{
+                    android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                    mmr.setDataSource(internalCommand);
+
+                    byte [] data = mmr.getEmbeddedPicture();
+                    return BitmapFactory.decodeByteArray(data, 0, data.length);
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                    return Bitmap.createBitmap(new int[]{EternalMediaBar.savedData.iconCol},1,1, Bitmap.Config.ARGB_8888);
+                }
+            }
             default: {
                 //try to load app icon, if it fails, get the error icon
                 try {
-                    return ((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(view)).getBitmap();
+                    return ((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(uri)).getBitmap();
                 } catch (Exception e) {
                     switch (EternalMediaBar.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
                         //case "LunarInverse":{return getBitmap(true, "", R.drawable.lunar_inverse_error);}
                         //no google case
-                        default:{return getBitmap(true, "", R.drawable.error_144px);}
+                        default:{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
                     }
                 }
             }

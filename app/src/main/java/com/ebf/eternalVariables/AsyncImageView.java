@@ -10,12 +10,14 @@ import com.ebf.eternalmediabar.EternalMediaBar;
 import com.ebf.eternalmediabar.R;
 
 public class AsyncImageView {
-    public String ico;
+    public String internalCommand;
+    public String URI;
     public ImageView icon = new ImageView(EternalMediaBar.activity);
     public ImageView selectedIcon = new ImageView(EternalMediaBar.activity);
 
-    public AsyncImageView(String ico, ViewGroup.LayoutParams params, float y, float x, int id, boolean viewBounds){
-        this.ico = ico;
+    public AsyncImageView(String internalCommand, String uri, ViewGroup.LayoutParams params, float y, float x, int id, boolean viewBounds){
+        this.internalCommand = internalCommand;
+        this.URI = uri;
 
         icon.setLayoutParams(params);
         icon.setX(x);

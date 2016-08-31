@@ -81,7 +81,7 @@ public class Initialization {
         //now add any remaining apps to the newly installed list
         if (availableActivities.size() > 0) {
             for (ResolveInfo ri : availableActivities) {
-                AppDetail appRI = new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false, null);
+                AppDetail appRI = new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false);
                 for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                     if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Unorganized")) {
                         EternalMediaBar.savedData.categories.get(i).appList.add(appRI);
