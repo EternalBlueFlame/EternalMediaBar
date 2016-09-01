@@ -20,8 +20,6 @@ import android.widget.TextView;
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.CategoryClass;
 
-import java.util.Collections;
-import java.util.Comparator;
 
 
 //This class is intended to manage a large number of functions related to menu interactions,
@@ -30,7 +28,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////////////////Open the menu////////////////////
     //////////////////////////////////////////////////
-    public static void menuOpen(final boolean isLaunchable, final String launchIntent, final CharSequence appName){
+    public static void menuOpen(final AppDetail menuItem, boolean isApp){
         //just in case the user happened to hit "go back" on the copy or move page.
         if (EternalMediaBar.copyingOrMoving){
             EternalMediaBar.copyingOrMoving = false;
@@ -38,7 +36,7 @@ public class OptionsMenuChange {
             for (String uri : EternalMediaBar.selectedApps){
                 for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
                     if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
-                        EternalMediaBar.optionsLayout.getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
                         break;
                     }
                     i++;
@@ -95,7 +93,7 @@ public class OptionsMenuChange {
         });
 
         //if the program can be launched open the app options menu
-        if (isLaunchable) {loadAppOptionsMenu(launchIntent, appName);}
+        if (isApp) {loadAppOptionsMenu(menuItem);}
         //otherwise load the normal options menu
         else{loadMainOptionsItems();}
         EternalMediaBar.optionVitem=1;
@@ -105,7 +103,7 @@ public class OptionsMenuChange {
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
         EternalMediaBar.optionsLayout.addView(spacer);
         //close settings menu, we put this here since it's on the menu without exception.
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", 0, 0, menuItem));
     }
 
 
@@ -174,37 +172,41 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////Load the settings menu for a selected app////
     //////////////////////////////////////////////////
-    public static void loadAppOptionsMenu(String launchIntent, CharSequence appName){
+    public static void loadAppOptionsMenu(AppDetail menuItem){
         EternalMediaBar.optionVitem = 1;
 
         //add the app that's selected so the user knows for sure what they are messing with.
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to...", 2, 0, launchIntent, appName));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to...", 2, 1, launchIntent, appName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, -1, 0, new AppDetail(menuItem.label,"",menuItem.URI, ".optionsHeader")));
 
-        //if the app is in other lists, add an option remove item from this list.
-        int i=0;
-        for (CategoryClass category : EternalMediaBar.savedData.categories){
-            for (AppDetail app: category.appList){
-                if (app.URI.equals(launchIntent)){
-                    i++;
+        if (menuItem.internalCommand.equals(".search") || menuItem.URI.equals(".webSearch") || menuItem.URI.equals(".storeSearch") || menuItem.URI.equals(".musicSearch")) {
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Application Settings", 17, 0, menuItem));
+        } else {
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to...", 10, 0, menuItem));
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to...", 11, 1, menuItem));
+
+            //if the app is in other lists, add an option remove item from this list.
+            int i = 0;
+            for (CategoryClass category : EternalMediaBar.savedData.categories) {
+                for (AppDetail app : category.appList) {
+                    if (app.URI.equals(menuItem.URI)) {
+                        i++;
+                    }
+                    if (i > 1) {
+                        break;
+                    }
                 }
-                if (i>1){
+                if (i > 1) {
                     break;
                 }
             }
-            if (i>1){
-                break;
+            if (i > 1) {
+                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Remove this item", 16, 0, menuItem));
+            } else {
+                //later this will be modified to support hiding the icon when it's only in one list.
             }
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Application Settings", 17, 0, menuItem));
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Reorganize This Category", 24, 0, menuItem));
         }
-        if (i>1) {
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Remove this item", 6, 0, launchIntent, "4"));
-        }
-        else{
-            //later this will be modified to support hiding the icon when it's only in one list.
-        }
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Application Settings", 7, 0, launchIntent, appName));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Reorganize This Category", 11, 0, launchIntent, appName));
 
     }
 
@@ -215,15 +217,15 @@ public class OptionsMenuChange {
     public static void loadMainOptionsItems(){
         EternalMediaBar.optionVitem = 0;
 
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Theme", 8, 0, ".", "."));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Theme Colors", 15, 0, ".", "."));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Mirror Layout", 9, 0, ".", "."));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Theme", 19, 0, new AppDetail()));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Theme Colors", 23, 0, new AppDetail()));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Mirror Layout", 30, 0, new AppDetail()));
         if(EternalMediaBar.savedData.doubleTap){
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Disable Double Tap", 13, 0, ".", "."));
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Disable Double Tap", 31, 0, new AppDetail()));
         } else {
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Enable Double Tap", 13, 0, ".", "."));
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Enable Double Tap", 31, 0, new AppDetail()));
         }
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Homepage", 16, 0, "http://github.com/EternalBlueFlame/EternalMediaBar", "."));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Homepage", 18, 0, new AppDetail("", "http://github.com/EternalBlueFlame/EternalMediaBar", false)));
 
     }
 
@@ -231,92 +233,81 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     ///////////Copy/move an app menu item/////////////
     //////////////////////////////////////////////////
-    public static void createCopyList(String launchIntent, CharSequence appName, boolean isMove){
+    public static void createCopyList(AppDetail menuItem, boolean isMove){
         EternalMediaBar.optionVitem=0;
         EternalMediaBar.copyingOrMoving = true;
 
         ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.VISIBLE);
+        EternalMediaBar.selectedApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI);
 
         EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(appName, -1, 0, launchIntent, ".optionsHeader"));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, -1, 0, new AppDetail(menuItem.label,"",menuItem.URI, ".optionsHeader")));
         //add the options for copying the menu item, skip the one for the current menu
         for (int i=0; i < EternalMediaBar.savedData.categories.size()-1; ) {
             if (i != EternalMediaBar.hItem) {
                 if (isMove){
-                    EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to " + EternalMediaBar.savedData.categories.get(i).categoryName, 4, i, ".", "t"));
-                } else {
-                    EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, 4, i, ".", ""));
+                        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to " + EternalMediaBar.savedData.categories.get(i).categoryName, 14, i, menuItem));
+                    } else{
+                        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, 13, i, menuItem));
+                    }
                 }
-            }
             i++;
         }
-        goBackItems(launchIntent, appName);
+        goBackItems(menuItem, true);
     }
 
     //////////////////////////////////////////////////
     /////Load the settings menu for theme change//////
     //////////////////////////////////////////////////
-    public static void themeChange(String launchIntent, CharSequence appName){
+    public static void themeChange(AppDetail menuItem){
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
         //add the items for changing the theme
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nDefault", 14, 0, radioCheck(EternalMediaBar.savedData.theme.equals("Internal")), "Internal"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nInverse", 14, 0, radioCheck(EternalMediaBar.savedData.theme.equals("LunarInverse")), "LunarInverse"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Google", 14, 0, radioCheck(EternalMediaBar.savedData.theme.equals("Google")), "Google"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Material", 14, 0, radioCheck(EternalMediaBar.savedData.theme.equals("Material")), "Material"));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nDefault", 20, 0, new AppDetail("", "","Internal", radioCheck(EternalMediaBar.savedData.theme.equals("Internal")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nInverse", 20, 0, new AppDetail("", "", "LunarInverse", radioCheck(EternalMediaBar.savedData.theme.equals("LunarInverse")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Google", 20, 0, new AppDetail("", "", "Google", radioCheck(EternalMediaBar.savedData.theme.equals("Google")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Material", 20, 0, new AppDetail("", "", "Material", radioCheck(EternalMediaBar.savedData.theme.equals("Material")))));
 
-        goBackItems(launchIntent, appName);
+        goBackItems(menuItem,false);
     }
 
     //////////////////////////////////////////////////
     ///Load the settings menu for theme color change//
     //////////////////////////////////////////////////
-    public static void themeColorChange(String launchIntent, CharSequence appName){
+    public static void themeColorChange(AppDetail menuItem){
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
         //add the items for changing the theme colors
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Font Color", 10, 0, ".", "Font"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Icon Color", 10, 0, ".", "Icon"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Menu Color", 10, 0, ".", "Menu"));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change List Color", 10, 0, ".", "App Backgrounds"));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Font Color", 21, 0, new AppDetail("", "", "Font", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Icon Color", 21, 0, new AppDetail("", "", "Icon", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Menu Color", 21, 0, new AppDetail("", "", "Menu", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change List Color", 21, 0, new AppDetail("", "", "App Backgrounds", "")));
 
-        goBackItems(launchIntent, appName);
+        goBackItems(menuItem, false);
     }
-
 
     //////////////////////////////////////////////////
     /////Load the settings menu for customization/////
     //////////////////////////////////////////////////
-    public static void listOrganizeSelect(int secondaryIndex, String launchIntent, CharSequence appName){
-
-        //we have to reload this menu every time we change it because we're using a radio button system, so we might as well make use of that by changing the variable from its own function.
-        if(secondaryIndex!=0){
-            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[2] = secondaryIndex;
-        }
+    public static void listOrganizeSelect(AppDetail menuItem){
         //add the items for changing the organization method
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Alphabetically", 11, 1, radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[2] == 1), appName));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Reverse Alphabetically", 11, 2, radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[2] == 2), appName));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("No Organization", 11, 3, radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[2] == 3), appName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Alphabetically", 25, 1, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 1))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Reverse Alphabetically", 25, 2, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 2))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("No Organization", 25, 3, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 3))));
         //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
         EternalMediaBar.optionsLayout.addView(spacer);
         //check whether or not the organization is always applied, and make the apply options accordingly.
-        if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[1] ==0) {
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Apply once", 12, -1, ".radioCheck", appName));
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Always apply", 12, 1, ".radioUnCheck", appName));
-        }
-        else{
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Apply once", 12, -1, ".radioUnCheck", appName));
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Always apply", 12, 1, ".radioCheck", appName));
-        }
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Apply once", 26, -1, menuItem.setCommand(radioCheck(!EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Always apply", 26, 1, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways))));
 
-        goBackItems(launchIntent, appName);
+        goBackItems(menuItem, true);
     }
 
     //////////////////////////////////////////////////
@@ -333,20 +324,18 @@ public class OptionsMenuChange {
         }
     }
 
-    private static void goBackItems(String launchIntent, CharSequence appName){
+    private static void goBackItems(AppDetail menuItem, boolean isApp){
         //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
         EternalMediaBar.optionsLayout.addView(spacer);
         //add go back buttons
-        if (launchIntent.equals(".category")){
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Go Back", 1, 0, launchIntent, appName));
-        } else if (!launchIntent.equals(".settings") && !launchIntent.equals(".")) {
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Go Back", 1, 1, launchIntent, appName));
+        if (isApp){
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Go Back", 1, 0, menuItem));
         } else {
-            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Go Back", 1, 0, launchIntent, appName));
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Go Back", 2, 0, menuItem));
         }
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", 0, 0, launchIntent, appName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", 0, 0, menuItem));
     }
 
 
@@ -356,30 +345,24 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////
-    /////////////////Change Boolean///////////////////
-    //////////////////////////////////////////////////
-
-    public static Boolean toggleBool(Boolean bool){
-        menuClose();
-        return !bool;
-    }
-
 
     //////////////////////////////////////////////////
-    ///////////Copy/move an app menu item/////////////
+    /////////Copy/move/hide an app menu item//////////
     //////////////////////////////////////////////////
-    public static void copyItem(int secondaryIndex, boolean isRemove){
-
-        if (!EternalMediaBar.selectedApps.contains(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI)){
-            EternalMediaBar.selectedApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI);
-        }
+    public static void relocateItem(int category, boolean isMove, boolean isHide){
 
         for (String uri : EternalMediaBar.selectedApps){
             for (int i =0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
                 if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI.equals(uri)){
-                    EternalMediaBar.savedData.categories.get(secondaryIndex).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
-                    if (isRemove){
+                    if (!isHide) {
+                        //copy and move
+                        EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
+                    } else {
+                        //hide
+                        EternalMediaBar.savedData.hiddenApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
+                    }
+                    if (isMove || isHide){
+                        //remove the old item
                         EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);
                     }
                     break;
@@ -389,88 +372,22 @@ public class OptionsMenuChange {
         }
         menuClose();
 
-        if (isRemove){
+        if (isMove){
             EternalMediaBar.activity.loadListView();
         }
 
     }
 
-
-    //////////////////////////////////////////////////
-    //////////////Hide an app menu item///////////////
-    //////////////////////////////////////////////////
-    public static void hideApp() {
-        EternalMediaBar.savedData.hiddenApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem));
-        EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
-        menuClose();
-    }
-
-
     //////////////////////////////////////////////////
     ////////////Open application Settings/////////////
     //////////////////////////////////////////////////
-    public static Intent openAppSettings(String launchIntent){
+    public static Intent openAppSettings(AppDetail menuItem){
         Intent intent = new Intent();
         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:" + Uri.parse(launchIntent)));
+        intent.setData(Uri.parse("package:" + Uri.parse(menuItem.URI)));
         menuClose();
         return intent;
     }
-
-
-    //////////////////////////////////////////////////
-    ////////////////Change The Theme//////////////////
-    //////////////////////////////////////////////////
-    public static void setIconTheme(CharSequence theme){
-        EternalMediaBar.savedData.theme = theme.toString();
-        menuClose();
-    }
-
-
-    //////////////////////////////////////////////////
-    //////////////////Organize List///////////////////
-    //////////////////////////////////////////////////
-    public static void organizeList(int secondaryIndex){
-        //we want to define the organization method when we load this menu.
-        //toggle for if the organize is used every time the list is loaded.
-        if (secondaryIndex ==1){EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[1] =1;}
-        else if (secondaryIndex ==-1){EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[1] =0;}
-
-        switch(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode[2]){
-            //no organization
-            case 0:case 3:{break;}
-            //alphabetical
-            case 1:{
-                Collections.sort(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList, new Comparator<AppDetail>() {
-                    @Override
-                    public int compare(AppDetail lhs, AppDetail rhs) {
-                        return lhs.label.toString().compareTo(rhs.label.toString());
-                    }
-                });
-                break;
-            }
-            //reverse alphabetical
-            case 2:{
-                Collections.sort(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList, new Comparator<AppDetail>() {
-                    @Override
-                    public int compare(AppDetail lhs, AppDetail rhs) {
-                        return -lhs.label.toString().compareTo(rhs.label.toString());
-                    }
-                });
-                break;
-            }
-            //Most used
-            case 4:{break;}
-        }
-        if (EternalMediaBar.optionsMenu) {
-            menuClose();
-        }
-    }
-
-
-
-
-
 
 
     //////////////////////////////////////////////////
@@ -478,21 +395,10 @@ public class OptionsMenuChange {
     //////////////////Color Selector//////////////////
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
-    public static void colorSelect(final String colorName, int secondaryIndex){
-        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
-        if (secondaryIndex!=0){
-            switch (colorName){
-                case "Font":{EternalMediaBar.savedData.fontCol = secondaryIndex;break;}
-                case "Icon":{EternalMediaBar.savedData.iconCol = secondaryIndex;break;}
-                case "Menu":{EternalMediaBar.savedData.menuCol = secondaryIndex;break;}
-                case "App Backgrounds":{EternalMediaBar.savedData.dimCol = secondaryIndex;break;}
-            }
-            menuClose();
-            return;
-        }
+    public static void colorSelect(final AppDetail menuItem){
         EternalMediaBar.optionsLayout.removeAllViews();
         //load the header that contains the current color
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose " + colorName + " Color", -1, 0, ".colHeader" + colorName, ".optionsHeader"));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose " + menuItem.label + " Color", -1, 0, new AppDetail(".colHeader" + menuItem.URI,"","", ".optionsHeader")));
         //create the inflater for the seeker bars
         View child = EternalMediaBar.activity.getLayoutInflater().inflate(R.layout.color_select, null);
         //get the red seeker bar, then set it's progress
@@ -503,7 +409,7 @@ public class OptionsMenuChange {
         EditText hexText = (EditText) child.findViewById(R.id.hexText);
         //set the currentCol int to define the value of what the color was when we started, also use it so we can quicklyset the initial positions of the values.
         int currentCol = 0xffffffff;
-        switch (colorName){
+        switch (menuItem.URI){
             case "Font":{currentCol=EternalMediaBar.savedData.fontCol;break;}
             case "Icon":{currentCol=EternalMediaBar.savedData.iconCol;break;}
             case "Menu":{currentCol=EternalMediaBar.savedData.menuCol;break;}
@@ -522,7 +428,7 @@ public class OptionsMenuChange {
         //change the listener for the Red seek bar
         seekerRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,progress,0,0,colorName);}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,progress,0,0,menuItem.URI);}
             //these are useless, but we need them to exist
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -531,7 +437,7 @@ public class OptionsMenuChange {
         //Now we do it again for green
         seekerGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,0,progress,0,colorName);}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,0,progress,0,menuItem.URI);}
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -539,7 +445,7 @@ public class OptionsMenuChange {
         //Now we do it one more time for blue
         seekerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,0,0,progress,colorName);}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(0,0,0,progress,menuItem.URI);}
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -547,7 +453,7 @@ public class OptionsMenuChange {
         //Now we do it one more time for Alpha
         seekerAlpha.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(progress +25, 0,0,0,colorName);}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {scrollSetColor(progress +25, 0,0,0,menuItem.URI);}
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
@@ -569,10 +475,26 @@ public class OptionsMenuChange {
 
 
         EternalMediaBar.optionsLayout.addView(child);
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Save and close", 0, 0, ".", "."));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Save and close", 0, 0, menuItem));
         //if the user decides to cancel, this is where we use the value of the color before changes that we stored earlier.
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Close without saving", 10, currentCol, ".", colorName));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Close without saving", 22, currentCol, menuItem));
     }
+
+
+
+    public static void cancelColorSelect(int oldColor, AppDetail menuItem){
+        //Instead of making a new case, it's easier to compensate for the cancel button by modifying this call
+        switch (menuItem.internalCommand){
+            case "Font":{EternalMediaBar.savedData.fontCol = oldColor;break;}
+            case "Icon":{EternalMediaBar.savedData.iconCol = oldColor;break;}
+            case "Menu":{EternalMediaBar.savedData.menuCol = oldColor;break;}
+            case "App Backgrounds":{EternalMediaBar.savedData.dimCol = oldColor;break;}
+        }
+        menuClose();
+    }
+
+
+
 
     public static void scrollSetColor(int a, int r, int g, int b, String type){
         switch (type){

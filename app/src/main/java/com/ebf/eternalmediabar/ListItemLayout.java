@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.AsyncImageView;
@@ -85,7 +86,8 @@ public class ListItemLayout {
                         switch (menuItem.URI){
                             case ".options":{
                                 EternalMediaBar.activity.listMove(index, false);
-                                OptionsMenuChange.menuOpen(false, menuItem.internalCommand, menuItem.label);
+                                //use a blank value for the AppDetail to be absolutley sure we don't break anything.
+                                OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options", true), false);
                                 break;
                             }
                             case ".webSearch":{
@@ -130,7 +132,7 @@ public class ListItemLayout {
                     EternalMediaBar.optionsMenu = false;
                 } else {
                     EternalMediaBar.activity.listMove(index, false);
-                    OptionsMenuChange.menuOpen(true, menuItem.URI, menuItem.label);
+                    OptionsMenuChange.menuOpen(menuItem, true);
                 }
                 return true;
             }
@@ -189,7 +191,7 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose();
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    OptionsMenuChange.menuOpen(false, ".", ".category");
+                    OptionsMenuChange.menuOpen(new AppDetail("","",".category",""), false);
                 }
                 return true;
             }
@@ -238,117 +240,164 @@ public class ListItemLayout {
     //////////////////// Options List Item /////////////////////
     ////////////////////////////////////////////////////////////
 
-    public static View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final String launchIntent, final CharSequence appName){
+    public static View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final AppDetail menuItem){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
+        layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
+        TextView appLabel = new TextView(EternalMediaBar.activity);
         //in the options menu, besides the header, only radio buttons have icons, so check if it's a radio button before worrying about adding an icon
-        if (launchIntent.equals(".radioUnCheck") || launchIntent.equals(".radioCheck")) {
-            layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
-
+        if (menuItem.internalCommand.equals(".radioUnCheck") || menuItem.internalCommand.equals(".radioCheck")) {
             //create the icon base using the async image loader
-            AsyncImageView image = new AsyncImageView("",launchIntent, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
+            AsyncImageView image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
                     10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
             //now process the image view and add it to the display.
             new ImgLoader().execute(image);
             layout.addView(image.icon);
 
-            //the text also has to be repositioned with a radio item, so we have to define that stuff here as well.
-            TextView appLabel = new TextView(EternalMediaBar.activity);
-            appLabel.setText(text);
-            appLabel.setLines(2);
-            appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-            appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
             appLabel.setX(26 * EternalMediaBar.dpi.scaledDensity);
             appLabel.setY((2 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setId(R.id.list_item_text);
             appLabel.setWidth(Math.round(90 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             appLabel.setGravity(Gravity.CENTER);
-            layout.addView(appLabel);
         }
         //if it is the header this also has a different layout and an image. so we have to define that accordingly, similar to the above.
-        else if(appName.equals(".optionsHeader")){
-            layout.setMinimumHeight(Math.round(85 * EternalMediaBar.dpi.scaledDensity));
+        else if(menuItem.internalCommand.equals(".optionsHeader")){
+            layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
 
             //create the icon base using the async image loader
-            AsyncImageView image = new AsyncImageView("",launchIntent, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
+            AsyncImageView image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
                     6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
             //now process the image view and add it to the display.
             new ImgLoader().execute(image);
             layout.addView(image.icon);
 
-            TextView appLabel = new TextView(EternalMediaBar.activity);
-            appLabel.setText(text);
-            appLabel.setLines(2);
-            appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-            appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
             appLabel.setX(2 * EternalMediaBar.dpi.scaledDensity);
             appLabel.setY((48 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setId(R.id.list_item_text);
             appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             appLabel.setGravity(Gravity.CENTER);
-
-            layout.addView(appLabel);
         }
         else {
             //if it's not either of the above, we won't need to deal with the image, just the text.
-            layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
-            TextView appLabel = new TextView(EternalMediaBar.activity);
-            appLabel.setText(text);
-            appLabel.setLines(2);
-            appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-            appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
             appLabel.setX(12 * EternalMediaBar.dpi.scaledDensity);
             appLabel.setY((24 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setId(R.id.list_item_text);
             appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            layout.addView(appLabel);
         }
+        //this part is generic to all three menus, so we write it after the non-generic parts are set.
+        appLabel.setText(text);
+        appLabel.setLines(2);
+        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
+        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
+        appLabel.setId(R.id.list_item_text);
+        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        layout.addView(appLabel);
 
         //if it's not the header then setup the click cunctionality redirects
-        if(!appName.equals(".searchHeader")) {
+        if(index!=-1) {
             //this is where it gets tricky, options menu items, have a LOT of redirects to other functions, based on what they do. This is defined on creation of the menu item with the index variable.
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     switch (index) {
-                        case -1: {/*/ Null Case /*/}
                         //menu open and close
                         case 0: {
                             OptionsMenuChange.menuClose();break;}
+                        //menu open for if it's an app's settings, and if it's just the options menu
                         case 1: {
-                            OptionsMenuChange.menuOpen(secondaryIndex==1, launchIntent, appName);break;}
-                        //copy, hide and move menus
+                            OptionsMenuChange.menuOpen(menuItem, true);break;}
                         case 2: {
-                            OptionsMenuChange.createCopyList(launchIntent, appName, secondaryIndex == 1);break;}
-                        case 4: {
-                            OptionsMenuChange.copyItem(secondaryIndex, appName.equals("t"));break;}
-                        case 6: {
-                            OptionsMenuChange.hideApp();break;}
-                        //open app settings
-                        case 7: {EternalMediaBar.activity.startActivity(OptionsMenuChange.openAppSettings(launchIntent));break;}
-                        //open a URL
-                        case 16: {EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(launchIntent)));break;}
-                        //toggles
-                        case 9: {EternalMediaBar.savedData.mirrorMode = OptionsMenuChange.toggleBool(EternalMediaBar.savedData.mirrorMode); EternalMediaBar.activity.loadListView();break;}
-                        case 13: {EternalMediaBar.savedData.doubleTap = OptionsMenuChange.toggleBool(EternalMediaBar.savedData.doubleTap);break;}
-                        //cases for changing theme
-                        case 8: {
-                            OptionsMenuChange.themeChange(launchIntent, appName);break;}
+                            OptionsMenuChange.menuOpen(menuItem, false);break;}
+                        //we leave case 3 open in case it is necessary for creating a new option menu to manage categories
+                        //we leave case 4 open in case it is necessary for managing media on the device.
+                        //we leave case 5 open in case it is necessary for managing constacts.
+                        //cases 6 through 9 are for unforseen necessary options menus.
+
+                        //case for making the list of categories for moving or copying.
+                        case 10:{
+                            OptionsMenuChange.createCopyList(menuItem, false);break;
+                        }
+                        case 11:{
+                            OptionsMenuChange.createCopyList(menuItem, true);break;
+                        }
+                        case 12:{
+                            break;//create hide apps menu designed similar to move/copy for ability to multi-select
+                        }
+                        //cases for copying, moving, and hiding apps.
+                        case 13:{
+                            OptionsMenuChange.relocateItem(secondaryIndex, false, false);break;
+                        }
                         case 14:{
-                            OptionsMenuChange.setIconTheme(appName);break;}
+                            OptionsMenuChange.relocateItem(secondaryIndex, true, false);break;
+                        }
+                        case 15:{
+                            OptionsMenuChange.relocateItem(secondaryIndex, false, true);break;
+                        }
+                        case 16:{
+                            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
+                            OptionsMenuChange.menuClose(); break;
+                        }
+                        //case for opening app's system settings
+                        case 17:{
+                            EternalMediaBar.activity.startActivity(OptionsMenuChange.openAppSettings(menuItem));break;
+                        }
+                        //case for opening a URL
+                        case 18:{
+                            EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(menuItem.URI)));break;
+                        }
+                        //cases for theme changing
+                        case 19: {
+                            OptionsMenuChange.themeChange(menuItem);break;
+                        }
+                        case 20:{//reload the list, we have to change the menu item back to the default options menu item
+                            EternalMediaBar.savedData.theme = menuItem.URI;
+                            OptionsMenuChange.themeChange(new AppDetail("Eternal Media Bar - Settings", ".options", true));
+                            break;
+                        }
                         //cases for changing colors
-                        case 10: {
-                            OptionsMenuChange.colorSelect(appName.toString(), secondaryIndex);break;}
-                        case 15: {
-                            OptionsMenuChange.themeColorChange(launchIntent, appName);break;}
+                        case 21: {
+                            OptionsMenuChange.colorSelect(menuItem);break;
+                        }
+                        case 22:{
+                            OptionsMenuChange.cancelColorSelect(secondaryIndex, menuItem); break;
+                        }
+                        case 23: {
+                            OptionsMenuChange.themeColorChange(menuItem);break;
+                        }
                         //list organize
-                        case 11: {
-                            OptionsMenuChange.listOrganizeSelect(secondaryIndex, launchIntent, appName);break;}
-                        case 12: {
-                            OptionsMenuChange.organizeList(secondaryIndex);break;}
+                        case 24: {
+                            OptionsMenuChange.listOrganizeSelect(menuItem);break;
+                        }
+                        case 25: {
+                            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode = secondaryIndex;
+                            OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+                            Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        case 26:{
+                            if (secondaryIndex==-1){
+                                EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = false;
+                                EternalUtil.organizeList();
+                                OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+                                Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+                                break;
+                            } else {
+                                EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = true;
+                                EternalUtil.organizeList();
+                                OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+                                Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+
+                        //cases for toggles
+                        case 30: {
+                            EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
+                            OptionsMenuChange.menuClose();break;
+                        }
+                        case 31: {
+                            EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
+                            OptionsMenuChange.menuClose();break;
+                        }
+                        //null case
+                        default:{break;}
                     }
                 }
             });

@@ -122,12 +122,12 @@ public class SettingsClass implements Serializable {
             //due to the way the variable is managed, this may fail, so we need to compensate for that.
             try {
                 //while we do this we can also define the organize mode to save some time and effort.
-                bytes.append("          <organizeMode>\n               <sub>");
-                bytes.append(category.organizeMode[0]);
-                bytes.append("</sub>\n               <repeat>");
-                bytes.append(category.organizeMode[1]);
+                bytes.append("          <organizeMode>\n               <dev>");
+                bytes.append(category.organizeGroupDevs);
+                bytes.append("</dev>\n               <repeat>");
+                bytes.append(category.organizeAlways);
                 bytes.append("</repeat>\n               <main>");
-                bytes.append(category.organizeMode[2]);
+                bytes.append(category.organizeMode);
                 bytes.append("</main>\n          </organizeMode>\n\n");
             } catch (Exception e) {}
             //now load the actual apps in the list
@@ -295,9 +295,15 @@ public class SettingsClass implements Serializable {
                     }
                     //try and grab the variables for the list URI, list icon, list google icon and list organization mode.
                     try {
-                        newCategory.organizeMode = new int[]{Integer.parseInt(appElements.getElementsByTagName("sub").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("repeat").item(0).getTextContent()), Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent())};
+                        newCategory.organizeMode = Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent());
+                        newCategory.organizeAlways = boolFromString(appElements.getElementsByTagName("repeat").item(0).getTextContent());
+                        newCategory.organizeGroupDevs = boolFromString(appElements.getElementsByTagName("dev").item(0).getTextContent());
                     }
-                    catch (Exception e){newCategory.organizeMode = new int[]{0,1,1};}
+                    catch (Exception e){
+                        newCategory.organizeMode = 1;
+                        newCategory.organizeAlways = true;
+                        newCategory.organizeGroupDevs = false;
+                    }
                     // iterate through AppData tags
                     NodeList appsList = appElements.getElementsByTagName("AppData");
                     for (int currentApp = 0; currentApp < appsList.getLength();) {
@@ -346,14 +352,13 @@ public class SettingsClass implements Serializable {
             //e.printStackTrace();
 
             //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
-            int[] organize = new int[]{0, 1, 1};
-            savedData.categories.add(new CategoryClass(organize, "Social", "icon.social", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
-            savedData.categories.add(new CategoryClass(organize, "Media", "icon.media",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
-            savedData.categories.add(new CategoryClass(organize, "Games", "icon.games", Collections.singletonList("Games")));
-            savedData.categories.add(new CategoryClass(organize, "Web", "icon.web", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
-            savedData.categories.add(new CategoryClass(organize, "Utility", "icon.utility", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
-            savedData.categories.add(new CategoryClass(organize, "Settings", "icon.settings", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
-            savedData.categories.add(new CategoryClass(organize, "New Apps", "icon.new", Collections.singletonList("Unorganized")));
+            savedData.categories.add(new CategoryClass(1, true,false, "Social", "icon.social", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
+            savedData.categories.add(new CategoryClass(1, true,false, "Media", "icon.media",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
+            savedData.categories.add(new CategoryClass(1, true,false, "Games", "icon.games", Collections.singletonList("Games")));
+            savedData.categories.add(new CategoryClass(1, true,false, "Web", "icon.web", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
+            savedData.categories.add(new CategoryClass(1, true,false, "Utility", "icon.utility", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
+            savedData.categories.add(new CategoryClass(1, true,false, "Settings", "icon.settings", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
+            savedData.categories.add(new CategoryClass(1, true,false, "New Apps", "icon.new", Collections.singletonList("Unorganized")));
             //we should initialize the other variables as well.
             savedData.theme = "Internal";
             savedData.mirrorMode = false;

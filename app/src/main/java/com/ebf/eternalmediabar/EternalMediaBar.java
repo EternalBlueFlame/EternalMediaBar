@@ -12,10 +12,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Paint;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -29,12 +26,9 @@ import android.widget.Toast;
 
 import com.ebf.eternalVariables.AppDetail;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 
 public class EternalMediaBar extends Activity {
@@ -142,7 +136,7 @@ public class EternalMediaBar extends Activity {
                                 categoryListed = true;
                             }
                             //display the actual search result
-                            searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii), -1, true));
+                            searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii).setCommand(".search"), -1, true));
                         }
                         ii++;
                     }
@@ -398,8 +392,8 @@ public class EternalMediaBar extends Activity {
         vLayout.removeAllViews();
 
         //set the list organization method
-        if(savedData.categories.get(hItem).appList.size() >1) {
-            OptionsMenuChange.organizeList(0);
+        if(savedData.categories.get(hItem).appList.size() >1 && EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways) {
+            EternalUtil.organizeList();
         }
         //dim the list background to the dim color
         vLayout.setBackgroundColor(savedData.dimCol);
