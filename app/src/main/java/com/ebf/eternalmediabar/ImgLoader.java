@@ -1,14 +1,11 @@
 package com.ebf.eternalmediabar;
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
 
@@ -152,7 +149,8 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
             default: {
                 //try to load app icon, if it fails, get the error icon
                 try {
-                    return ((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(uri)).getBitmap();
+                    int scale = Math.round(EternalMediaBar.dpi.scaledDensity * 48);
+                    return Bitmap.createScaledBitmap(((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(uri)).getBitmap(), scale,scale, true);
                 } catch (Exception e) {
                     switch (EternalMediaBar.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}

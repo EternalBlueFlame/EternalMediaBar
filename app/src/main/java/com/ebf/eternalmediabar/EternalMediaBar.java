@@ -103,23 +103,23 @@ public class EternalMediaBar extends Activity {
         //first, be sure there's actually something to search
         if (query.length()>0) {
             if (query.contains(":audio:")){
-                final String search = query.replace(":audio:","");
-                System.out.println("searching for music: " + search );
-                final List<AppDetail> songs = recrusiveSearch(search);
+                List<AppDetail> songs = recrusiveSearch(query.replace(":audio:",""));
 
                 if (songs.size() >0){
-                    System.out.println("there are songs");
                     for (AppDetail song : songs){
-                        System.out.println("found song" + song.internalCommand);
                         searchView.addView(ListItemLayout.appListItemView(song, -1, true));
                         //songs.remove(song);
                     }
                 }
 
             } else {
-                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" on the web", "", ".webSearch", query), -1, true));
-                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" on the Apps Store ",",",".storeSearch", query), -1, true));
-                searchView.addView(ListItemLayout.appListItemView(new AppDetail("Search \"" + query + "\" in your Music ","",".musicSearch", query), -1, true));
+                LinearLayout providerList = new LinearLayout(this);
+                providerList.setOrientation(LinearLayout.HORIZONTAL);
+                providerList.setMinimumHeight(Math.round(dpi.scaledDensity * 58));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Google", "", ".webSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Play Store", ",", ".storeSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Music","",".musicSearch", query), -1));
+                searchView.addView(providerList);
 
                 //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
                 query = query.toLowerCase();
@@ -150,19 +150,14 @@ public class EternalMediaBar extends Activity {
 
 
     private List<AppDetail> recrusiveSearch(final String search){
-        final List<AppDetail> output = new ArrayList<AppDetail>();
+        List<AppDetail> output = new ArrayList<AppDetail>();
 
-        ContentResolver cr = this.getContentResolver();
-
-        Cursor cur = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
-        int count = 0;
+        Cursor cur = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
 
         if(cur != null) {
-            count = cur.getCount();
-            if(count > 0) {
+            if(cur.getCount() > 0) {
                 while(cur.moveToNext()) {
                     if ( cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase()) ){
-                        System.out.println("found song" + cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
                         output.add(new AppDetail(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)),
                                 cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),".audio",
                                 cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))

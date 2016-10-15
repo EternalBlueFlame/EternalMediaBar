@@ -2,6 +2,9 @@
 <resources>
     <color name="clear">#00000000</color>
     <color name="dimColor">#33000000</color>
+    <color name="gray">#33aaaaaa</color>
+    <color name="darkGray">#99aaaaaa</color>
     <color name="illuminate">#33ffffff</color>
     <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
 </resources>

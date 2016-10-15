@@ -39,6 +39,12 @@
             android:launchMode="singleTask"
             android:alwaysRetainTaskState="true"/>-->
 
+        <activity
+            android:name="com.ebf.eternalfinance.EternalFinance"
+            android:label="Eternal Finance"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"/>
 
     </application>
 

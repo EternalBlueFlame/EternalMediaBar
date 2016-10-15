@@ -4,7 +4,6 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.AsyncImageView;
+import com.ebf.eternalfinance.EternalFinance;
 
 import java.io.File;
 
@@ -30,37 +30,25 @@ public class ListItemLayout {
     //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
     public static View appListItemView (final AppDetail menuItem, final int index, boolean isSearch){
 
-        final int position = ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildCount();
         //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
         //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
         new ImgLoader().execute(image);
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
-        //now add the text similar to the image
-        TextView appLabel = new TextView(EternalMediaBar.activity);
-        appLabel.setText(menuItem.label);
-        appLabel.setLines(2);
-        //because of how dynamic text has to be, we define the text first, and everything else second.
-        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
-        appLabel.setX(54 * EternalMediaBar.dpi.scaledDensity);
-        appLabel.setY((9 * EternalMediaBar.dpi.scaledDensity));
-        appLabel.setId(R.id.list_item_text);
         if (!isSearch) {
-            appLabel.setWidth(Math.round(120 * EternalMediaBar.dpi.scaledDensity));
+            layout.addView(GenLabel(menuItem.label, 2, Gravity.START, 54, 9, 120));
         } else{
-            appLabel.setWidth(Math.round(EternalMediaBar.dpi.widthPixels * 0.65f));
+            TextView text = GenLabel(menuItem.label, 2, Gravity.START, 54, 9, 120);
+            text.setWidth(Math.round(EternalMediaBar.dpi.widthPixels * 0.65f));
+            layout.addView(text);
         }
-        //set the font size then add the text to the root view
-        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        layout.addView(appLabel);
 
         //setup the onclick listener and button
         layout.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +56,10 @@ public class ListItemLayout {
             public void onClick(View v) {
                 //if the options menu is closed, then close the menu
                 if (EternalMediaBar.copyingOrMoving) {
+                    AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+                            10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+                    //now add the progress view to the display, then process the image view and add it to the display.
+                    new ImgLoader().execute(image);
                     if (EternalMediaBar.selectedApps.contains(menuItem.URI)){
                         EternalMediaBar.selectedApps.remove(menuItem.URI);
                         image.selectedIcon.setVisibility(View.INVISIBLE);
@@ -78,31 +70,20 @@ public class ListItemLayout {
                 } else if (!EternalMediaBar.optionsMenu) {
                     //otherwise act normally.
                     //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
-                    if (EternalMediaBar.vItem != position && EternalMediaBar.savedData.doubleTap) {
-                        EternalMediaBar.activity.listMove(position, false);
+                    if (EternalMediaBar.savedData.doubleTap && EternalMediaBar.vItem != index) {
+                        EternalMediaBar.activity.listMove(index, false);
                     } else {
                         //if double tap is off, or this is the position for the app, or both, open it.
                         //if its the options button, open the options menu
                         switch (menuItem.URI){
                             case ".options":{
                                 EternalMediaBar.activity.listMove(index, false);
-                                //use a blank value for the AppDetail to be absolutley sure we don't break anything.
+                                //use a blank value for the AppDetail to be absolutely sure we don't break anything.
                                 OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options", true), false);
                                 break;
                             }
-                            case ".webSearch":{
-                                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                                intent.putExtra(SearchManager.QUERY, menuItem.label);
-                                EternalMediaBar.activity.startActivity(intent);
-                                break;
-                            }
-                            case ".storeSearch":{
-                                Intent storeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=" + menuItem.label +"&c=apps"));
-                                EternalMediaBar.activity.startActivity(storeIntent);
-                                break;
-                            }
-                            case ".musicSearch":{
-                                EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
+                            case ".finance":{
+                                EternalMediaBar.activity.startActivity(new Intent(EternalMediaBar.activity, EternalFinance.class));
                                 break;
                             }
                             case ".audio":{
@@ -145,30 +126,103 @@ public class ListItemLayout {
 
 
     ////////////////////////////////////////////////////////////
+    ////////////////////// App List Item ///////////////////////
+    ////////////////////////////////////////////////////////////
+
+    //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
+    public static View searchView (final AppDetail menuItem, final int index){
+
+        //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
+        //make the core layout
+        RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
+        layout.setMinimumHeight(Math.round(58 * EternalMediaBar.dpi.scaledDensity));
+        //create the icon base using the async image loader
+        AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+                8 * EternalMediaBar.dpi.scaledDensity, 28 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        //now add the progress view to the display, then process the image view and add it to the display.
+        new ImgLoader().execute(image);
+        layout.addView(image.icon);
+        layout.addView(image.selectedIcon);
+
+        //now add the text similar to the image
+        layout.addView(GenLabel(menuItem.label, 1, Gravity.CENTER, 0, 34, 90));
+
+        //setup the onclick listener and button
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //if the options menu is closed, then close the menu
+                if (!EternalMediaBar.copyingOrMoving && !EternalMediaBar.optionsMenu) {
+                    //otherwise act normally.
+                    //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
+                    if (EternalMediaBar.vItem != index && EternalMediaBar.savedData.doubleTap) {
+                        EternalMediaBar.activity.listMove(index, false);
+                    } else {
+                        //if double tap is off, or this is the position for the app, or both, open it.
+                        //if its the options button, open the options menu
+                        switch (menuItem.URI) {
+                            case ".webSearch": {
+                                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                                intent.putExtra(SearchManager.QUERY, menuItem.internalCommand);
+                                EternalMediaBar.activity.startActivity(intent);
+                                break;
+                            }
+                            case ".storeSearch": {
+                                EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=" + menuItem.internalCommand + "&c=apps")));
+                                break;
+                            }
+                            case ".musicSearch": {
+                                EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
+                                break;
+                            }
+                            default: {
+                                //if it's not the options menu then try to open the app
+                                EternalMediaBar.activity.startActivity(EternalMediaBar.manager.getLaunchIntentForPackage(menuItem.URI));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        //define the function for long click, this closes the options menu if it's open, or opens the settings menu for an app.
+        layout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (EternalMediaBar.optionsMenu) {
+                    OptionsMenuChange.menuClose();
+                    EternalMediaBar.optionsMenu = false;
+                } else {
+                    EternalMediaBar.activity.listMove(index, false);
+                    OptionsMenuChange.menuOpen(menuItem, true);
+                }
+                return true;
+            }
+        });
+
+        //finally return the root view, and all it's children as a single view.
+        return layout.getRootView();
+    }
+
+
+
+
+    ////////////////////////////////////////////////////////////
     //////////////////// Category List Item ////////////////////
     ////////////////////////////////////////////////////////////
 
     public static View categoryListItemView (CharSequence text, final int index, final String launchIntent){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(75 * EternalMediaBar.dpi.scaledDensity));
+        layout.setMinimumHeight(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
         AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",launchIntent), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         layout.addView(image.icon);
 
-        TextView appLabel = new TextView(EternalMediaBar.activity);
-        appLabel.setText(text);
-        appLabel.setSingleLine(true);
-        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
-        appLabel.setY((50 * EternalMediaBar.dpi.scaledDensity));
-        appLabel.setId(R.id.list_item_text);
-        appLabel.setGravity(Gravity.CENTER);
-        appLabel.setWidth(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
-        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        layout.addView(appLabel);
+        layout.addView(GenLabel(text, 2, Gravity.CENTER,0, 45, 80));
 
         //on click this just changes the category, unless the options menu is open, then it coses options.
         layout.setOnClickListener(new View.OnClickListener() {
@@ -213,25 +267,15 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
-        layout.setMinimumHeight(Math.round(28 * EternalMediaBar.dpi.scaledDensity));
+        layout.setMinimumHeight(Math.round(20 * EternalMediaBar.dpi.scaledDensity));//TODO height not quite correct
         //create the icon base using the async image loader
         AsyncImageView image = new AsyncImageView("",launchIntent, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         new ImgLoader().execute(image);
         layout.addView(image.icon);
-
-        TextView appLabel = new TextView(EternalMediaBar.activity);
-        appLabel.setText(text);
-        appLabel.setLines(2);
-        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
-        appLabel.setX(34 * EternalMediaBar.dpi.scaledDensity);
-        appLabel.setY((6 * EternalMediaBar.dpi.scaledDensity));
-        appLabel.setId(R.id.list_item_text);
-        appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
-        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        layout.addView(appLabel);
+        //add the text
+        layout.addView(GenLabel(text, 2, Gravity.START,34, 6, 115));
 
         return layout.getRootView();
     }
@@ -243,52 +287,43 @@ public class ListItemLayout {
     public static View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final AppDetail menuItem){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
-        TextView appLabel = new TextView(EternalMediaBar.activity);
         //in the options menu, besides the header, only radio buttons have icons, so check if it's a radio button before worrying about adding an icon
-        if (menuItem.internalCommand.equals(".radioUnCheck") || menuItem.internalCommand.equals(".radioCheck")) {
-            //create the icon base using the async image loader
-            AsyncImageView image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
-                    10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-            //now process the image view and add it to the display.
-            new ImgLoader().execute(image);
-            layout.addView(image.icon);
 
-            appLabel.setX(26 * EternalMediaBar.dpi.scaledDensity);
-            appLabel.setY((2 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setWidth(Math.round(90 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setGravity(Gravity.CENTER);
-        }
-        //if it is the header this also has a different layout and an image. so we have to define that accordingly, similar to the above.
-        else if(menuItem.internalCommand.equals(".optionsHeader")){
-            layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
+        switch (menuItem.internalCommand){
+            case ".radioUnCheck":case ".radioCheck": {
+                layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
+                //create the icon base using the async image loader
+                AsyncImageView image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
+                        10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+                //now process the image view and add it to the display.
+                new ImgLoader().execute(image);
+                layout.addView(image.icon);
 
-            //create the icon base using the async image loader
-            AsyncImageView image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
-                    6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-            //now process the image view and add it to the display.
-            new ImgLoader().execute(image);
-            layout.addView(image.icon);
+                layout.addView(GenLabel(text, 2, Gravity.CENTER, 26, 2, 90));
+                break;
+            }
+            case ".optionsHeader": {
+                layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
 
-            appLabel.setX(2 * EternalMediaBar.dpi.scaledDensity);
-            appLabel.setY((48 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setGravity(Gravity.CENTER);
-        }
-        else {
-            //if it's not either of the above, we won't need to deal with the image, just the text.
-            appLabel.setX(12 * EternalMediaBar.dpi.scaledDensity);
-            appLabel.setY((24 * EternalMediaBar.dpi.scaledDensity));
-            appLabel.setWidth(Math.round(115 * EternalMediaBar.dpi.scaledDensity));
+                //create the icon base using the async image loader
+                AsyncImageView image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
+                        6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+                //now process the image view and add it to the display.
+                new ImgLoader().execute(image);
+                layout.addView(image.icon);
+                layout.addView(GenLabel(text, 2, Gravity.CENTER, 2, 48, 115));
+                break;
+            }
+            default:{
+                //if it's not either of the above, we won't need to deal with the image, just the text.
+                layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
+                layout.addView(GenLabel(text, 2, Gravity.START, 12, 24, 115));
+                break;
+            }
+
         }
         //this part is generic to all three menus, so we write it after the non-generic parts are set.
-        appLabel.setText(text);
-        appLabel.setLines(2);
-        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
-        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
-        appLabel.setId(R.id.list_item_text);
-        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        layout.addView(appLabel);
+
 
         //if it's not the header then setup the click cunctionality redirects
         if(index!=-1) {
@@ -405,5 +440,24 @@ public class ListItemLayout {
 
 
         return layout.getRootView();
+    }
+
+
+    private static TextView GenLabel(CharSequence text, int lines, int gravity, int x, int y, int width){
+        TextView appLabel = new TextView(EternalMediaBar.activity);
+        appLabel.setText(text);
+        appLabel.setLines(lines);
+        appLabel.setTextColor(EternalMediaBar.savedData.fontCol);
+        appLabel.setAlpha(Color.alpha(EternalMediaBar.savedData.fontCol));
+        appLabel.setId(R.id.list_item_text);
+        appLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+
+        appLabel.setX(x * EternalMediaBar.dpi.scaledDensity);
+        appLabel.setY(y * EternalMediaBar.dpi.scaledDensity);
+        appLabel.setWidth(Math.round(width * EternalMediaBar.dpi.scaledDensity));
+        appLabel.setGravity(gravity);
+
+        return appLabel;
+
     }
 }

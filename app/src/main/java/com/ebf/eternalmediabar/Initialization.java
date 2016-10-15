@@ -32,7 +32,7 @@ public class Initialization {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent, 0);
         //create a list of bools for checking what system apps are present.
-        Boolean[] sysApps = new Boolean[]{false};
+        Boolean[] sysApps = new Boolean[]{false,false};
 
         //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
         for (int i = 0; i < EternalMediaBar.savedData.categories.size();) {
@@ -57,6 +57,8 @@ public class Initialization {
                 } catch (Exception e) {
                     if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".options")) {
                         sysApps[0] = true;
+                    } else if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".finance")) {
+                        sysApps[1] = true;
                     } else if (!EternalMediaBar.savedData.categories.get(i).appList.get(ii).isPersistent) {
                         EternalMediaBar.savedData.categories.get(i).appList.remove(ii);
                         ii--;
@@ -69,10 +71,18 @@ public class Initialization {
 
         //now check the list of bools and add any missing system apps.
         if (!sysApps[0]) {
-            AppDetail eternalSettings = new AppDetail("Eternal Media Bar - Settings", ".options", true);
             for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                 if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Tools")) {
-                    EternalMediaBar.savedData.categories.get(i).appList.add(eternalSettings);
+                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Media Bar - Settings", ".options", true));
+                    break;
+                }
+                i++;
+            }
+        }
+        if (!sysApps[1]) {
+            for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
+                if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Business")) {
+                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Finance", ".finance", true));
                     break;
                 }
                 i++;
@@ -81,10 +91,9 @@ public class Initialization {
         //now add any remaining apps to the newly installed list
         if (availableActivities.size() > 0) {
             for (ResolveInfo ri : availableActivities) {
-                AppDetail appRI = new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false);
                 for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                     if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Unorganized")) {
-                        EternalMediaBar.savedData.categories.get(i).appList.add(appRI);
+                        EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false));
                         break;
                     }
                     i++;

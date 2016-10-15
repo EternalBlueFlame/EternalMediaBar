@@ -45,7 +45,7 @@ public class SettingsClass implements Serializable {
         try {
             FileOutputStream fileStream = eternalMediaBar.openFileOutput("data.xml", Context.MODE_PRIVATE);
             StringBuilder sB = new StringBuilder();
-            sB.append("<xmlRoot>\n" + "<iconCol>");
+            sB.append("<xmlRoot>\n<iconCol>");
             sB.append(EternalMediaBar.savedData.iconCol);
             sB.append("</iconCol>\n<menuCol>");
             sB.append(EternalMediaBar.savedData.menuCol);

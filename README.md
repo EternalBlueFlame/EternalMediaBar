@@ -51,19 +51,16 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>
--	make new method for adding apps to the new apps list, the current method seems to rarley let some random apps through.
 -	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	finish the Lunar Tales icon theme, and it's invert theme.
 -	add manufacturer themes (using HTC/Samgsung/Sony/etc apps).
 -	apps fade out and back in when changing categories.
 -	custom wallpaper for selected app from file, if file exists (use an async task).
 -	listview scroll snapping.
--	parse google play through the market API for app categories.
 -	extra settings:
 -	option to change icon color with month like PSP.
 -	color selector for the google now bar.
 -	enable/disable custom app backgrounds.
--	download app backgrounds from google play (market API).
 -	un-hide hidden apps //selective menu.
 -	expanded manual organization of lists.
 -	organization grouping dependant on developer //combines with other organization methods
