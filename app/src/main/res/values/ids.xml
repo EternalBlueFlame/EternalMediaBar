@@ -16,7 +16,6 @@
     <item name="WIDGET" type="id"/>
     <item name="SETTINGS" type="id"/>
     <item name="SELECTION" type="id"/>
-    <item name="GO_BACK" type="id"/>
     <item name="CLOSE" type="id"/>
 
 
@@ -34,6 +33,7 @@
     <item name="ACTION_COPY" type="id"/>
     <item name="ACTION_MOVE" type="id"/>
     <item name="ACTION_HIDE" type="id"/>
+    <item name="ACTION_UNHIDE" type="id"/>
     <item name="ACTION_REMOVE" type="id"/>
     <item name="ACTION_APP_SYSTEM_SETTINGS" type="id"/>
     <item name="ACTION_URL" type="id"/>

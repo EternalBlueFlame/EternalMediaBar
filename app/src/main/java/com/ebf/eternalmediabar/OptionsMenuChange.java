@@ -32,53 +32,21 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     public static void menuOpen(AppDetail item, int type){
 
-        switch(type){
-            case R.id.APP:{
-                loadAppOptionsMenu(item);
-                break;
-            }
-            case R.id.CATEGORY:{
-
-                break;
-            }
-            case R.id.WIDGET:{
-                modifyWidget();
-                break;
-            }
-            case R.id.GO_BACK:{
-                //just in case the user happened to hit "go back" on the copy or move page.
-                if (EternalMediaBar.copyingOrMoving){
-                    EternalMediaBar.copyingOrMoving = false;
-                    //clear selected apps
-                    for (String uri : EternalMediaBar.selectedApps){
-                        for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
-                            if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
-                                ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
-                                break;
-                            }
-                            i++;
-                        }
+        //just in case the user happened to hit "go back" on the copy or move page.
+        if (EternalMediaBar.copyingOrMoving){
+            EternalMediaBar.copyingOrMoving = false;
+            //clear selected apps
+            for (String uri : EternalMediaBar.selectedApps){
+                for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
+                    if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
+                        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                        break;
                     }
-                    EternalMediaBar.selectedApps.clear();
+                    i++;
                 }
-                break;
             }
-            case R.id.SETTINGS:{
-                loadMainOptionsItems();
-                break;
-            }
+            EternalMediaBar.selectedApps.clear();
         }
-
-        EternalMediaBar.optionsMenu = true;
-        EternalMediaBar.optionVitem =1;
-
-        //add an empty space
-        Space spacer = new Space(EternalMediaBar.activity);
-        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
-        EternalMediaBar.optionsLayout.addView(spacer);
-        //close settings menu, we put this here since it's on the menu without exception.
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", R.id.CLOSE, 0, item));
-
 
         //run the animation
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
@@ -101,9 +69,7 @@ public class OptionsMenuChange {
         sLayout.setAnimation(anim);
         //now move the menu itself
         sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
+            @Override public void onAnimationStart(Animation animation) {}
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -118,10 +84,39 @@ public class OptionsMenuChange {
                 }
             }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
+            @Override public void onAnimationRepeat(Animation animation) {}
         });
+
+
+        switch(type){
+            case R.id.APP:{
+                loadAppOptionsMenu(item);
+                break;
+            }
+            case R.id.CATEGORY:{
+
+                break;
+            }
+            case R.id.WIDGET:{
+                modifyWidget();
+                break;
+            }
+            case R.id.SETTINGS:{
+                loadMainOptionsItems();
+                break;
+            }
+        }
+
+        EternalMediaBar.optionsMenu = true;
+        EternalMediaBar.optionVitem =1;
+
+        //add an empty space
+        Space spacer = new Space(EternalMediaBar.activity);
+        spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
+        EternalMediaBar.optionsLayout.addView(spacer);
+        //close settings menu, we put this here since it's on the menu without exception.
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", R.id.CLOSE, 0, item));
+
     }
 
 
@@ -262,10 +257,10 @@ public class OptionsMenuChange {
             if (i != EternalMediaBar.hItem) {
                 if (action == R.id.MOVE_LIST){
                         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to " + EternalMediaBar.savedData.categories.get(i).categoryName, R.id.ACTION_MOVE, i, menuItem));
-                    } else{
-                        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, R.id.ACTION_COPY, i, menuItem));
-                    }
+                } else{
+                    EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to " + EternalMediaBar.savedData.categories.get(i).categoryName, R.id.ACTION_COPY, i, menuItem));
                 }
+            }
             i++;
         }
         goBackItems(menuItem, R.id.APP);
@@ -447,20 +442,20 @@ public class OptionsMenuChange {
             for (int i =0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
                 if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI.equals(uri)){
                     switch (action){
-                        case R.id.HIDE_LIST:{
+                        case R.id.ACTION_HIDE:{
                             EternalMediaBar.savedData.hiddenApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);break;
                         }
-                        case R.id.COPY_LIST:{
+                        case R.id.ACTION_COPY:{
                             EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
                             EternalMediaBar.savedData.categories.get(category).hasBeenOrganized = false;break;
                         }
-                        case R.id.MOVE_LIST:{
+                        case R.id.ACTION_MOVE:{
                             EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).hasBeenOrganized = false;break;
                         }
-                        case R.id.UNHIDE_LIST:{
+                        case R.id.ACTION_UNHIDE:{
                             EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.hiddenApps.get(i));
                             EternalMediaBar.savedData.hiddenApps.remove(i);
                             EternalMediaBar.savedData.categories.get(category).hasBeenOrganized = false;break;

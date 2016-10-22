@@ -40,7 +40,7 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+        final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
         new ImgLoader().execute(image);
@@ -61,10 +61,7 @@ public class ListItemLayout {
             public void onClick(View v) {
                 //if the options menu is closed, then close the menu
                 if (EternalMediaBar.copyingOrMoving) {
-                    AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
-                            10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                     //now add the progress view to the display, then process the image view and add it to the display.
-                    new ImgLoader().execute(image);
                     if (EternalMediaBar.selectedApps.contains(menuItem.URI)){
                         EternalMediaBar.selectedApps.remove(menuItem.URI);
                         image.selectedIcon.setVisibility(View.INVISIBLE);
@@ -404,11 +401,11 @@ public class ListItemLayout {
                         }
 
                         //cases for toggles
-                        case R.id.ACTION_DOUBLE_TAP: {
+                        case R.id.ACTION_MIRROR: {
                             EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
                             OptionsMenuChange.menuClose();break;
                         }
-                        case R.id.ACTION_MIRROR: {
+                        case R.id.ACTION_DOUBLE_TAP: {
                             EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
                             OptionsMenuChange.menuClose();break;
                         }

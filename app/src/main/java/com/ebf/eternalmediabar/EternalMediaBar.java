@@ -405,7 +405,7 @@ public class EternalMediaBar extends Activity {
             }
             mAppWidgetHost.startListening();
         } else {
-                selectWidget();
+                //selectWidget();
         }
 
     }
