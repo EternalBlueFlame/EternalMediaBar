@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.CategoryClass;
+import com.ebf.eternalVariables.Widget;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,6 +37,7 @@ public class SettingsClass implements Serializable {
     int dimCol;
     List<AppDetail> hiddenApps = new ArrayList<>();
     List<CategoryClass> categories = new ArrayList<>();
+    List<Widget> widgets = new ArrayList<>();
 
     //////////////////////////////////////////////////
     //////Create the string for saving to a file//////
@@ -68,6 +70,20 @@ public class SettingsClass implements Serializable {
             sB.append("</dimLists>\n\n<vLists>\n");
             sB.append(appSavesToXML(EternalMediaBar.savedData));
             sB.append(hiddenAppsToString(EternalMediaBar.savedData));
+            for (Widget widget :widgets){
+                sB.append("<widget>\n     <id>\n");
+                sB.append(widget.ID);
+                sB.append("</id>\n     <x>\n");
+                sB.append(widget.X);
+                sB.append("</x>\n     <y>\n");
+                sB.append(widget.Y);
+                sB.append("</y>\n     <width>\n");
+                sB.append(widget.width);
+                sB.append("</width>\n     <height>\n");
+                sB.append(widget.X);
+                sB.append("</width>\n</widget>\n");
+            }
+
             sB.append("\n</xmlRoot>");
             fileStream.write(sB.toString().getBytes());
             //write a string to the stream
@@ -124,9 +140,7 @@ public class SettingsClass implements Serializable {
                 //while we do this we can also define the organize mode to save some time and effort.
                 bytes.append("          <organizeMode>\n               <dev>");
                 bytes.append(category.organizeGroupDevs);
-                bytes.append("</dev>\n               <repeat>");
-                bytes.append(category.organizeAlways);
-                bytes.append("</repeat>\n               <main>");
+                bytes.append("</dev>\n               <main>");
                 bytes.append(category.organizeMode);
                 bytes.append("</main>\n          </organizeMode>\n\n");
             } catch (Exception e) {}
@@ -138,9 +152,7 @@ public class SettingsClass implements Serializable {
                 bytes.append(app.label.toString().replace("&", "andabcd"));
                 bytes.append("</label>\n               <URI>");
                 bytes.append(app.URI);
-                bytes.append("</URI>\n               <persistent>");
-                bytes.append(app.isPersistent);
-                bytes.append("</persistent>\n          </AppData>");
+                bytes.append("</URI>\n          </AppData>");
             }
             bytes.append("\n     </vList>\n");
         }
@@ -159,11 +171,7 @@ public class SettingsClass implements Serializable {
             bytes.append(saveData.hiddenApps.get(i).label.toString().replace("&", "andabcd"));
             bytes.append("</label>\n          <URI>");
             bytes.append(saveData.hiddenApps.get(i).URI);
-            bytes.append("</URI>\n          <persistent>");
-            bytes.append(saveData.hiddenApps.get(i).isPersistent);
-            bytes.append("</persistent>\n     </AppData>");
-            bytes.append(saveData.hiddenApps.get(i).isPersistent);
-            bytes.append("</persistent>\n     </AppData>");
+            bytes.append("</URI>\n     </AppData>");
             i++;
         }
         bytes.append("\n</hiddenApps>\n");
@@ -296,12 +304,10 @@ public class SettingsClass implements Serializable {
                     //try and grab the variables for the list URI, list icon, list google icon and list organization mode.
                     try {
                         newCategory.organizeMode = Integer.parseInt(appElements.getElementsByTagName("main").item(0).getTextContent());
-                        newCategory.organizeAlways = boolFromString(appElements.getElementsByTagName("repeat").item(0).getTextContent());
                         newCategory.organizeGroupDevs = boolFromString(appElements.getElementsByTagName("dev").item(0).getTextContent());
                     }
                     catch (Exception e){
                         newCategory.organizeMode = 1;
-                        newCategory.organizeAlways = true;
                         newCategory.organizeGroupDevs = false;
                     }
                     // iterate through AppData tags
@@ -311,8 +317,7 @@ public class SettingsClass implements Serializable {
                             Element appElement = (Element) appsList.item(currentApp);
                             newCategory.appList.add(new AppDetail(
                                     appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&"),
-                                    appElement.getElementsByTagName("URI").item(0).getTextContent(),
-                                    boolFromString(appElement.getElementsByTagName("persistent").item(0).getTextContent())
+                                    appElement.getElementsByTagName("URI").item(0).getTextContent()
                             ));
                         } catch (Exception e) {}
                         currentApp++;
@@ -333,8 +338,7 @@ public class SettingsClass implements Serializable {
                     try {
                         Element appElement = (Element) appsList.item(currentApp);
                         savedData.hiddenApps.add(new AppDetail(appElement.getElementsByTagName("label").item(0).getTextContent().replace("andabcd", "&"),
-                                appElement.getElementsByTagName("URI").item(0).getTextContent(),
-                                boolFromString(appElement.getElementsByTagName("persistent").item(0).getTextContent())
+                                appElement.getElementsByTagName("URI").item(0).getTextContent()
                                 ));
                     }
                     catch (Exception e){
@@ -352,13 +356,13 @@ public class SettingsClass implements Serializable {
             //e.printStackTrace();
 
             //the save data loader has compensation for any variables being missing, so we don't need to compensate for file not found.
-            savedData.categories.add(new CategoryClass(1, true,false, "Social", "icon.social", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
-            savedData.categories.add(new CategoryClass(1, true,false, "Media", "icon.media",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
-            savedData.categories.add(new CategoryClass(1, true,false, "Games", "icon.games", Collections.singletonList("Games")));
-            savedData.categories.add(new CategoryClass(1, true,false, "Web", "icon.web", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
-            savedData.categories.add(new CategoryClass(1, true,false, "Utility", "icon.utility", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
-            savedData.categories.add(new CategoryClass(1, true,false, "Settings", "icon.settings", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
-            savedData.categories.add(new CategoryClass(1, true,false, "New Apps", "icon.new", Collections.singletonList("Unorganized")));
+            savedData.categories.add(new CategoryClass(1, false, "Social", "icon.social", new ArrayList<>(Arrays.asList("Communication", "Social", "Sports", "Education"))));
+            savedData.categories.add(new CategoryClass(1, false, "Media", "icon.media",  new ArrayList<>(Arrays.asList("Music", "Video", "Entertainment", "Books", "Comics", "Photo"))));
+            savedData.categories.add(new CategoryClass(1, false, "Games", "icon.games", Collections.singletonList("Games")));
+            savedData.categories.add(new CategoryClass(1, false, "Web", "icon.web", new ArrayList<>(Arrays.asList("Weather", "News", "Shopping", "Lifestyle", "Transportation", "Travel", "Web"))));
+            savedData.categories.add(new CategoryClass(1, false, "Utility", "icon.utility", new ArrayList<>(Arrays.asList("Business", "Finance", "Health", "Medical", "Productivity"))));
+            savedData.categories.add(new CategoryClass(1, false, "Settings", "icon.settings", new ArrayList<>(Arrays.asList("Live Wallpaper", "Personalization", "Tools", "Widgets", "Libraries", "Android Wear"))));
+            savedData.categories.add(new CategoryClass(1, false, "New Apps", "icon.new", Collections.singletonList("Unorganized")));
             //we should initialize the other variables as well.
             savedData.theme = "Internal";
             savedData.mirrorMode = false;

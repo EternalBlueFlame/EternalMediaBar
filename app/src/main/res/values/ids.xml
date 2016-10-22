@@ -6,5 +6,81 @@
     <item name="list_item_checkbox" type="id"/>
 
 
+    <item name="APPWIDGET_HOST_ID" type="id"/>
+    <item name="REQUEST_PICK_APPWIDGET" type="id"/>
+    <item name="REQUEST_CREATE_APPWIDGET" type="id"/>
+
+
+    <item name="APP" type="id"/>
+    <item name="CATEGORY" type="id"/>
+    <item name="WIDGET" type="id"/>
+    <item name="SETTINGS" type="id"/>
+    <item name="SELECTION" type="id"/>
+    <item name="GO_BACK" type="id"/>
+    <item name="CLOSE" type="id"/>
+
+
+    <item name="THEME_SELECT" type="id"/>
+    <item name="COLOR_MENU" type="id"/>
+    <item name="COLOR_FONT" type="id"/>
+    <item name="COLOR_ICON" type="id"/>
+    <item name="COLOR_OPTIONS" type="id"/>
+    <item name="COLOR_APP_BG" type="id"/>
+    <item name="ORGANIZE_MENU" type="id"/>
+    <item name="COPY_LIST" type="id"/>
+    <item name="MOVE_LIST" type="id"/>
+    <item name="HIDE_LIST" type="id"/>
+    <item name="UNHIDE_LIST" type="id"/>
+    <item name="ACTION_COPY" type="id"/>
+    <item name="ACTION_MOVE" type="id"/>
+    <item name="ACTION_HIDE" type="id"/>
+    <item name="ACTION_REMOVE" type="id"/>
+    <item name="ACTION_APP_SYSTEM_SETTINGS" type="id"/>
+    <item name="ACTION_URL" type="id"/>
+    <item name="ACTION_THEME_CHANGE" type="id"/>
+    <item name="COLOR_ACTION" type="id"/>
+    <item name="COLOR_ACTION_CANCEL" type="id"/>
+    <item name="ACTION_ORGANIZE" type="id"/>
+    <item name="ACTION_DOUBLE_TAP" type="id"/>
+    <item name="ACTION_MIRROR" type="id"/>
+    <item name="ACTION_ADD_WIDGET" type="id"/>
+
+    <item name="NULL" type="id"/>
+
+    //list organize
+    case 24: {
+    OptionsMenuChange.listOrganizeSelect(menuItem);break;
+    }
+    case 25: {
+    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode = secondaryIndex;
+    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+    break;
+    }
+    case 26:{
+    if (secondaryIndex==-1){
+    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = false;
+    EternalUtil.organizeList();
+    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+    break;
+    } else {
+    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = true;
+    EternalUtil.organizeList();
+    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
+    break;
+    }
+    }
+
+    //cases for toggles
+    case 30: {
+    EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
+    OptionsMenuChange.menuClose();break;
+    }
+    case 31: {
+    EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
+    OptionsMenuChange.menuClose();break;
+    }
 
 </resources>

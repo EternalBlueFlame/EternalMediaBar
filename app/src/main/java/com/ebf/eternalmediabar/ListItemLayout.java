@@ -1,6 +1,9 @@
 package com.ebf.eternalmediabar;
 
 import android.app.SearchManager;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -14,6 +17,8 @@ import android.widget.Toast;
 
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.AsyncImageView;
+import com.ebf.eternalVariables.CategoryClass;
+import com.ebf.eternalVariables.Widget;
 import com.ebf.eternalfinance.EternalFinance;
 
 import java.io.File;
@@ -79,7 +84,7 @@ public class ListItemLayout {
                             case ".options":{
                                 EternalMediaBar.activity.listMove(index, false);
                                 //use a blank value for the AppDetail to be absolutely sure we don't break anything.
-                                OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options", true), false);
+                                OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options"), R.id.SETTINGS);
                                 break;
                             }
                             case ".finance":{
@@ -113,7 +118,7 @@ public class ListItemLayout {
                     EternalMediaBar.optionsMenu = false;
                 } else {
                     EternalMediaBar.activity.listMove(index, false);
-                    OptionsMenuChange.menuOpen(menuItem, true);
+                    OptionsMenuChange.menuOpen(menuItem, R.id.APP);
                 }
                 return true;
             }
@@ -138,14 +143,14 @@ public class ListItemLayout {
         layout.setMinimumHeight(Math.round(58 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
         AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
-                8 * EternalMediaBar.dpi.scaledDensity, 28 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+                8 * EternalMediaBar.dpi.scaledDensity, 20 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
         new ImgLoader().execute(image);
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
         //now add the text similar to the image
-        layout.addView(GenLabel(menuItem.label, 1, Gravity.CENTER, 0, 34, 90));
+        layout.addView(GenLabel(menuItem.label, 1, Gravity.CENTER, 0, 34, 70));
 
         //setup the onclick listener and button
         layout.setOnClickListener(new View.OnClickListener() {
@@ -175,54 +180,59 @@ public class ListItemLayout {
                                 EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
                                 break;
                             }
-                            default: {
-                                //if it's not the options menu then try to open the app
-                                EternalMediaBar.activity.startActivity(EternalMediaBar.manager.getLaunchIntentForPackage(menuItem.URI));
-                                break;
-                            }
                         }
                     }
                 }
             }
         });
+        //finally return the root view, and all it's children as a single view.
+        return layout.getRootView();
+    }
 
-        //define the function for long click, this closes the options menu if it's open, or opens the settings menu for an app.
-        layout.setOnLongClickListener(new View.OnLongClickListener() {
+
+    ////////////////////////////////////////////////////////////
+    /////////////////////// Widget Item ////////////////////////
+    ////////////////////////////////////////////////////////////
+    public static View loadWidget(final Widget widget){
+        AppWidgetProviderInfo appWidgetInfo = EternalMediaBar.mAppWidgetManager.getAppWidgetInfo(widget.ID);
+        AppWidgetHostView hostView = EternalMediaBar.mAppWidgetHost.createView(EternalMediaBar.activity, widget.ID, appWidgetInfo);
+        hostView.setAppWidget(widget.ID, appWidgetInfo);
+        hostView.setX(widget.X);
+        hostView.setY(widget.Y);
+        hostView.setMinimumWidth(widget.width);
+        hostView.setMinimumHeight(widget.height);
+        hostView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.optionsMenu) {
                     OptionsMenuChange.menuClose();
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    EternalMediaBar.activity.listMove(index, false);
-                    OptionsMenuChange.menuOpen(menuItem, true);
+                    OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
+                    EternalMediaBar.editingWidget = widget;
                 }
-                return true;
+                return false;
             }
         });
-
-        //finally return the root view, and all it's children as a single view.
-        return layout.getRootView();
+        return hostView;
     }
-
-
 
 
     ////////////////////////////////////////////////////////////
     //////////////////// Category List Item ////////////////////
     ////////////////////////////////////////////////////////////
 
-    public static View categoryListItemView (CharSequence text, final int index, final String launchIntent){
+    public static View categoryListItemView (final CategoryClass category, final int index){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",launchIntent), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
-                4 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",category.categoryIcon), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
+                4 * EternalMediaBar.dpi.scaledDensity, 19 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         layout.addView(image.icon);
 
-        layout.addView(GenLabel(text, 2, Gravity.CENTER,0, 45, 80));
+        layout.addView(GenLabel(category.categoryName, 1, Gravity.CENTER,0, 45, 84));
 
         //on click this just changes the category, unless the options menu is open, then it coses options.
         layout.setOnClickListener(new View.OnClickListener() {
@@ -245,7 +255,8 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose();
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    OptionsMenuChange.menuOpen(new AppDetail("","",".category",""), false);
+                    //instead of making an entirely different version of menuOpen for category, we'll just convert the unique data to an AppDetail for us to parse later
+                    OptionsMenuChange.menuOpen(new AppDetail(category.categoryName, index + ""), R.id.CATEGORY);
                 }
                 return true;
             }
@@ -262,20 +273,20 @@ public class ListItemLayout {
     ////////////////////////////////////////////////////////////
 
 
-    public static View searchCategoryItemView (CharSequence text, final String launchIntent){
+    public static View searchCategoryItemView (CategoryClass category){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
         layout.setMinimumHeight(Math.round(20 * EternalMediaBar.dpi.scaledDensity));//TODO height not quite correct
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView("",launchIntent, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView("",category.categoryIcon, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         new ImgLoader().execute(image);
         layout.addView(image.icon);
         //add the text
-        layout.addView(GenLabel(text, 2, Gravity.START,34, 6, 115));
+        layout.addView(GenLabel(category.categoryName, 1, Gravity.START,34, 6, 115));
 
         return layout.getRootView();
     }
@@ -326,113 +337,81 @@ public class ListItemLayout {
 
 
         //if it's not the header then setup the click cunctionality redirects
-        if(index!=-1) {
+        if(index!=R.id.NULL) {
             //this is where it gets tricky, options menu items, have a LOT of redirects to other functions, based on what they do. This is defined on creation of the menu item with the index variable.
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     switch (index) {
                         //menu open and close
-                        case 0: {
+                        case R.id.CLOSE: {
                             OptionsMenuChange.menuClose();break;}
                         //menu open for if it's an app's settings, and if it's just the options menu
-                        case 1: {
-                            OptionsMenuChange.menuOpen(menuItem, true);break;}
-                        case 2: {
-                            OptionsMenuChange.menuOpen(menuItem, false);break;}
-                        //we leave case 3 open in case it is necessary for creating a new option menu to manage categories
-                        //we leave case 4 open in case it is necessary for managing media on the device.
-                        //we leave case 5 open in case it is necessary for managing constacts.
-                        //cases 6 through 9 are for unforseen necessary options menus.
+                        case R.id.APP: case R.id.SETTINGS: {
+                            OptionsMenuChange.menuOpen(menuItem, index);break;}
 
                         //case for making the list of categories for moving or copying.
-                        case 10:{
-                            OptionsMenuChange.createCopyList(menuItem, false);break;
+                        case R.id.COPY_LIST: case R.id.MOVE_LIST:{
+                            OptionsMenuChange.createCopyList(menuItem, index);break;
                         }
-                        case 11:{
-                            OptionsMenuChange.createCopyList(menuItem, true);break;
-                        }
-                        case 12:{
+                        case R.id.HIDE_LIST:{
                             break;//create hide apps menu designed similar to move/copy for ability to multi-select
                         }
                         //cases for copying, moving, and hiding apps.
-                        case 13:{
-                            OptionsMenuChange.relocateItem(secondaryIndex, false, false);break;
+                        case R.id.ACTION_COPY: case R.id.ACTION_MOVE: case R.id.ACTION_HIDE:{
+                            OptionsMenuChange.relocateItem(secondaryIndex, index);break;
                         }
-                        case 14:{
-                            OptionsMenuChange.relocateItem(secondaryIndex, true, false);break;
-                        }
-                        case 15:{
-                            OptionsMenuChange.relocateItem(secondaryIndex, false, true);break;
-                        }
-                        case 16:{
+                        case R.id.ACTION_REMOVE:{
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
                             OptionsMenuChange.menuClose(); break;
                         }
                         //case for opening app's system settings
-                        case 17:{
-                            EternalMediaBar.activity.startActivity(OptionsMenuChange.openAppSettings(menuItem));break;
+                        case R.id.ACTION_APP_SYSTEM_SETTINGS:{
+                            EternalUtil.openAppSettings(menuItem);break;
                         }
                         //case for opening a URL
-                        case 18:{
+                        case R.id.ACTION_URL:{
                             EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(menuItem.URI)));break;
                         }
                         //cases for theme changing
-                        case 19: {
+                        case R.id.THEME_SELECT: {
                             OptionsMenuChange.themeChange(menuItem);break;
                         }
-                        case 20:{//reload the list, we have to change the menu item back to the default options menu item
+                        case R.id.ACTION_THEME_CHANGE:{//reload the list, we have to change the menu item back to the default options menu item
                             EternalMediaBar.savedData.theme = menuItem.URI;
-                            OptionsMenuChange.themeChange(new AppDetail("Eternal Media Bar - Settings", ".options", true));
+                            OptionsMenuChange.themeChange(new AppDetail("Eternal Media Bar - Settings", ".options"));
                             break;
                         }
                         //cases for changing colors
-                        case 21: {
-                            OptionsMenuChange.colorSelect(menuItem);break;
+                        case R.id.COLOR_APP_BG: case R.id.COLOR_OPTIONS: case R.id.COLOR_FONT: case R.id.COLOR_ICON:{
+                            OptionsMenuChange.colorSelect(index);break;
                         }
-                        case 22:{
+                        case R.id.COLOR_ACTION_CANCEL:{
                             OptionsMenuChange.cancelColorSelect(secondaryIndex, menuItem); break;
                         }
-                        case 23: {
+                        case R.id.COLOR_MENU: {
                             OptionsMenuChange.themeColorChange(menuItem);break;
                         }
                         //list organize
-                        case 24: {
+                        case R.id.ORGANIZE_MENU: {
                             OptionsMenuChange.listOrganizeSelect(menuItem);break;
                         }
-                        case 25: {
+                        case R.id.ACTION_ORGANIZE: {
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode = secondaryIndex;
                             OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
                             Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
                             break;
                         }
-                        case 26:{
-                            if (secondaryIndex==-1){
-                                EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = false;
-                                EternalUtil.organizeList();
-                                OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
-                                Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
-                                break;
-                            } else {
-                                EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = true;
-                                EternalUtil.organizeList();
-                                OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
-                                Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
-                                break;
-                            }
-                        }
 
                         //cases for toggles
-                        case 30: {
+                        case R.id.ACTION_DOUBLE_TAP: {
                             EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
                             OptionsMenuChange.menuClose();break;
                         }
-                        case 31: {
+                        case R.id.ACTION_MIRROR: {
                             EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
                             OptionsMenuChange.menuClose();break;
                         }
-                        //null case
-                        default:{break;}
                     }
                 }
             });

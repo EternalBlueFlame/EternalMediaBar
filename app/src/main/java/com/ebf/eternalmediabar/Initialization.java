@@ -59,7 +59,7 @@ public class Initialization {
                         sysApps[0] = true;
                     } else if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".finance")) {
                         sysApps[1] = true;
-                    } else if (!EternalMediaBar.savedData.categories.get(i).appList.get(ii).isPersistent) {
+                    } else {
                         EternalMediaBar.savedData.categories.get(i).appList.remove(ii);
                         ii--;
                     }
@@ -73,7 +73,7 @@ public class Initialization {
         if (!sysApps[0]) {
             for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                 if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Tools")) {
-                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Media Bar - Settings", ".options", true));
+                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Media Bar - Settings", ".options"));
                     break;
                 }
                 i++;
@@ -82,7 +82,7 @@ public class Initialization {
         if (!sysApps[1]) {
             for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                 if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Business")) {
-                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Finance", ".finance", true));
+                    EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail("Eternal Finance", ".finance"));
                     break;
                 }
                 i++;
@@ -93,7 +93,7 @@ public class Initialization {
             for (ResolveInfo ri : availableActivities) {
                 for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                     if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Unorganized")) {
-                        EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName, false));
+                        EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName));
                         break;
                     }
                     i++;

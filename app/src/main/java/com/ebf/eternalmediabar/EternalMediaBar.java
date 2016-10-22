@@ -4,8 +4,10 @@ package com.ebf.eternalmediabar;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -20,14 +23,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ebf.eternalVariables.AppDetail;
+import com.ebf.eternalVariables.CategoryClass;
+import com.ebf.eternalVariables.Widget;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,19 +44,17 @@ public class EternalMediaBar extends Activity {
     public static int hItem = 0;
     public static boolean init = false;
     public static boolean optionsMenu = false;
-    public static boolean copyingOrMoving;
+    public static boolean copyingOrMoving = false;
+    public static Widget editingWidget;
     public static int vItem = 0;
     public static int optionVitem =1;
-    public static boolean[] warningToggle;
-    //static instance of the activity
 
+    //static instance of the activity
     public static EternalMediaBar activity;
 
     public static LinearLayout optionsLayout;
 
     public static DisplayMetrics dpi = new DisplayMetrics();
-
-    public static final List<String> innerURI = Arrays.asList(".options", ".music");
 
     public static List<String> selectedApps = new ArrayList<>();
 
@@ -116,8 +119,8 @@ public class EternalMediaBar extends Activity {
                 LinearLayout providerList = new LinearLayout(this);
                 providerList.setOrientation(LinearLayout.HORIZONTAL);
                 providerList.setMinimumHeight(Math.round(dpi.scaledDensity * 58));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Google", "", ".webSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Play Store", ",", ".storeSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", "", ".webSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ",", ".storeSearch", query), -1));
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Music","",".musicSearch", query), -1));
                 searchView.addView(providerList);
 
@@ -132,7 +135,7 @@ public class EternalMediaBar extends Activity {
                         if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
                             //check if this category has a header, if not make one and note that there is one.
                             if (!categoryListed) {
-                                searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i).categoryName, savedData.categories.get(i).categoryIcon));
+                                searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i)));
                                 categoryListed = true;
                             }
                             //display the actual search result
@@ -154,15 +157,13 @@ public class EternalMediaBar extends Activity {
 
         Cursor cur = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
 
-        if(cur != null) {
-            if(cur.getCount() > 0) {
-                while(cur.moveToNext()) {
-                    if ( cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase()) ){
-                        output.add(new AppDetail(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)),
-                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),".audio",
-                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
-                        ));
-                    }
+        if(cur != null &&cur.getCount() > 0) {
+            while(cur.moveToNext()) {
+                if ( cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase()) ){
+                    output.add(new AppDetail(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)),
+                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),".audio",
+                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
+                    ));
                 }
             }
         }
@@ -299,7 +300,7 @@ public class EternalMediaBar extends Activity {
                 catch (Exception e){}
             }
         }
-        else if(!isCategory && optionsMenu){
+        else if(!isCategory){
             LinearLayout layout = (LinearLayout) findViewById(R.id.optionslist);
             if (move >= 0 && move < layout.getChildCount()) {
                 try {
@@ -366,41 +367,117 @@ public class EternalMediaBar extends Activity {
         layout.removeAllViews();
         //dim the color to the dimCol
         layout.setBackgroundColor(savedData.dimCol);
+        int count =0;
         //loop to add all entries of hli to the list
-        for (int ii=0; (ii)<savedData.categories.size();) {
-            if(!savedData.categories.get(ii).categoryTags.contains("Unorganized")) {
-                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon));
+        for (CategoryClass category :savedData.categories) {
+            if(!category.categoryTags.contains("Unorganized")) {
+                layout.addView(ListItemLayout.categoryListItemView(category, count));
+            } else if (category.appList.size() >0){
+                layout.addView(ListItemLayout.categoryListItemView(category, count));
             }
-            else if (savedData.categories.get(ii).appList.size() >0){
-                layout.addView(ListItemLayout.categoryListItemView(savedData.categories.get(ii).categoryName, ii, savedData.categories.get(ii).categoryIcon));
-            }
-        ii++;
+            count++;
         }
         listMove(0, false);
-
+        count =0;
         //now define the apps list
         LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
-        for(int i=0; i<vLayout.getChildCount();){
-            vLayout.getChildAt(i).invalidate();
-            i++;
-        }
         vLayout.removeAllViews();
 
         //set the list organization method
-        if(savedData.categories.get(hItem).appList.size() >1 && EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways) {
-            EternalUtil.organizeList();
-        }
+        savedData.categories.get(hItem).Organize();
         //dim the list background to the dim color
         vLayout.setBackgroundColor(savedData.dimCol);
 
 
-        for (int ii=0; ii< savedData.categories.get(hItem).appList.size();) {
-            vLayout.addView(ListItemLayout.appListItemView(savedData.categories.get(hItem).appList.get(ii), ii, false));
-            ii++;
+        for (AppDetail app : savedData.categories.get(hItem).appList) {
+            vLayout.addView(ListItemLayout.appListItemView(app, count, false));
+            count++;
         }
-
         //make sure the vList item is selected
         listMove(0, false);
+
+        mAppWidgetManager = AppWidgetManager.getInstance(this);
+        mAppWidgetHost = new AppWidgetHost(this, R.id.APPWIDGET_HOST_ID);
+
+        if (savedData.widgets.size()>0){
+            for (Widget widget : savedData.widgets) {
+                ((RelativeLayout)EternalMediaBar.activity.findViewById(R.id.mainlayout)).addView(ListItemLayout.loadWidget(widget));
+            }
+            mAppWidgetHost.startListening();
+        } else {
+                selectWidget();
+        }
+
+    }
+
+    public static AppWidgetManager mAppWidgetManager;
+    public static AppWidgetHost mAppWidgetHost;
+
+    /**
+     * If the user has selected an widget, the result will be in the 'data' when
+     * this function is called.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            /**
+             * Checks if the widget needs any configuration. If it needs, launches the
+             * configuration activity.
+             */
+            if (requestCode == R.id.REQUEST_PICK_APPWIDGET) {
+                int appWidgetId = data.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+                if (mAppWidgetManager.getAppWidgetInfo(appWidgetId).configure != null) {
+                    Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+                    intent.setComponent(mAppWidgetManager.getAppWidgetInfo(appWidgetId).configure);
+                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                    startActivityForResult(intent, R.id.REQUEST_CREATE_APPWIDGET);
+                } else {
+                    createWidget(appWidgetId);
+                }
+
+                //Creates the widget and adds to our view layout.
+            } else if (requestCode == R.id.REQUEST_CREATE_APPWIDGET) {
+                createWidget(data.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1));
+            }
+        } else if (resultCode == RESULT_CANCELED && data != null) {
+            if (data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) != -1) {
+                mAppWidgetHost.deleteAppWidgetId(data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1));
+            }
+        }
+    }
+
+
+    /**
+     * Creates the widget and adds to our view layout.
+     */
+    public void createWidget(int appWidgetId) {
+        AppWidgetProviderInfo appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
+        savedData.widgets.add(new Widget(appWidgetId, appWidgetInfo.minWidth, appWidgetInfo.minHeight));
+    }
+
+    /**
+     * Launches the menu to select the widget. The selected widget will be on
+     * the result of the activity.
+     */
+    void selectWidget() {
+        int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        /**
+         * This avoids a bug in the com.android.settings.AppWidgetPickActivity,
+         * This just adds empty extras to the intent, avoiding the bug.
+         */
+        pickIntent.putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, new ArrayList<AppWidgetProviderInfo>());
+        pickIntent.putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, new ArrayList<Bundle>());
+
+        startActivityForResult(pickIntent, R.id.REQUEST_PICK_APPWIDGET);
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAppWidgetHost.stopListening();
     }
 
 }
