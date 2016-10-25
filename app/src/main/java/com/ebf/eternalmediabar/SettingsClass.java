@@ -255,6 +255,7 @@ public class SettingsClass implements Serializable {
                     try {
                         newCategory.categoryName = appElements.getElementsByTagName("listName").item(0).getTextContent();
                         newCategory.categoryIcon = appElements.getElementsByTagName("listIcon").item(0).getTextContent();
+
                         //TODO compatibility switch for older save files, remove at next major revision.
                         switch (newCategory.categoryIcon){
                             case "1":{ newCategory.categoryIcon = "icon.social"; break;}
@@ -265,6 +266,7 @@ public class SettingsClass implements Serializable {
                             case "6":{ newCategory.categoryIcon = "icon.settings"; break;}
                             case "7":{ newCategory.categoryIcon = "icon.new"; break;}
                         }
+                        //newer save files will be the second option by default.
                     }
                     catch(Exception e){
                         switch (categoriesInXML){

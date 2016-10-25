@@ -1,7 +1,6 @@
 package com.ebf.eternalmediabar;
 
 import android.app.SearchManager;
-import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Intent;
@@ -43,7 +42,7 @@ public class ListItemLayout {
         final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
-        new ImgLoader().execute(image);
+
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
@@ -142,7 +141,6 @@ public class ListItemLayout {
         AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
                 8 * EternalMediaBar.dpi.scaledDensity, 20 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
-        new ImgLoader().execute(image);
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
@@ -280,7 +278,6 @@ public class ListItemLayout {
         AsyncImageView image = new AsyncImageView("",category.categoryIcon, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
-        new ImgLoader().execute(image);
         layout.addView(image.icon);
         //add the text
         layout.addView(GenLabel(category.categoryName, 1, Gravity.START,34, 6, 115));
@@ -296,15 +293,14 @@ public class ListItemLayout {
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the options menu, besides the header, only radio buttons have icons, so check if it's a radio button before worrying about adding an icon
-
+        final AsyncImageView image;
         switch (menuItem.internalCommand){
             case ".radioUnCheck":case ".radioCheck": {
                 layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
                 //create the icon base using the async image loader
-                AsyncImageView image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
+                image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
                         10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                 //now process the image view and add it to the display.
-                new ImgLoader().execute(image);
                 layout.addView(image.icon);
 
                 layout.addView(GenLabel(text, 2, Gravity.CENTER, 26, 2, 90));
@@ -314,22 +310,31 @@ public class ListItemLayout {
                 layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
 
                 //create the icon base using the async image loader
-                AsyncImageView image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
+                image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
                         6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                 //now process the image view and add it to the display.
-                new ImgLoader().execute(image);
                 layout.addView(image.icon);
                 layout.addView(GenLabel(text, 2, Gravity.CENTER, 2, 48, 115));
                 break;
             }
             default:{
-                //if it's not either of the above, we won't need to deal with the image, just the text.
-                layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
-                layout.addView(GenLabel(text, 2, Gravity.START, 12, 24, 115));
+                if (index == R.id.ACTION_UNHIDE){
+                    //create the icon base using the async image loader
+                    image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+                            10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+                    //now add the progress view to the display, then process the image view and add it to the display.
+                    layout.addView(image.icon);
+                    layout.addView(image.selectedIcon);
+                } else {
+                    //if it's not either of the above, we won't need to deal with the image, just the text.
+                    layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
+                    layout.addView(GenLabel(text, 2, Gravity.START, 12, 24, 115));
+                }
                 break;
             }
 
         }
+
         //this part is generic to all three menus, so we write it after the non-generic parts are set.
 
 
@@ -408,6 +413,10 @@ public class ListItemLayout {
                         case R.id.ACTION_DOUBLE_TAP: {
                             EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
                             OptionsMenuChange.menuClose();break;
+                        }
+
+                        case R.id.ACTION_UNHIDE: {
+
                         }
                     }
                 }

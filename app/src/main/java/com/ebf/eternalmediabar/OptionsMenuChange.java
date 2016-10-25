@@ -189,7 +189,7 @@ public class OptionsMenuChange {
         EternalMediaBar.optionVitem = 1;
 
         //add the app that's selected so the user knows for sure what they are messing with.
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, R.id.NULL, 0, new AppDetail(menuItem.label,"",menuItem.URI, ".optionsHeader")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, R.id.NULL, 0, new AppDetail(menuItem.label,menuItem.URI, ".optionsHeader")));
 
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Copy to...", R.id.COPY_LIST, 0, menuItem));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Move to...", R.id.MOVE_LIST, 1, menuItem));
@@ -212,6 +212,7 @@ public class OptionsMenuChange {
         if (i > 1) {
             EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Remove this item", R.id.ACTION_REMOVE, 0, menuItem));
         } else {
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Hide this item", R.id.ACTION_HIDE, 0, menuItem));
             //later this will be modified to support hiding the icon when it's only in one list.
         }
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Application Settings", R.id.ACTION_APP_SYSTEM_SETTINGS, 0, menuItem));
@@ -251,7 +252,7 @@ public class OptionsMenuChange {
         EternalMediaBar.selectedApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI);
 
         EternalMediaBar.optionsLayout.removeAllViews();
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, R.id.NULL, 0, new AppDetail(menuItem.label,"",menuItem.URI, ".optionsHeader")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(menuItem.label, R.id.NULL, 0, new AppDetail(menuItem.label,menuItem.URI, ".optionsHeader")));
         //add the options for copying the menu item, skip the one for the current menu
         for (int i=0; i < EternalMediaBar.savedData.categories.size()-1; ) {
             if (i != EternalMediaBar.hItem) {
@@ -274,10 +275,10 @@ public class OptionsMenuChange {
 
         EternalMediaBar.optionsLayout.removeAllViews();
         //add the items for changing the theme
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nDefault", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "","Internal", radioCheck(EternalMediaBar.savedData.theme.equals("Internal")))));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nInverse", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "", "LunarInverse", radioCheck(EternalMediaBar.savedData.theme.equals("LunarInverse")))));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Google", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "", "Google", radioCheck(EternalMediaBar.savedData.theme.equals("Google")))));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Material", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "", "Material", radioCheck(EternalMediaBar.savedData.theme.equals("Material")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nDefault", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("","Internal", radioCheck(EternalMediaBar.savedData.theme.equals("Internal")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Lunar\nInverse", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "LunarInverse", radioCheck(EternalMediaBar.savedData.theme.equals("LunarInverse")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Google", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "Google", radioCheck(EternalMediaBar.savedData.theme.equals("Google")))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Material", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "Material", radioCheck(EternalMediaBar.savedData.theme.equals("Material")))));
 
         goBackItems(menuItem,R.id.SETTINGS);
     }
@@ -290,10 +291,10 @@ public class OptionsMenuChange {
 
         EternalMediaBar.optionsLayout.removeAllViews();
         //add the items for changing the theme colors
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Font Color", R.id.COLOR_FONT, 0, new AppDetail("", "", "Font", "")));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Icon Color", R.id.COLOR_ICON, 0, new AppDetail("", "", "Icon", "")));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Menu Color", R.id.COLOR_OPTIONS, 0, new AppDetail("", "", "Menu", "")));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change List Color", R.id.COLOR_APP_BG, 0, new AppDetail("", "", "App Backgrounds", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Font Color", R.id.COLOR_FONT, 0, new AppDetail("", "Font", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Icon Color", R.id.COLOR_ICON, 0, new AppDetail("", "Icon", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Menu Color", R.id.COLOR_OPTIONS, 0, new AppDetail("", "Menu", "")));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change List Color", R.id.COLOR_APP_BG, 0, new AppDetail("", "App Backgrounds", "")));
 
         goBackItems(menuItem, R.id.SETTINGS);
     }
@@ -474,6 +475,18 @@ public class OptionsMenuChange {
 
     }
 
+    public void unhideList(AppDetail menuItem){
+
+        EternalMediaBar.optionsLayout.removeAllViews();
+
+        for (int i =0; i<EternalMediaBar.savedData.hiddenApps.size();){
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView(EternalMediaBar.savedData.hiddenApps.get(i).label,R.id.ACTION_UNHIDE, i, new AppDetail()));
+            i++;
+        }
+
+        goBackItems(menuItem, R.id.SETTINGS);
+    }
+
 
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
@@ -494,13 +507,13 @@ public class OptionsMenuChange {
         int currentCol = 0xffffffff;
         switch (type){
             case R.id.COLOR_FONT:{currentCol=EternalMediaBar.savedData.fontCol;
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Font Color", R.id.NULL, 0, new AppDetail(".colHeaderFont","","", ".optionsHeader")));break;}
+                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Font Color", R.id.NULL, 0, new AppDetail(".colHeaderFont","", ".optionsHeader")));break;}
             case R.id.COLOR_ICON:{currentCol=EternalMediaBar.savedData.iconCol;
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Icon Color", R.id.NULL, 0, new AppDetail(".colHeaderIcon","","", ".optionsHeader")));break;}
+                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Icon Color", R.id.NULL, 0, new AppDetail(".colHeaderIcon","", ".optionsHeader")));break;}
             case R.id.COLOR_OPTIONS:{currentCol=EternalMediaBar.savedData.menuCol;
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Menu Color", R.id.NULL, 0, new AppDetail(".colHeaderMenu","","", ".optionsHeader")));break;}
+                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose Menu Color", R.id.NULL, 0, new AppDetail(".colHeaderMenu","", ".optionsHeader")));break;}
             case R.id.COLOR_APP_BG:{currentCol=EternalMediaBar.savedData.dimCol;
-                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose App Background Color", R.id.NULL, 0, new AppDetail(".colHeaderApp" + type,"","", ".optionsHeader")));break;}
+                EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Choose App Background Color", R.id.NULL, 0, new AppDetail(".colHeaderApp" + type,"", ".optionsHeader")));break;}
         }
         seekerRed.setProgress(Color.red(currentCol));
         seekerGreen.setProgress(Color.green(currentCol));

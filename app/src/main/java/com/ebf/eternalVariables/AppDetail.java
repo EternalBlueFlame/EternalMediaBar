@@ -1,12 +1,13 @@
 package com.ebf.eternalVariables;
 
+import android.widget.ImageView;
+
 import java.io.Serializable;
 
 public class AppDetail implements Serializable {
     private static final long serialVersionUID = 0L;
 
     public CharSequence label = "";
-    public CharSequence subLabel = "";
     public String internalCommand = "";
     public String URI = "";
 
@@ -15,20 +16,19 @@ public class AppDetail implements Serializable {
         this.label = label;
         this.URI = URI;
     }
-    public AppDetail(CharSequence label,CharSequence subLabel, String URI,  String internalCommand){
+    public AppDetail(CharSequence label, String URI,  String internalCommand){
         this.label = label;
         this.URI = URI;
         this.internalCommand = internalCommand;
-        this.subLabel = subLabel;
     }
     public AppDetail(){}
 
 
     public AppDetail setCommand(String command){
-        return new AppDetail(this.label, this.subLabel, this.URI, command);
+        return new AppDetail(this.label, this.URI, command);
     }
     public AppDetail setURI(String URI){
-        return new AppDetail(this.label, this.subLabel, URI, this.internalCommand);
+        return new AppDetail(this.label, this.internalCommand);
     }
 }
 

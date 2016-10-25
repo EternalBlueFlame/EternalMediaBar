@@ -12,6 +12,7 @@
 
 
     <item name="APP" type="id"/>
+    <item name="SEARCH" type="id"/>
     <item name="CATEGORY" type="id"/>
     <item name="WIDGET" type="id"/>
     <item name="SETTINGS" type="id"/>
@@ -46,41 +47,5 @@
     <item name="ACTION_ADD_WIDGET" type="id"/>
 
     <item name="NULL" type="id"/>
-
-    //list organize
-    case 24: {
-    OptionsMenuChange.listOrganizeSelect(menuItem);break;
-    }
-    case 25: {
-    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode = secondaryIndex;
-    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
-    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
-    break;
-    }
-    case 26:{
-    if (secondaryIndex==-1){
-    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = false;
-    EternalUtil.organizeList();
-    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
-    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
-    break;
-    } else {
-    EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeAlways = true;
-    EternalUtil.organizeList();
-    OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
-    Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
-    break;
-    }
-    }
-
-    //cases for toggles
-    case 30: {
-    EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
-    OptionsMenuChange.menuClose();break;
-    }
-    case 31: {
-    EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
-    OptionsMenuChange.menuClose();break;
-    }
-
+    
 </resources>

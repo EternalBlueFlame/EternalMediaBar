@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.ebf.eternalmediabar.EternalMediaBar;
+import com.ebf.eternalmediabar.ImgLoader;
 import com.ebf.eternalmediabar.R;
 
 public class AsyncImageView {
@@ -31,6 +32,7 @@ public class AsyncImageView {
         selectedIcon.setAdjustViewBounds(viewBounds);
         selectedIcon.setImageResource(android.R.drawable.checkbox_on_background);
         selectedIcon.setVisibility(View.INVISIBLE);
+        new ImgLoader().execute(this);
     }
 
     public AsyncImageView(Bitmap ico, ViewGroup.LayoutParams params, float y, float x, int id, boolean viewBounds){

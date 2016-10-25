@@ -119,9 +119,9 @@ public class EternalMediaBar extends Activity {
                 LinearLayout providerList = new LinearLayout(this);
                 providerList.setOrientation(LinearLayout.HORIZONTAL);
                 providerList.setMinimumHeight(Math.round(dpi.scaledDensity * 58));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", "", ".webSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ",", ".storeSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Music","",".musicSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", ".webSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ".storeSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query), -1));
                 searchView.addView(providerList);
 
                 //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
@@ -159,15 +159,17 @@ public class EternalMediaBar extends Activity {
 
         if(cur != null &&cur.getCount() > 0) {
             while(cur.moveToNext()) {
-                if ( cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase()) ){
-                    output.add(new AppDetail(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)),
-                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),".audio",
+                if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase())
+                                & cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).toLowerCase().contains(search.toLowerCase()) ){
+                    output.add(new AppDetail(
+                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)) + " - " +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)) + "\n" +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                            ,".audio",
                             cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
                     ));
                 }
             }
+            cur.close();
         }
-        cur.close();
         return output;
 
 
@@ -338,6 +340,9 @@ public class EternalMediaBar extends Activity {
     ///////Function to draw all the information///////
     //////////////////////////////////////////////////
     public void loadListView(){
+
+        Runtime.getRuntime().gc();
+        
         getWindowManager().getDefaultDisplay().getMetrics(dpi);
         if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
         else{setContentView(R.layout.activity_eternal_media_bar);}
@@ -408,6 +413,7 @@ public class EternalMediaBar extends Activity {
                 //selectWidget();
         }
 
+        Runtime.getRuntime().gc();
     }
 
     public static AppWidgetManager mAppWidgetManager;
