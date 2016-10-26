@@ -53,6 +53,8 @@ public class EternalMediaBar extends Activity {
     public static EternalMediaBar activity;
 
     public static LinearLayout optionsLayout;
+    public static LinearLayout appsLayout;
+    public static LinearLayout categoriesLayout;
 
     public static DisplayMetrics dpi = new DisplayMetrics();
 
@@ -70,21 +72,21 @@ public class EternalMediaBar extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        manager = getPackageManager();
         activity = this;
         //be sure to load the save data, and/or update any changes that may have happened while the app was out of focus.
         Initialization.loadData(this);
-        //if this hasin't been initialized yet
-        if (init){
-            //make sure vItem isn't out of bounds
-            if (vItem >= savedData.categories.get(hItem).appList.size()){
-                vItem=0;
-            }
+        //if this has been initialized, make sure vItem isn't out of bounds
+        if (init && vItem >= savedData.categories.get(hItem).appList.size()-1){
+            vItem = 0;
         }
         //now load the list view normally
         loadListView();
         //now deal with the event receiver.
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        filter.addAction("android.hardware.usb.action.USB_STATE");
+        filter.addAction("android.intent.action.HDMI_PLUGGED");
         registerReceiver(mainReciever, filter);
         getPerms();
     }
@@ -111,7 +113,6 @@ public class EternalMediaBar extends Activity {
                 if (songs.size() >0){
                     for (AppDetail song : songs){
                         searchView.addView(ListItemLayout.appListItemView(song, -1, true));
-                        //songs.remove(song);
                     }
                 }
 
@@ -204,19 +205,55 @@ public class EternalMediaBar extends Activity {
     private class intentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //if the headset is plugged in, show a toast and move to the media list
-            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
-                if (intent.getIntExtra("state", -1) == 1) {
-                    Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
+            switch (intent.getAction()) {
+
+                //if the headset is plugged in, show a toast and move to the media list
+                case Intent.ACTION_HEADSET_PLUG: {
+                    if (intent.getIntExtra("state", -1) == 1) {
+                        Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
+                        //we have to iterate through the tags to find the list with the desired tag
+                        for (int i = 0; i < savedData.categories.size(); ) {
+                            if (savedData.categories.get(i).categoryTags.contains("Music")) {
+                                listMove(i, true);
+                                break;
+                            }
+                            i++;
+                        }
+                    }
+                    break;
+                }
+
+                case "android.intent.action.HDMI_PLUGGED":{
+                    Toast.makeText(EternalMediaBar.this, "HDMI plugged in", Toast.LENGTH_SHORT).show();
                     //we have to iterate through the tags to find the list with the desired tag
                     for (int i = 0; i < savedData.categories.size(); ) {
-                        if (savedData.categories.get(i).categoryTags.contains("Music")) {
+                        if (savedData.categories.get(i).categoryTags.contains("Video")) {
                             listMove(i, true);
                             break;
                         }
                         i++;
                     }
+                    break;
                 }
+
+                case "android.hardware.usb.action.USB_STATE": {
+                    if (intent.getExtras().getBoolean("connected")) {
+                        Toast.makeText(EternalMediaBar.this, "USB plugged in", Toast.LENGTH_SHORT).show();
+                        //we have to iterate through the tags to find the list with the desired tag
+                        for (int i = 0; i < savedData.categories.size(); ) {
+                            if (savedData.categories.get(i).categoryTags.contains("Games")) {
+                                listMove(i, true);
+                                break;
+                            }
+                            i++;
+                        }
+                    }
+                    break;
+                }
+
+
+
+
             }
         }
     }
@@ -308,16 +345,16 @@ public class EternalMediaBar extends Activity {
                 try {
                     move -= vItem;
                     move += optionVitem;
-                    LinearLayout vLayout = (LinearLayout) findViewById(R.id.optionslist);
+                    appsLayout = (LinearLayout) findViewById(R.id.optionslist);
                     //if you are trying to move within the actual list size then do so.
-                    if (move >= 0 || move < vLayout.getChildCount()) {
+                    if (move >= 0 || move < appsLayout.getChildCount()) {
                         //set the font face.
-                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                        ((TextView) appsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                         //change OptionsVItem
                         optionVitem = move;
-                        ((TextView) vLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                        ((TextView) appsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                         //scroll to the new entry
-                        vLayout.scrollTo(0, (int) vLayout.getChildAt(optionVitem).getX());
+                        appsLayout.scrollTo(0, (int) appsLayout.getChildAt(optionVitem).getX());
                     }
                 }
                 catch (Exception e){}
@@ -341,13 +378,10 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     public void loadListView(){
 
-        Runtime.getRuntime().gc();
-        
         getWindowManager().getDefaultDisplay().getMetrics(dpi);
         if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
         else{setContentView(R.layout.activity_eternal_media_bar);}
         optionVitem = 0;
-        optionsLayout = (LinearLayout)findViewById(R.id.optionslist);
 
         ((SearchView) findViewById(R.id.searchView)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -360,42 +394,39 @@ public class EternalMediaBar extends Activity {
                 return false;
             }
         });
+        //redefine the layouts and remove their views, and reorganize the list we are about to load, before running GC.
+        optionsLayout = (LinearLayout)findViewById(R.id.optionslist);
+        optionsLayout = (LinearLayout)findViewById(R.id.optionslist);
+        categoriesLayout = (LinearLayout)findViewById(R.id.categories);
+        appsLayout = (LinearLayout)findViewById(R.id.apps_display);
+        appsLayout.setBackgroundColor(savedData.dimCol);
+        categoriesLayout.setBackgroundColor(savedData.dimCol);
+        categoriesLayout.removeAllViews();
+        appsLayout.removeAllViews();
+        savedData.categories.get(hItem).Organize();
 
-
+        Runtime.getRuntime().gc();
         //////////////////////
         //Draw the Categories
         //////////////////////
 
-        manager = getPackageManager();
-        LinearLayout layout = (LinearLayout)findViewById(R.id.categories);
-        //empty the list
-        layout.removeAllViews();
         //dim the color to the dimCol
-        layout.setBackgroundColor(savedData.dimCol);
         int count =0;
         //loop to add all entries of hli to the list
         for (CategoryClass category :savedData.categories) {
             if(!category.categoryTags.contains("Unorganized")) {
-                layout.addView(ListItemLayout.categoryListItemView(category, count));
+                categoriesLayout.addView(ListItemLayout.categoryListItemView(category, count));
             } else if (category.appList.size() >0){
-                layout.addView(ListItemLayout.categoryListItemView(category, count));
+                categoriesLayout.addView(ListItemLayout.categoryListItemView(category, count));
             }
             count++;
         }
         listMove(0, false);
         count =0;
         //now define the apps list
-        LinearLayout vLayout = (LinearLayout)findViewById(R.id.apps_display);
-        vLayout.removeAllViews();
-
-        //set the list organization method
-        savedData.categories.get(hItem).Organize();
-        //dim the list background to the dim color
-        vLayout.setBackgroundColor(savedData.dimCol);
-
 
         for (AppDetail app : savedData.categories.get(hItem).appList) {
-            vLayout.addView(ListItemLayout.appListItemView(app, count, false));
+            appsLayout.addView(ListItemLayout.appListItemView(app, count, false));
             count++;
         }
         //make sure the vList item is selected
@@ -482,8 +513,8 @@ public class EternalMediaBar extends Activity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         mAppWidgetHost.stopListening();
+        super.onStop();
     }
 
 }

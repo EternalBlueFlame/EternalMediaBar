@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,6 +26,11 @@ import java.io.File;
 
 public class ListItemLayout {
 
+    private static final ViewGroup.LayoutParams layout24 = new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity));
+    private static final ViewGroup.LayoutParams layout48 = new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity));
+    private static final ViewGroup.LayoutParams layout34 = new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity));
+    private static final ViewGroup.LayoutParams layout50 = new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity));
+    private static final ViewGroup.LayoutParams layout28 = new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity));
 
 
     ////////////////////////////////////////////////////////////
@@ -39,8 +45,7 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
-                10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , layout34, 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
 
         layout.addView(image.icon);
@@ -138,8 +143,7 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(58 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
-                8 * EternalMediaBar.dpi.scaledDensity, 20 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
+        AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, layout34, 8 * EternalMediaBar.dpi.scaledDensity, 20 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now add the progress view to the display, then process the image view and add it to the display.
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
@@ -222,7 +226,7 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",category.categoryIcon), new LinearLayout.LayoutParams(Math.round(50 * EternalMediaBar.dpi.scaledDensity), Math.round(50 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",category.categoryIcon),layout50 ,
                 4 * EternalMediaBar.dpi.scaledDensity, 19 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         layout.addView(image.icon);
@@ -273,9 +277,9 @@ public class ListItemLayout {
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
-        layout.setMinimumHeight(Math.round(20 * EternalMediaBar.dpi.scaledDensity));//TODO height not quite correct
+        layout.setMinimumHeight(Math.round(20 * EternalMediaBar.dpi.scaledDensity));
         //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView("",category.categoryIcon, new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity)),
+        AsyncImageView image = new AsyncImageView("",category.categoryIcon, layout28,
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
         //now process the image view and add it to the display.
         layout.addView(image.icon);
@@ -298,7 +302,7 @@ public class ListItemLayout {
             case ".radioUnCheck":case ".radioCheck": {
                 layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
                 //create the icon base using the async image loader
-                image = new AsyncImageView("",menuItem.internalCommand, new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity)),
+                image = new AsyncImageView("",menuItem.internalCommand, layout24,
                         10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                 //now process the image view and add it to the display.
                 layout.addView(image.icon);
@@ -310,7 +314,7 @@ public class ListItemLayout {
                 layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
 
                 //create the icon base using the async image loader
-                image = new AsyncImageView("",menuItem.URI, new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity)),
+                image = new AsyncImageView("",menuItem.URI, layout48,
                         6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                 //now process the image view and add it to the display.
                 layout.addView(image.icon);
@@ -320,7 +324,7 @@ public class ListItemLayout {
             default:{
                 if (index == R.id.ACTION_UNHIDE){
                     //create the icon base using the async image loader
-                    image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity)),
+                    image = new AsyncImageView(menuItem.internalCommand, menuItem.URI ,layout34,
                             10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
                     //now add the progress view to the display, then process the image view and add it to the display.
                     layout.addView(image.icon);
@@ -400,7 +404,7 @@ public class ListItemLayout {
                         }
                         case R.id.ACTION_ORGANIZE: {
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode = secondaryIndex;
-                            OptionsMenuChange.listOrganizeSelect(menuItem.setCommand(""));
+                            OptionsMenuChange.listOrganizeSelect(menuItem);
                             Toast.makeText(EternalMediaBar.activity, "Changes will take effect\nwhen you exit the menu", Toast.LENGTH_SHORT).show();
                             break;
                         }

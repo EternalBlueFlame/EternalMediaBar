@@ -51,10 +51,8 @@ We love to see people contribute to our projects, any and all issues, pull reque
 </hr>
 <hr>
 <strong>RC2.5 Plans:</strong>
--	if you plugin a controller, bluetooth headset, or HDMI it will automatically change to the approporate menu.
 -	finish the Lunar Tales icon theme, and it's invert theme.
 -	add manufacturer themes (using HTC/Samgsung/Sony/etc apps).
--	apps fade out and back in when changing categories.
 -	custom wallpaper for selected app from file, if file exists (use an async task).
 -	listview scroll snapping.
 -	extra settings:
@@ -64,14 +62,12 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	un-hide hidden apps //selective menu.
 -	expanded manual organization of lists.
 -	organization grouping dependant on developer //combines with other organization methods
--	organize by date installed/updated //highly dependant on how the OS handles this sort of thing
 -	option to backup the save file to external storage.
 -	option to make backups manual or automatic.
 </hr>
 <hr>
 <strong>RC3 plans:</strong>
 -	User defined app/menu icons?
--	Widgets in the scroll list, or on the side?
 -	Folder lists for music.
 -	Folder lists for photos.
 -	Folder lists for Videos.

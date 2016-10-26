@@ -39,7 +39,7 @@ public class OptionsMenuChange {
             for (String uri : EternalMediaBar.selectedApps){
                 for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
                     if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
-                        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                        EternalMediaBar.appsLayout.getChildAt(i).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
                         break;
                     }
                     i++;
@@ -51,7 +51,7 @@ public class OptionsMenuChange {
         //run the animation
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
         sLayout.setBackgroundColor(EternalMediaBar.savedData.menuCol);
-        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist)).removeAllViews();
+        EternalMediaBar.optionsLayout.removeAllViews();
         //animate the menu opening
         TranslateAnimation anim;
         if (!EternalMediaBar.savedData.mirrorMode) {
@@ -128,7 +128,7 @@ public class OptionsMenuChange {
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
         //empty the one that has content
         EternalMediaBar.copyingOrMoving = false;
-        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.optionslist)).removeAllViews();
+        EternalMediaBar.optionsLayout.removeAllViews();
         //set the variables in the main activity
         EternalMediaBar.optionsMenu = false;
         EternalMediaBar.optionVitem=1;
@@ -167,7 +167,7 @@ public class OptionsMenuChange {
         for (String uri : EternalMediaBar.selectedApps){
             for (int i=0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
                 if (uri.equals(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI)) {
-                    ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
+                    EternalMediaBar.appsLayout.getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.INVISIBLE);
                     break;
                 }
                 i++;
@@ -248,7 +248,7 @@ public class OptionsMenuChange {
         EternalMediaBar.optionVitem=0;
         EternalMediaBar.copyingOrMoving = true;
 
-        ((LinearLayout)EternalMediaBar.activity.findViewById(R.id.apps_display)).getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.VISIBLE);
+        EternalMediaBar.appsLayout.getChildAt(EternalMediaBar.vItem).findViewById(R.id.list_item_checkbox).setVisibility(View.VISIBLE);
         EternalMediaBar.selectedApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(EternalMediaBar.vItem).URI);
 
         EternalMediaBar.optionsLayout.removeAllViews();
@@ -309,7 +309,9 @@ public class OptionsMenuChange {
         EternalMediaBar.optionsLayout.removeAllViews();
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Alphabetically", R.id.ACTION_ORGANIZE, 1, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 1))));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Reverse Alphabetically", R.id.ACTION_ORGANIZE, 2, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 2))));
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("No Organization", R.id.ACTION_ORGANIZE, 3, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 3))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("No Organization", R.id.ACTION_ORGANIZE, 0, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 0))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Newest", R.id.ACTION_ORGANIZE, 3, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 3))));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Oldest", R.id.ACTION_ORGANIZE, 4, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 4))));
 
         goBackItems(menuItem, R.id.APP);
     }
@@ -520,7 +522,7 @@ public class OptionsMenuChange {
         seekerBlue.setProgress(Color.blue(currentCol));
         seekerAlpha.setProgress(Color.alpha(currentCol) - 25);
         hexText.setText("#" + Integer.toHexString(currentCol));
-        ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(currentCol));
+        ((ImageView) EternalMediaBar.optionsLayout.getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(currentCol));
 
 
 
@@ -603,10 +605,6 @@ public class OptionsMenuChange {
                 if (r==0){r=Color.red(EternalMediaBar.savedData.fontCol);}
                 if (g==0){g=Color.green(EternalMediaBar.savedData.fontCol);}
                 if (b==0){b=Color.blue(EternalMediaBar.savedData.fontCol);}
-                EternalMediaBar.savedData.fontCol = Color.argb(a, r, g, b);
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.savedData.fontCol));
-                //changing the hex box will automatically change the scroll bars accordingly.
-                ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.savedData.fontCol));
                 break;
             }
             case R.id.COLOR_ICON:{
@@ -614,9 +612,6 @@ public class OptionsMenuChange {
                 if (r==0){r=Color.red(EternalMediaBar.savedData.iconCol);}
                 if (g==0){g=Color.green(EternalMediaBar.savedData.iconCol);}
                 if (b==0){b=Color.blue(EternalMediaBar.savedData.iconCol);}
-                EternalMediaBar.savedData.iconCol = Color.argb(a, r, g, b);
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.savedData.iconCol));
-                ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.savedData.iconCol));
                 break;
             }
             case R.id.COLOR_OPTIONS:{
@@ -624,9 +619,6 @@ public class OptionsMenuChange {
                 if (r==0){r=Color.red(EternalMediaBar.savedData.menuCol);}
                 if (g==0){g=Color.green(EternalMediaBar.savedData.menuCol);}
                 if (b==0){b=Color.blue(EternalMediaBar.savedData.menuCol);}
-                EternalMediaBar.savedData.menuCol = Color.argb(a, r, g, b);
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.savedData.menuCol));
-                ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.savedData.menuCol));
                 break;
             }
             case R.id.COLOR_APP_BG:{
@@ -634,12 +626,13 @@ public class OptionsMenuChange {
                 if (r==0){r=Color.red(EternalMediaBar.savedData.dimCol);}
                 if (g==0){g=Color.green(EternalMediaBar.savedData.dimCol);}
                 if (b==0){b=Color.blue(EternalMediaBar.savedData.dimCol);}
-                EternalMediaBar.savedData.dimCol = Color.argb(a, r, g, b);
-                ((ImageView) ((LinearLayout) EternalMediaBar.activity.findViewById(R.id.optionslist)).getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.savedData.dimCol));
-                ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.savedData.dimCol));
                 break;
             }
         }
+        EternalMediaBar.savedData.dimCol = Color.argb(a, r, g, b);
+        ((ImageView) EternalMediaBar.optionsLayout.getChildAt(0).findViewById(R.id.list_item_icon)).setImageDrawable(new ColorDrawable(EternalMediaBar.savedData.fontCol));
+        //changing the hex box will automatically change the scroll bars accordingly.
+        ((EditText) (EternalMediaBar.activity.findViewById(R.id.optionslist)).findViewById(R.id.hexText)).setText("#" + Integer.toHexString(EternalMediaBar.savedData.fontCol));
     }
 
 }

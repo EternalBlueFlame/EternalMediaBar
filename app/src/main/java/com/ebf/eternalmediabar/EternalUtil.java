@@ -1,6 +1,7 @@
 package com.ebf.eternalmediabar;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import com.ebf.eternalVariables.AppDetail;
@@ -40,9 +41,45 @@ public class EternalUtil {
                 break;
             }
             //Newest
-            case 3:{break;}
-            //Most used
-            case 4:{break;}
+            case 3:{Collections.sort(list, new Comparator<AppDetail>() {
+                @Override
+                public int compare(AppDetail lhs, AppDetail rhs) {
+                    try {
+                        if (EternalMediaBar.manager.getPackageInfo(lhs.URI, 0).firstInstallTime > EternalMediaBar.manager.getPackageInfo(rhs.URI, 0).firstInstallTime) {
+                            return 1;
+                        } else if (EternalMediaBar.manager.getPackageInfo(lhs.URI, 0).firstInstallTime < EternalMediaBar.manager.getPackageInfo(rhs.URI, 0).firstInstallTime) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    } catch (PackageManager.NameNotFoundException e){
+                        return 0;
+                    }
+                }
+            });
+            break;}
+            //Oldest
+            case 4:{Collections.sort(list, new Comparator<AppDetail>() {
+                @Override
+                public int compare(AppDetail lhs, AppDetail rhs) {
+                    try {
+                        if (EternalMediaBar.manager.getPackageInfo(lhs.URI, 0).firstInstallTime < EternalMediaBar.manager.getPackageInfo(rhs.URI, 0).firstInstallTime) {
+                            return 1;
+                        } else if (EternalMediaBar.manager.getPackageInfo(lhs.URI, 0).firstInstallTime > EternalMediaBar.manager.getPackageInfo(rhs.URI, 0).firstInstallTime) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    } catch (PackageManager.NameNotFoundException e){
+                        return 0;
+                    }
+                }
+            });
+                break;}
+            //most used
+            case 5:{
+                break;
+            }
         }
     }
 
