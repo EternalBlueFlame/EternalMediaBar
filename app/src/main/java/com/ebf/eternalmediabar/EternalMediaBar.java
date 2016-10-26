@@ -42,7 +42,6 @@ public class EternalMediaBar extends Activity {
     public static SettingsClass savedData = new SettingsClass();
 
     public static int hItem = 0;
-    public static boolean init = false;
     public static boolean optionsMenu = false;
     public static boolean copyingOrMoving = false;
     public static Widget editingWidget;
@@ -55,6 +54,9 @@ public class EternalMediaBar extends Activity {
     public static LinearLayout optionsLayout;
     public static LinearLayout appsLayout;
     public static LinearLayout categoriesLayout;
+
+    public static AppWidgetManager mAppWidgetManager;
+    public static AppWidgetHost mAppWidgetHost;
 
     public static DisplayMetrics dpi = new DisplayMetrics();
 
@@ -77,7 +79,7 @@ public class EternalMediaBar extends Activity {
         //be sure to load the save data, and/or update any changes that may have happened while the app was out of focus.
         Initialization.loadData(this);
         //if this has been initialized, make sure vItem isn't out of bounds
-        if (init && vItem >= savedData.categories.get(hItem).appList.size()-1){
+        if (vItem >= savedData.categories.get(hItem).appList.size()-1){
             vItem = 0;
         }
         //now load the list view normally
@@ -108,12 +110,23 @@ public class EternalMediaBar extends Activity {
         //first, be sure there's actually something to search
         if (query.length()>0) {
             if (query.contains(":audio:")){
-                List<AppDetail> songs = recrusiveSearch(query.replace(":audio:",""));
+                List<AppDetail> songs = new ArrayList<AppDetail>();
 
-                if (songs.size() >0){
-                    for (AppDetail song : songs){
-                        searchView.addView(ListItemLayout.appListItemView(song, -1, true));
+                Cursor cur = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
+
+                if(cur != null && cur.getCount() > 0) {
+                    while(cur.moveToNext()) {
+                        if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(query.replace(":audio:","").toLowerCase())
+                                & cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).toLowerCase().contains(query.replace(":audio:","").toLowerCase()) ){
+
+                            searchView.addView(ListItemLayout.appListItemView(new AppDetail(
+                                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)) + " - " +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)) + "\n" +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                                    ,".audio",
+                                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
+                            ), -1, true));
+                        }
                     }
+                    cur.close();
                 }
 
             } else {
@@ -123,6 +136,8 @@ public class EternalMediaBar extends Activity {
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Web", ".webSearch", query), -1));
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ".storeSearch", query), -1));
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("YouTube",".ytSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Maps",".mapSearch", query), -1));
                 searchView.addView(providerList);
 
                 //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
@@ -152,29 +167,6 @@ public class EternalMediaBar extends Activity {
         else{searchView.invalidate();}
     }
 
-
-    private List<AppDetail> recrusiveSearch(final String search){
-        List<AppDetail> output = new ArrayList<AppDetail>();
-
-        Cursor cur = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
-
-        if(cur != null &&cur.getCount() > 0) {
-            while(cur.moveToNext()) {
-                if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(search.toLowerCase())
-                                & cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).toLowerCase().contains(search.toLowerCase()) ){
-                    output.add(new AppDetail(
-                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)) + " - " +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)) + "\n" +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                            ,".audio",
-                            cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
-                    ));
-                }
-            }
-            cur.close();
-        }
-        return output;
-
-
-    }
 
 
     //////////////////////////////////////////////////
@@ -224,6 +216,7 @@ public class EternalMediaBar extends Activity {
                 }
 
                 case "android.intent.action.HDMI_PLUGGED":{
+                    System.out.println("HDMI: " + intent.getType() + " : " + intent.getDataString());
                     Toast.makeText(EternalMediaBar.this, "HDMI plugged in", Toast.LENGTH_SHORT).show();
                     //we have to iterate through the tags to find the list with the desired tag
                     for (int i = 0; i < savedData.categories.size(); ) {
@@ -294,7 +287,7 @@ public class EternalMediaBar extends Activity {
                     ((LinearLayout)findViewById(R.id.apps_display)).getChildAt(vItem).performLongClick();
                 }
                 else{
-                    OptionsMenuChange.menuClose();
+                    OptionsMenuChange.menuClose(false);
                 }
 				return true;
 			}
@@ -311,62 +304,60 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     void listMove(int move, boolean isCategory){
         if (!isCategory && !optionsMenu){
-            LinearLayout layout = (LinearLayout) findViewById(R.id.apps_display);
-            if (move >= 0 && move < layout.getChildCount()) {
+            if (move >= 0 && move < appsLayout.getChildCount()-1) {
                 //change the old item, if it exists
                 try {
                     //change the old font face
-                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                    ((TextView) appsLayout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                     //scale the icon back to normal
-                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.list_item_icon);
+                    ImageView appIcon = (ImageView) appsLayout.getChildAt(vItem).findViewById(R.id.list_item_icon);
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
                 }
-                catch(Exception e){}
+                catch(Exception e){e.printStackTrace();}
                 //change vItem
                 vItem = move;
                 try {
                     //change the font face
-                    ((TextView) layout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                    ((TextView) appsLayout.getChildAt(vItem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                     //scale the icon larger
-                    ImageView appIcon = (ImageView) layout.getChildAt(vItem).findViewById(R.id.list_item_icon);
+                    ImageView appIcon = (ImageView) appsLayout.getChildAt(vItem).findViewById(R.id.list_item_icon);
                     appIcon.setScaleX(1.5f);
                     appIcon.setScaleY(1.5f);
 
                     //scroll to the new entry
-                    layout.scrollTo(0, (int) layout.getChildAt(vItem).getX());
+                    appsLayout.scrollTo(0, (int) (appsLayout.getChildAt(vItem).getX() - (appsLayout.getHeight() * 0.4F)));
                 }
-                catch (Exception e){}
+                catch (Exception e){e.printStackTrace();}
             }
         }
         else if(!isCategory){
-            LinearLayout layout = (LinearLayout) findViewById(R.id.optionslist);
-            if (move >= 0 && move < layout.getChildCount()) {
+            if (move >= 0 && move < optionsLayout.getChildCount()-1) {
                 try {
                     move -= vItem;
                     move += optionVitem;
-                    appsLayout = (LinearLayout) findViewById(R.id.optionslist);
                     //if you are trying to move within the actual list size then do so.
-                    if (move >= 0 || move < appsLayout.getChildCount()) {
+                    if (move >= 0 || move < optionsLayout.getChildCount()) {
                         //set the font face.
-                        ((TextView) appsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+                        ((TextView) optionsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                         //change OptionsVItem
                         optionVitem = move;
-                        ((TextView) appsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
+                        ((TextView) optionsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                         //scroll to the new entry
-                        appsLayout.scrollTo(0, (int) appsLayout.getChildAt(optionVitem).getX());
+                        optionsLayout.scrollTo(0, (int) (optionsLayout.getChildAt(optionVitem).getX() - (optionsLayout.getHeight()*0.4F)));
                     }
                 }
-                catch (Exception e){}
+                catch (Exception e){e.printStackTrace();}
             }
         }
         else{
-            LinearLayout layout = (LinearLayout) findViewById(R.id.categories);
-            if (move >= 0 && move < layout.getChildCount()) {
+            if (move >= 0 && move < categoriesLayout.getChildCount()-1) {
                 //change hItem
                 hItem = move;
                 //reload the list
                 loadListView();
+                //scroll to the new entry
+                categoriesLayout.scrollTo((int) (categoriesLayout.getChildAt(optionVitem).getX() - (categoriesLayout.getWidth()*0.4F)), 0);
             }
         }
     }
@@ -421,7 +412,6 @@ public class EternalMediaBar extends Activity {
             }
             count++;
         }
-        listMove(0, false);
         count =0;
         //now define the apps list
 
@@ -440,15 +430,11 @@ public class EternalMediaBar extends Activity {
                 ((RelativeLayout)EternalMediaBar.activity.findViewById(R.id.mainlayout)).addView(ListItemLayout.loadWidget(widget));
             }
             mAppWidgetHost.startListening();
-        } else {
-                //selectWidget();
         }
 
         Runtime.getRuntime().gc();
     }
 
-    public static AppWidgetManager mAppWidgetManager;
-    public static AppWidgetHost mAppWidgetHost;
 
     /**
      * If the user has selected an widget, the result will be in the 'data' when
@@ -496,7 +482,7 @@ public class EternalMediaBar extends Activity {
      * Launches the menu to select the widget. The selected widget will be on
      * the result of the activity.
      */
-    void selectWidget() {
+    public void selectWidget() {
         int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
         Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
         pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);

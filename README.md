@@ -59,11 +59,10 @@ We love to see people contribute to our projects, any and all issues, pull reque
 -	option to change icon color with month like PSP.
 -	color selector for the google now bar.
 -	enable/disable custom app backgrounds.
--	un-hide hidden apps //selective menu.
 -	expanded manual organization of lists.
 -	organization grouping dependant on developer //combines with other organization methods
--	option to backup the save file to external storage.
--	option to make backups manual or automatic.
+-	option to make backups, manual, none, or automatic, and to what folder.
+-	option to load user defined backup.
 </hr>
 <hr>
 <strong>RC3 plans:</strong>

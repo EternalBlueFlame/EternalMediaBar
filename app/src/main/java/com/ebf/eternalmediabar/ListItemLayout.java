@@ -3,6 +3,7 @@ package com.ebf.eternalmediabar;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -115,7 +116,7 @@ public class ListItemLayout {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose();
+                    OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
                     EternalMediaBar.activity.listMove(index, false);
@@ -158,27 +159,42 @@ public class ListItemLayout {
                 //if the options menu is closed, then close the menu
                 if (!EternalMediaBar.copyingOrMoving && !EternalMediaBar.optionsMenu) {
                     //otherwise act normally.
-                    //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
-                    if (EternalMediaBar.vItem != index && EternalMediaBar.savedData.doubleTap) {
-                        EternalMediaBar.activity.listMove(index, false);
-                    } else {
-                        //if double tap is off, or this is the position for the app, or both, open it.
-                        //if its the options button, open the options menu
-                        switch (menuItem.URI) {
-                            case ".webSearch": {
-                                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                                intent.putExtra(SearchManager.QUERY, menuItem.internalCommand);
+                    switch (menuItem.URI) {
+                        case ".webSearch": {
+                            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                            intent.putExtra(SearchManager.QUERY, menuItem.internalCommand);
+                            EternalMediaBar.activity.startActivity(intent);
+                            break;
+                        }
+                        case ".storeSearch": {
+                            EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=" + menuItem.internalCommand + "&c=apps")));
+                            break;
+                        }
+                        case ".musicSearch": {
+                            EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
+                            break;
+                        }
+                        case ".ytSearch": {
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_SEARCH);
+                                intent.setPackage("com.google.android.youtube");
+                                intent.putExtra("query", menuItem.internalCommand);
                                 EternalMediaBar.activity.startActivity(intent);
-                                break;
+                            } catch (ActivityNotFoundException ex) {
+                                EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/results?search_query=" + menuItem.internalCommand)));
                             }
-                            case ".storeSearch": {
-                                EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=" + menuItem.internalCommand + "&c=apps")));
-                                break;
+                            break;
+                        }
+                        case ".mapSearch": {
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_SEARCH);
+                                intent.setPackage("com.google.android.apps.maps");
+                                intent.putExtra("query", menuItem.internalCommand);
+                                EternalMediaBar.activity.startActivity(intent);
+                            } catch (ActivityNotFoundException ex) {
+                                EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com/maps/search/" + menuItem.internalCommand)));
                             }
-                            case ".musicSearch": {
-                                EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
@@ -204,7 +220,7 @@ public class ListItemLayout {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose();
+                    OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
                     OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
@@ -238,9 +254,8 @@ public class ListItemLayout {
             @Override
             public void onClick(View v) {
                 if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose();
+                    OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
-                    EternalMediaBar.activity.listMove(index, true);
                 } else {
                     EternalMediaBar.activity.listMove(index, true);
                 }
@@ -251,7 +266,7 @@ public class ListItemLayout {
             @Override
             public boolean onLongClick(View v) {
                 if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose();
+                    OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
                     //instead of making an entirely different version of menuOpen for category, we'll just convert the unique data to an AppDetail for us to parse later
@@ -349,9 +364,11 @@ public class ListItemLayout {
                 @Override
                 public void onClick(View v) {
                     switch (index) {
-                        //menu open and close
+                        //menu close
                         case R.id.CLOSE: {
-                            OptionsMenuChange.menuClose();break;}
+                            OptionsMenuChange.menuClose(false);break;}
+                        case R.id.CLOSE_AND_SAVE: {
+                            OptionsMenuChange.menuClose(true);break;}
                         //menu open for if it's an app's settings, and if it's just the options menu
                         case R.id.APP: case R.id.SETTINGS: {
                             OptionsMenuChange.menuOpen(menuItem, index);break;}
@@ -361,15 +378,15 @@ public class ListItemLayout {
                             OptionsMenuChange.createCopyList(menuItem, index);break;
                         }
                         case R.id.HIDE_LIST:{
-                            break;//create hide apps menu designed similar to move/copy for ability to multi-select
+                            OptionsMenuChange.unhideList(menuItem);break;
                         }
                         //cases for copying, moving, and hiding apps.
-                        case R.id.ACTION_COPY: case R.id.ACTION_MOVE: case R.id.ACTION_HIDE:{
-                            OptionsMenuChange.relocateItem(secondaryIndex, index);break;
+                        case R.id.ACTION_COPY: case R.id.ACTION_MOVE: case R.id.ACTION_HIDE: case R.id.ACTION_UNHIDE: {
+                            EternalUtil.relocateItem(secondaryIndex, index);break;
                         }
                         case R.id.ACTION_REMOVE:{
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
-                            OptionsMenuChange.menuClose(); break;
+                            OptionsMenuChange.menuClose(true); break;
                         }
                         //case for opening app's system settings
                         case R.id.ACTION_APP_SYSTEM_SETTINGS:{
@@ -412,15 +429,14 @@ public class ListItemLayout {
                         //cases for toggles
                         case R.id.ACTION_MIRROR: {
                             EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
-                            OptionsMenuChange.menuClose();break;
+                            OptionsMenuChange.menuClose(true);break;
                         }
                         case R.id.ACTION_DOUBLE_TAP: {
                             EternalMediaBar.savedData.doubleTap = ! EternalMediaBar.savedData.doubleTap;
-                            OptionsMenuChange.menuClose();break;
+                            OptionsMenuChange.menuClose(true);break;
                         }
-
-                        case R.id.ACTION_UNHIDE: {
-
+                        case R.id.ACTION_ADD_WIDGET: {
+                            EternalMediaBar.activity.selectWidget();
                         }
                     }
                 }

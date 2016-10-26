@@ -69,7 +69,9 @@ public class OptionsMenuChange {
         sLayout.setAnimation(anim);
         //now move the menu itself
         sLayout.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -84,7 +86,9 @@ public class OptionsMenuChange {
                 }
             }
 
-            @Override public void onAnimationRepeat(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
         });
 
 
@@ -123,7 +127,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     /////////////////Close the menu///////////////////
     //////////////////////////////////////////////////
-    public static void menuClose() {
+    public static void menuClose(boolean reload) {
         //load the layouts
         ScrollView sLayout = (ScrollView) EternalMediaBar.activity.findViewById(R.id.options_displayscroll);
         //empty the one that has content
@@ -175,10 +179,11 @@ public class OptionsMenuChange {
         }
         EternalMediaBar.selectedApps.clear();
 
-
-        //save any changes and reload the view
-        EternalMediaBar.savedData.writeXML(EternalMediaBar.activity);
-        EternalMediaBar.activity.loadListView();
+        if (reload) {
+            //save any changes and reload the view
+            EternalMediaBar.savedData.writeXML(EternalMediaBar.activity);
+            EternalMediaBar.activity.loadListView();
+        }
     }
 
 
@@ -235,6 +240,9 @@ public class OptionsMenuChange {
         } else {
             EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Enable Double Tap", R.id.ACTION_DOUBLE_TAP, 0, new AppDetail()));
         }
+        if (EternalMediaBar.savedData.hiddenApps.size() >0){
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Un-Hide Apps", R.id.UNHIDE_LIST, 0, new AppDetail()));
+        }
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Add A Widget", R.id.ACTION_ADD_WIDGET, 0, new AppDetail()));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Homepage", R.id.ACTION_URL, 0, new AppDetail("", "http://github.com/EternalBlueFlame/EternalMediaBar")));
 
@@ -264,7 +272,7 @@ public class OptionsMenuChange {
             }
             i++;
         }
-        goBackItems(menuItem, R.id.APP);
+        goBackItems(menuItem, R.id.APP, false);
     }
 
     //////////////////////////////////////////////////
@@ -280,7 +288,7 @@ public class OptionsMenuChange {
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Google", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "Google", radioCheck(EternalMediaBar.savedData.theme.equals("Google")))));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Material", R.id.ACTION_THEME_CHANGE, 0, new AppDetail("", "Material", radioCheck(EternalMediaBar.savedData.theme.equals("Material")))));
 
-        goBackItems(menuItem,R.id.SETTINGS);
+        goBackItems(menuItem,R.id.SETTINGS, false);
     }
 
     //////////////////////////////////////////////////
@@ -296,7 +304,7 @@ public class OptionsMenuChange {
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change Menu Color", R.id.COLOR_OPTIONS, 0, new AppDetail("", "Menu", "")));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Change List Color", R.id.COLOR_APP_BG, 0, new AppDetail("", "App Backgrounds", "")));
 
-        goBackItems(menuItem, R.id.SETTINGS);
+        goBackItems(menuItem, R.id.SETTINGS, true);
     }
 
     //////////////////////////////////////////////////
@@ -313,7 +321,7 @@ public class OptionsMenuChange {
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Newest", R.id.ACTION_ORGANIZE, 3, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 3))));
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Oldest", R.id.ACTION_ORGANIZE, 4, menuItem.setCommand(radioCheck(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).organizeMode == 4))));
 
-        goBackItems(menuItem, R.id.APP);
+        goBackItems(menuItem, R.id.APP, false);
     }
 
 
@@ -412,7 +420,7 @@ public class OptionsMenuChange {
         }
     }
 
-    private static void goBackItems(AppDetail menuItem, int type){
+    private static void goBackItems(AppDetail menuItem, int type, boolean saveOnExit){
         //add an empty space
         Space spacer = new Space(EternalMediaBar.activity);
         spacer.setMinimumHeight(Math.round(50 * (EternalMediaBar.dpi.scaledDensity)));
@@ -425,7 +433,11 @@ public class OptionsMenuChange {
                 break;
             }
         }
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", 0, 0, menuItem));
+        if (saveOnExit){
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", R.id.CLOSE_AND_SAVE, 0, menuItem));
+        } else {
+            EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Exit Options", R.id.CLOSE, 0, menuItem));
+        }
     }
 
 
@@ -436,48 +448,7 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
 
 
-    //////////////////////////////////////////////////
-    /////////Copy/move/hide an app menu item//////////
-    //////////////////////////////////////////////////
-    public static void relocateItem(int category, int action){
-
-        for (String uri : EternalMediaBar.selectedApps){
-            for (int i =0; i<EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size();){
-                if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI.equals(uri)){
-                    switch (action){
-                        case R.id.ACTION_HIDE:{
-                            EternalMediaBar.savedData.hiddenApps.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
-                            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);break;
-                        }
-                        case R.id.ACTION_COPY:{
-                            EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
-                            EternalMediaBar.savedData.categories.get(category).hasBeenOrganized = false;break;
-                        }
-                        case R.id.ACTION_MOVE:{
-                            EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i));
-                            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(i);
-                            EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).hasBeenOrganized = false;break;
-                        }
-                        case R.id.ACTION_UNHIDE:{
-                            EternalMediaBar.savedData.categories.get(category).appList.add(EternalMediaBar.savedData.hiddenApps.get(i));
-                            EternalMediaBar.savedData.hiddenApps.remove(i);
-                            EternalMediaBar.savedData.categories.get(category).hasBeenOrganized = false;break;
-                        }
-                    }
-                    break;
-                }
-                i++;
-            }
-        }
-        menuClose();
-
-        if (action == R.id.MOVE_LIST || action == R.id.HIDE_LIST){
-            EternalMediaBar.activity.loadListView();
-        }
-
-    }
-
-    public void unhideList(AppDetail menuItem){
+    public static void unhideList(AppDetail menuItem){
 
         EternalMediaBar.optionsLayout.removeAllViews();
 
@@ -486,7 +457,7 @@ public class OptionsMenuChange {
             i++;
         }
 
-        goBackItems(menuItem, R.id.SETTINGS);
+        goBackItems(menuItem, R.id.SETTINGS, false);
     }
 
 
@@ -577,7 +548,7 @@ public class OptionsMenuChange {
 
 
         EternalMediaBar.optionsLayout.addView(child);
-        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Save and close", R.id.CLOSE, 0, new AppDetail()));
+        EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Save and close", R.id.CLOSE_AND_SAVE, 0, new AppDetail()));
         //if the user decides to cancel, this is where we use the value of the color before changes that we stored earlier.
         EternalMediaBar.optionsLayout.addView(ListItemLayout.optionsListItemView("Close without saving", R.id.COLOR_ACTION_CANCEL, currentCol, new AppDetail()));
     }
@@ -592,7 +563,7 @@ public class OptionsMenuChange {
             case "Menu":{EternalMediaBar.savedData.menuCol = oldColor;break;}
             case "App Backgrounds":{EternalMediaBar.savedData.dimCol = oldColor;break;}
         }
-        menuClose();
+        menuClose(false);
     }
 
 

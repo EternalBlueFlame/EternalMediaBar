@@ -18,6 +18,7 @@
     <item name="SETTINGS" type="id"/>
     <item name="SELECTION" type="id"/>
     <item name="CLOSE" type="id"/>
+    <item name="CLOSE_AND_SAVE" type="id"/>
 
 
     <item name="THEME_SELECT" type="id"/>

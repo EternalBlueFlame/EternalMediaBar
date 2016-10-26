@@ -63,6 +63,12 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
             case ".storeSearch":{
                 return getBitmap(false, "com.android.vending", R.drawable.lunar_web);
             }
+            case ".ytSearch":{
+                return getBitmap(false, "com.google.android.youtube", R.drawable.lunar_web);
+            }
+            case ".mapSearch":{
+                return getBitmap(false, "com.google.android.apps.maps", R.drawable.lunar_web);
+            }
             case "0": {
                 return Bitmap.createBitmap(new int[]{-1},1,1, Bitmap.Config.ALPHA_8);
             }
