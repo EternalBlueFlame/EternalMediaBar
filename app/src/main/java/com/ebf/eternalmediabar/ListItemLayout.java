@@ -171,7 +171,7 @@ public class ListItemLayout {
                             break;
                         }
                         case ".musicSearch": {
-                            EternalMediaBar.activity.searchIntent(":audio:" + menuItem.internalCommand);
+                            EternalUtil.searchIntent(":audio:" + menuItem.internalCommand);
                             break;
                         }
                         case ".ytSearch": {

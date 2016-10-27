@@ -7,16 +7,12 @@ import android.app.Activity;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -63,7 +59,7 @@ public class EternalMediaBar extends Activity {
     public static List<String> selectedApps = new ArrayList<>();
 
     //we have to instance the event receiver so we can get rid of it when the app is not open.
-    intentReceiver mainReciever = new intentReceiver();
+    EternalUtil.intentReceiver mainReciever = new EternalUtil.intentReceiver();
 
 
     //////////////////////////////////////////////////
@@ -85,86 +81,11 @@ public class EternalMediaBar extends Activity {
         //now load the list view normally
         loadListView();
         //now deal with the event receiver.
-        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
-        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         filter.addAction("android.hardware.usb.action.USB_STATE");
         filter.addAction("android.intent.action.HDMI_PLUGGED");
         registerReceiver(mainReciever, filter);
         getPerms();
-    }
-
-
-    //////////////////////////////////////////////////
-    ///////////Intent receiver for search/////////////
-    //////////////////////////////////////////////////
-    public void searchIntent(String query) {
-        //get the results view and be sure it's clear.
-        LinearLayout searchView = (LinearLayout)findViewById(R.id.search_view);
-        if(searchView.getChildCount()>0){
-            for(int i=0;i<searchView.getChildCount();){
-                searchView.getChildAt(i).invalidate();
-                i++;
-            }
-            searchView.removeAllViews();
-        }
-        //first, be sure there's actually something to search
-        if (query.length()>0) {
-            if (query.contains(":audio:")){
-                List<AppDetail> songs = new ArrayList<AppDetail>();
-
-                Cursor cur = this.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
-
-                if(cur != null && cur.getCount() > 0) {
-                    while(cur.moveToNext()) {
-                        if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)).toLowerCase().contains(query.replace(":audio:","").toLowerCase())
-                                & cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).toLowerCase().contains(query.replace(":audio:","").toLowerCase()) ){
-
-                            searchView.addView(ListItemLayout.appListItemView(new AppDetail(
-                                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)) + " - " +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)) + "\n" +cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                                    ,".audio",
-                                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA))
-                            ), -1, true));
-                        }
-                    }
-                    cur.close();
-                }
-
-            } else {
-                LinearLayout providerList = new LinearLayout(this);
-                providerList.setOrientation(LinearLayout.HORIZONTAL);
-                providerList.setMinimumHeight(Math.round(dpi.scaledDensity * 58));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", ".webSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ".storeSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("YouTube",".ytSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Maps",".mapSearch", query), -1));
-                searchView.addView(providerList);
-
-                //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
-                query = query.toLowerCase();
-                //iterate vLists
-                for (int i = 0; i < savedData.categories.size(); ) {
-                    //set the bool for if there is a header on the category then iterate through the apps in the category
-                    Boolean categoryListed = false;
-                    for (int ii = 0; ii < savedData.categories.get(i).appList.size(); ) {
-                        //make sure the labels are lowercase, and if it finds something
-                        if (savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
-                            //check if this category has a header, if not make one and note that there is one.
-                            if (!categoryListed) {
-                                searchView.addView(ListItemLayout.searchCategoryItemView(savedData.categories.get(i)));
-                                categoryListed = true;
-                            }
-                            //display the actual search result
-                            searchView.addView(ListItemLayout.appListItemView(savedData.categories.get(i).appList.get(ii).setCommand(".search"), -1, true));
-                        }
-                        ii++;
-                    }
-                    i++;
-                }
-            }
-        }
-        //if the search query is less than 3 characters, just invalidate the search results view to be sure it gets cleared.
-        else{searchView.invalidate();}
     }
 
 
@@ -191,65 +112,6 @@ public class EternalMediaBar extends Activity {
         super.onPause();
     }
 
-    //////////////////////////////////////////////////
-    ///////////Intent receiver for events/////////////
-    //////////////////////////////////////////////////
-    private class intentReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-
-                //if the headset is plugged in, show a toast and move to the media list
-                case Intent.ACTION_HEADSET_PLUG: {
-                    if (intent.getIntExtra("state", -1) == 1) {
-                        Toast.makeText(EternalMediaBar.this, "Headset plugged in", Toast.LENGTH_SHORT).show();
-                        //we have to iterate through the tags to find the list with the desired tag
-                        for (int i = 0; i < savedData.categories.size(); ) {
-                            if (savedData.categories.get(i).categoryTags.contains("Music")) {
-                                listMove(i, true);
-                                break;
-                            }
-                            i++;
-                        }
-                    }
-                    break;
-                }
-
-                case "android.intent.action.HDMI_PLUGGED":{
-                    System.out.println("HDMI: " + intent.getType() + " : " + intent.getDataString());
-                    Toast.makeText(EternalMediaBar.this, "HDMI plugged in", Toast.LENGTH_SHORT).show();
-                    //we have to iterate through the tags to find the list with the desired tag
-                    for (int i = 0; i < savedData.categories.size(); ) {
-                        if (savedData.categories.get(i).categoryTags.contains("Video")) {
-                            listMove(i, true);
-                            break;
-                        }
-                        i++;
-                    }
-                    break;
-                }
-
-                case "android.hardware.usb.action.USB_STATE": {
-                    if (intent.getExtras().getBoolean("connected")) {
-                        Toast.makeText(EternalMediaBar.this, "USB plugged in", Toast.LENGTH_SHORT).show();
-                        //we have to iterate through the tags to find the list with the desired tag
-                        for (int i = 0; i < savedData.categories.size(); ) {
-                            if (savedData.categories.get(i).categoryTags.contains("Games")) {
-                                listMove(i, true);
-                                break;
-                            }
-                            i++;
-                        }
-                    }
-                    break;
-                }
-
-
-
-
-            }
-        }
-    }
 
 
 
@@ -304,7 +166,7 @@ public class EternalMediaBar extends Activity {
     //////////////////////////////////////////////////
     void listMove(int move, boolean isCategory){
         if (!isCategory && !optionsMenu){
-            if (move >= 0 && move < appsLayout.getChildCount()-1) {
+            if (move >= 0 && move < appsLayout.getChildCount()) {
                 //change the old item, if it exists
                 try {
                     //change the old font face
@@ -314,7 +176,8 @@ public class EternalMediaBar extends Activity {
                     appIcon.setScaleX(1f);
                     appIcon.setScaleY(1f);
                 }
-                catch(Exception e){e.printStackTrace();}
+                catch(Exception e){e.printStackTrace();
+                    Toast.makeText(EternalMediaBar.activity, "listmove error", Toast.LENGTH_SHORT).show();}
                 //change vItem
                 vItem = move;
                 try {
@@ -328,11 +191,12 @@ public class EternalMediaBar extends Activity {
                     //scroll to the new entry
                     appsLayout.scrollTo(0, (int) (appsLayout.getChildAt(vItem).getX() - (appsLayout.getHeight() * 0.4F)));
                 }
-                catch (Exception e){e.printStackTrace();}
+                catch (Exception e){e.printStackTrace();
+                    Toast.makeText(EternalMediaBar.activity, "listmove error", Toast.LENGTH_SHORT).show();}
             }
         }
         else if(!isCategory){
-            if (move >= 0 && move < optionsLayout.getChildCount()-1) {
+            if (move >= 0 && move < optionsLayout.getChildCount()) {
                 try {
                     move -= vItem;
                     move += optionVitem;
@@ -347,11 +211,12 @@ public class EternalMediaBar extends Activity {
                         optionsLayout.scrollTo(0, (int) (optionsLayout.getChildAt(optionVitem).getX() - (optionsLayout.getHeight()*0.4F)));
                     }
                 }
-                catch (Exception e){e.printStackTrace();}
+                catch (Exception e){e.printStackTrace();
+                    Toast.makeText(EternalMediaBar.activity, "listmove error", Toast.LENGTH_SHORT).show();}
             }
         }
         else{
-            if (move >= 0 && move < categoriesLayout.getChildCount()-1) {
+            if (move >= 0 && move < categoriesLayout.getChildCount()) {
                 //change hItem
                 hItem = move;
                 //reload the list
@@ -381,7 +246,7 @@ public class EternalMediaBar extends Activity {
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchIntent(newText);
+                EternalUtil.searchIntent(newText);
                 return false;
             }
         });

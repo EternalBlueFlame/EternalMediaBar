@@ -1,4 +1,4 @@
-package com.ebf;
+package com.ebf.eternalmediaplayer;
 
 import android.app.Activity;
 

@@ -3,17 +3,13 @@ package com.ebf.eternalmediabar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Space;
@@ -21,7 +17,6 @@ import android.widget.TextView;
 
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.CategoryClass;
-import com.ebf.eternalVariables.Widget;
 
 
 //This class is intended to manage a large number of functions related to menu interactions,

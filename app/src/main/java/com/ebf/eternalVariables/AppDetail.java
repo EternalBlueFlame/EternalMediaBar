@@ -1,7 +1,5 @@
 package com.ebf.eternalVariables;
 
-import android.widget.ImageView;
-
 import java.io.Serializable;
 
 public class AppDetail implements Serializable {

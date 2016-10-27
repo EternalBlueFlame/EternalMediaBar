@@ -22,6 +22,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.HDMI_PLUGGED" />
+                <action android:name="android.hardware.usb.action.USB_STATE" />
 
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
