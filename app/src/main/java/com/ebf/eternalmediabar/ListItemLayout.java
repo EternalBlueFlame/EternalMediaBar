@@ -375,7 +375,9 @@ public class ListItemLayout {
 
                         //case for making the list of categories for moving or copying.
                         case R.id.COPY_LIST: case R.id.MOVE_LIST:{
-                            OptionsMenuChange.createCopyList(menuItem, index);break;
+                            OptionsMenuChange.createCopyList(menuItem, index);
+                            Toast.makeText(EternalMediaBar.activity, "Select the apps you want to move\nThen select where to move them.", Toast.LENGTH_LONG).show();
+                            break;
                         }
                         case R.id.HIDE_LIST:{
                             OptionsMenuChange.unhideList(menuItem);break;

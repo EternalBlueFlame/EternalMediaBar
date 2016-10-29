@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -120,7 +121,6 @@ public class EternalUtil {
             }
         } else {
 
-            Toast.makeText(EternalMediaBar.activity, "Select the apps you want to move\nThen select where to move them.", Toast.LENGTH_LONG).show();
             for (String uri : EternalMediaBar.selectedApps) {
                 for (int i = 0; i < EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.size(); ) {
                     if (EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.get(i).URI.equals(uri)) {
@@ -168,8 +168,6 @@ public class EternalUtil {
         //first, be sure there's actually something to search
         if (query.length()>0) {
             if (query.contains(":audio:")){
-                List<AppDetail> songs = new ArrayList<AppDetail>();
-
                 Cursor cur = EternalMediaBar.activity.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
 
                 if(cur != null && cur.getCount() > 0) {
@@ -188,6 +186,7 @@ public class EternalUtil {
                 }
 
             } else {
+                HorizontalScrollView providerScroller = new HorizontalScrollView(EternalMediaBar.activity);
                 LinearLayout providerList = new LinearLayout(EternalMediaBar.activity);
                 providerList.setOrientation(LinearLayout.HORIZONTAL);
                 providerList.setMinimumHeight(Math.round(EternalMediaBar.dpi.scaledDensity * 58));
@@ -196,7 +195,8 @@ public class EternalUtil {
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query), -1));
                 providerList.addView(ListItemLayout.searchView(new AppDetail("YouTube",".ytSearch", query), -1));
                 providerList.addView(ListItemLayout.searchView(new AppDetail("Maps",".mapSearch", query), -1));
-                searchView.addView(providerList);
+                providerScroller.addView(providerList);
+                searchView.addView(providerScroller);
 
                 //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
                 query = query.toLowerCase();

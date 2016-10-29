@@ -17,9 +17,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -189,7 +191,7 @@ public class EternalMediaBar extends Activity {
                     appIcon.setScaleY(1.5f);
 
                     //scroll to the new entry
-                    appsLayout.scrollTo(0, (int) (appsLayout.getChildAt(vItem).getX() - (appsLayout.getHeight() * 0.4F)));
+                    findViewById(R.id.apps_displayscroll).scrollTo(0, (int) (appsLayout.getChildAt(vItem).getY() - (findViewById(R.id.apps_displayscroll).getHeight() * 0.4F)));
                 }
                 catch (Exception e){e.printStackTrace();
                     Toast.makeText(EternalMediaBar.activity, "listmove error", Toast.LENGTH_SHORT).show();}
@@ -208,7 +210,7 @@ public class EternalMediaBar extends Activity {
                         optionVitem = move;
                         ((TextView) optionsLayout.getChildAt(optionVitem).findViewById(R.id.list_item_text)).setPaintFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
                         //scroll to the new entry
-                        optionsLayout.scrollTo(0, (int) (optionsLayout.getChildAt(optionVitem).getX() - (optionsLayout.getHeight()*0.4F)));
+                        findViewById(R.id.options_displayscroll).scrollTo(0, (int) (optionsLayout.getChildAt(optionVitem).getY() - (findViewById(R.id.options_displayscroll).getHeight()*0.4F)));
                     }
                 }
                 catch (Exception e){e.printStackTrace();
@@ -222,7 +224,7 @@ public class EternalMediaBar extends Activity {
                 //reload the list
                 loadListView();
                 //scroll to the new entry
-                categoriesLayout.scrollTo((int) (categoriesLayout.getChildAt(optionVitem).getX() - (categoriesLayout.getWidth()*0.4F)), 0);
+                findViewById(R.id.categoriesscroll).scrollTo((int) (categoriesLayout.getChildAt(optionVitem).getX() - (findViewById(R.id.categoriesscroll).getWidth() * 0.4F)), 0);
             }
         }
     }
