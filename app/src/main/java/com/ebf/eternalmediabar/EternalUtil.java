@@ -190,11 +190,11 @@ public class EternalUtil {
                 LinearLayout providerList = new LinearLayout(EternalMediaBar.activity);
                 providerList.setOrientation(LinearLayout.HORIZONTAL);
                 providerList.setMinimumHeight(Math.round(EternalMediaBar.dpi.scaledDensity * 58));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", ".webSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ".storeSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("YouTube",".ytSearch", query), -1));
-                providerList.addView(ListItemLayout.searchView(new AppDetail("Maps",".mapSearch", query), -1));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Web", ".webSearch", query)));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Store", ".storeSearch", query)));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Music",".musicSearch", query)));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("YouTube",".ytSearch", query)));
+                providerList.addView(ListItemLayout.searchView(new AppDetail("Maps",".mapSearch", query)));
                 providerScroller.addView(providerList);
                 searchView.addView(providerScroller);
 
@@ -242,7 +242,7 @@ public class EternalUtil {
                         //we have to iterate through the tags to find the list with the desired tag
                         for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                             if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Music")) {
-                                EternalMediaBar.activity.listMove(i, true);
+                                EternalMediaBar.categoryListMove(i);
                                 break;
                             }
                             i++;
@@ -257,7 +257,7 @@ public class EternalUtil {
                         //we have to iterate through the tags to find the list with the desired tag
                         for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                             if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Video")) {
-                                EternalMediaBar.activity.listMove(i, true);
+                                EternalMediaBar.categoryListMove(i);
                                 break;
                             }
                             i++;
@@ -267,14 +267,14 @@ public class EternalUtil {
                 }
 
                 case "android.hardware.usb.action.USB_STATE": {
-                    System.out.println("HDMI: " + intent.getType() + " : " + intent.getDataString() + " : "+intent.getIntExtra("state", -1)  + " : " + intent.getExtras().toString() + " : " + intent.getFlags()
+                    System.out.println("USB: " + intent.getType() + " : " + intent.getDataString() + " : "+intent.getIntExtra("state", -1)  + " : " + intent.getExtras().toString() + " : " + intent.getFlags()
                     );//TODO need to detect what exactly got plugged in.
                     if (intent.getExtras().getBoolean("connected")) {
                         Toast.makeText(EternalMediaBar.activity, "USB plugged in", Toast.LENGTH_SHORT).show();
                         //we have to iterate through the tags to find the list with the desired tag
                         for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                             if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Games")) {
-                                EternalMediaBar.activity.listMove(i, true);
+                                EternalMediaBar.categoryListMove(i);
                                 break;
                             }
                             i++;

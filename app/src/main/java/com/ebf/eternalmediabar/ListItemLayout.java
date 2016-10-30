@@ -78,13 +78,13 @@ public class ListItemLayout {
                     //otherwise act normally.
                     //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
                     if (EternalMediaBar.savedData.doubleTap && EternalMediaBar.vItem != index) {
-                        EternalMediaBar.activity.listMove(index, false);
+                        EternalMediaBar.listMove(index);
                     } else {
                         //if double tap is off, or this is the position for the app, or both, open it.
                         //if its the options button, open the options menu
                         switch (menuItem.URI){
                             case ".options":{
-                                EternalMediaBar.activity.listMove(index, false);
+                                EternalMediaBar.listMove(index);
                                 //use a blank value for the AppDetail to be absolutely sure we don't break anything.
                                 OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options"), R.id.SETTINGS);
                                 break;
@@ -119,7 +119,7 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    EternalMediaBar.activity.listMove(index, false);
+                    EternalMediaBar.listMove(index);
                     OptionsMenuChange.menuOpen(menuItem, R.id.APP);
                 }
                 return true;
@@ -137,7 +137,7 @@ public class ListItemLayout {
     ////////////////////////////////////////////////////////////
 
     //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
-    public static View searchView (final AppDetail menuItem, final int index){
+    public static View searchView (final AppDetail menuItem){
 
         //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
         //make the core layout
@@ -257,7 +257,7 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    EternalMediaBar.activity.listMove(index, true);
+                    EternalMediaBar.categoryListMove(index);
                 }
             }
         });
