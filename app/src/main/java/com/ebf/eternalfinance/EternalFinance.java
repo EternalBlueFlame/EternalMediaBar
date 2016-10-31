@@ -32,6 +32,10 @@ public class EternalFinance extends Activity {
     public static List<FinanceAccount> accounts = new ArrayList<FinanceAccount>();
     public static DisplayMetrics dpi = new DisplayMetrics();
 
+    /**
+     * <h2> initialize </h2>
+     * setup the variables that won't normally change during use, then call the view builder
+     */
     @Override
     protected void onResume(){
         super.onResume();
@@ -43,16 +47,23 @@ public class EternalFinance extends Activity {
     }
 
 
+    /**
+     * <h2>build the list of transactions</h2>
+     * this will generate lists of every transaction
+     * @return
+     */
     public static View transactionList(){
-
+        //run GC then create the views.
+        Runtime.getRuntime().gc();
         LinearLayout accountsLayout = new LinearLayout(EternalFinance.activity);
 
 
         for (final FinanceAccount account : accounts){
-            //layout for the account
-        LinearLayout layout = new LinearLayout(EternalFinance.activity);
+            /**
+             * define the layouts for the accounts
+             */
+            LinearLayout layout = new LinearLayout(EternalFinance.activity);
             layout.setOrientation(LinearLayout.VERTICAL);
-            //layout for the year
             RelativeLayout entry = new RelativeLayout(EternalFinance.activity);
             TextView entryLabel = new TextView(EternalFinance.activity);
             entryLabel.setText(account.name);
@@ -60,8 +71,6 @@ public class EternalFinance extends Activity {
             entryLabel.setY((0 * EternalFinance.dpi.scaledDensity));
             entryLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             entry.addView(entryLabel);
-
-
             layout.addView(entry);
 
             //scroll view that contins a list view of entries
@@ -69,7 +78,11 @@ public class EternalFinance extends Activity {
             LinearLayout entries = new LinearLayout(EternalFinance.activity);
             entries.setOrientation(LinearLayout.VERTICAL);
 
-            //add an entry for adding a transaction
+            /**
+             * <h2>new transaction</h2>
+             * create the entry for adding a new transaction.
+             * The onClick will ask the user for all the appropriate data then add it to the save file before reloading everything.
+             */
             TextView newEntry = new TextView(EternalFinance.activity);
             newEntry.setText("New Transaction");
             newEntry.setMinimumWidth(Math.round(400 * EternalFinance.dpi.scaledDensity));
@@ -79,6 +92,7 @@ public class EternalFinance extends Activity {
             newEntry.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //use an alert dialogue to combine all the views for defining the new transation into a floating window.
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EternalFinance.activity);
 
                     LinearLayout layout = new LinearLayout(EternalFinance.activity);
@@ -107,10 +121,9 @@ public class EternalFinance extends Activity {
                     time.setText(android.text.format.DateFormat.getDateFormat(EternalFinance.activity).format(Calendar.getInstance().getTime()));
                     layout.addView(time);
 
-                    // set prompts.xml to alertdialog builder
                     alertDialogBuilder.setView(layout);
 
-                    // set dialog message
+                    // add buttons for OK and cancel
                     alertDialogBuilder.setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
@@ -132,16 +145,12 @@ public class EternalFinance extends Activity {
 
                         }
                     });
-
-                    // create alert dialog
+                    //now show the dialogue.
                     AlertDialog alertDialog = alertDialogBuilder.create();
-                    // show it
                     alertDialog.show();
                 }
             });
             entries.addView(newEntry);
-
-            //add the year label in the account label
 
             //sort the list first
             Collections.sort(account.transactions, new Comparator<Transaction>() {
@@ -151,12 +160,16 @@ public class EternalFinance extends Activity {
                 }
             });
 
+            /**
+             * <h3> List the transactions </h3>
+             * now we actually list the transactions and categorize them vertically by year and month.
+             */
             int year =0;
             int month =0;
             boolean darkItem = false;
             for (Transaction event : account.transactions){
                 //handle year, note date.getYar returns how many years it has been since 1900
-                if (year ==0 ^ year != event.time.getYear()){
+                if (year ==0 & year != event.time.getYear()){
                     year = event.time.getYear();
                     TextView yearLabel = new TextView(EternalFinance.activity);
                     yearLabel.setText("Year: " + (1900+year));
@@ -225,7 +238,9 @@ public class EternalFinance extends Activity {
 
         }
 
-        //add an entry for adding an account
+        /**
+         * create an entry for adding a new account.
+         */
         TextView newAccount = new TextView(EternalFinance.activity);
             newAccount.setText("Add an account");
             newAccount.setMinimumWidth(Math.round(400 * EternalFinance.dpi.scaledDensity));
@@ -235,14 +250,12 @@ public class EternalFinance extends Activity {
             newAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /**
+                 * create a dialogue builder to ask the user for the info necessary to add an account.
+                 */
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(EternalFinance.activity);
-
                 final EditText et = new EditText(EternalFinance.activity);
-
-                // set prompts.xml to alertdialog builder
                 alertDialogBuilder.setView(et);
-
-                // set dialog message
                 alertDialogBuilder.setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         FinanceAccount tempAccount = new FinanceAccount();
@@ -253,9 +266,8 @@ public class EternalFinance extends Activity {
                     }
                 });
 
-                // create alert dialog
+                // display the dialogue
                 AlertDialog alertDialog = alertDialogBuilder.create();
-                // show it
                 alertDialog.show();
             }
         });
@@ -266,7 +278,10 @@ public class EternalFinance extends Activity {
     }
 
 
-
+    /**
+     * <h2> save the data on change</h2>
+     * TODO: this part is still unfinished so the menu never saves.
+     */
     public void saveData(){
         StringBuilder save = new StringBuilder();
         save.append("<financeSave>\n");

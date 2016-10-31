@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.CategoryClass;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -22,9 +21,12 @@ import java.util.List;
 public class EternalUtil {
 
 
-    //////////////////////////////////////////////////
-    //////////////////Organize List///////////////////
-    //////////////////////////////////////////////////
+    /**
+     * <h2>Organize the app lists</h2>
+     * use one of the custom defined collections.sort methods to organize the list of apps.
+     * @param list the list to organize
+     * @param mode the mode to organize the list with
+     */
     public static void organizeList(List<AppDetail> list, int mode){
         switch(mode){
             //no organization
@@ -93,9 +95,10 @@ public class EternalUtil {
     }
 
 
-    //////////////////////////////////////////////////
-    ////////////Open application Settings/////////////
-    //////////////////////////////////////////////////
+    /**
+     * sinple call to open the Android System settings menu for the selected app.
+     * @param menuItem the app to open the menu for.
+     */
     public static void openAppSettings(AppDetail menuItem){
         Intent intent = new Intent();
         intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -105,9 +108,12 @@ public class EternalUtil {
     }
 
 
-    //////////////////////////////////////////////////
-    /////////Copy/move/hide an app menu item//////////
-    //////////////////////////////////////////////////
+    /**
+     * <h2>Relocate apps</h2>
+     * used for moving apps from one menu to another.
+     * @param category
+     * @param action
+     */
     public static void relocateItem(int category, int action){
 
         if (action == R.id.ACTION_UNHIDE){
@@ -152,21 +158,19 @@ public class EternalUtil {
     }
 
 
-    //////////////////////////////////////////////////
-    ///////////Intent receiver for search/////////////
-    //////////////////////////////////////////////////
+    /**
+     * c<h2> search intent reciever</h2>
+     * custom intent reciever for search functionality.
+     * If the search contains ":audio: search through the user's music via Android MediaStore.
+     * Otherwise display the options to search through one of the providers, before displaying the actual list of results.
+     * @param query
+     */
     public static void searchIntent(String query) {
-        //get the results view and be sure it's clear.
         LinearLayout searchView = (LinearLayout)EternalMediaBar.activity.findViewById(R.id.search_view);
-        if(searchView.getChildCount()>0){
-            for(int i=0;i<searchView.getChildCount();){
-                searchView.getChildAt(i).invalidate();
-                i++;
-            }
-            searchView.removeAllViews();
-        }
-        //first, be sure there's actually something to search
-        if (query.length()>0) {
+        searchView.removeAllViews();
+
+        if (query.length()>1) {
+            //search music
             if (query.contains(":audio:")){
                 Cursor cur = EternalMediaBar.activity.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, MediaStore.Audio.Media.TITLE + " ASC");
 
@@ -184,8 +188,13 @@ public class EternalUtil {
                     }
                     cur.close();
                 }
-
+                //normal search
             } else {
+                /**
+                 * add the searchbar for the providers such as google, youtube, maps, etc.
+                 * What these actually do is defined in:
+                 * @see ListItemLayout#searchView(AppDetail)
+                 */
                 HorizontalScrollView providerScroller = new HorizontalScrollView(EternalMediaBar.activity);
                 LinearLayout providerList = new LinearLayout(EternalMediaBar.activity);
                 providerList.setOrientation(LinearLayout.HORIZONTAL);
@@ -198,44 +207,44 @@ public class EternalUtil {
                 providerScroller.addView(providerList);
                 searchView.addView(providerScroller);
 
-                //handle local device searching, first because results are caps sensitive, put the query (and later the potential results) to lowercase.
+                /**
+                 * Display the search results for the users apps.
+                 * For every category that we iterate through, show a header for it before displaying the apps in it.
+                 */
                 query = query.toLowerCase();
-                //iterate vLists
-                for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
-                    //set the bool for if there is a header on the category then iterate through the apps in the category
+                for (CategoryClass category : EternalMediaBar.savedData.categories) {
                     Boolean categoryListed = false;
-                    for (int ii = 0; ii < EternalMediaBar.savedData.categories.get(i).appList.size(); ) {
-                        //make sure the labels are lowercase, and if it finds something
-                        if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).label.toString().toLowerCase().contains(query)) {
-                            //check if this category has a header, if not make one and note that there is one.
+                    for (AppDetail app : category.appList) {
+                        if (app.label.toString().toLowerCase().contains(query)) {
                             if (!categoryListed) {
-                                searchView.addView(ListItemLayout.searchCategoryItemView(EternalMediaBar.savedData.categories.get(i)));
+                                searchView.addView(ListItemLayout.searchCategoryItemView(category));
                                 categoryListed = true;
                             }
-                            //display the actual search result
-                            searchView.addView(ListItemLayout.appListItemView(EternalMediaBar.savedData.categories.get(i).appList.get(ii).setCommand(".search"), -1, true));
+                            searchView.addView(ListItemLayout.appListItemView(app.setCommand(".search"), -1, true));
                         }
-                        ii++;
                     }
-                    i++;
                 }
             }
         }
-        //if the search query is less than 3 characters, just invalidate the search results view to be sure it gets cleared.
-        else{searchView.invalidate();}
+        //if the search query is less than 1 character, just remove all views from search and run GC.
+        else{
+            searchView.removeAllViews();
+            Runtime.getRuntime().gc();
+        }
     }
 
 
-
-    //////////////////////////////////////////////////
-    ///////////Intent receiver for events/////////////
-    //////////////////////////////////////////////////
+    /**
+     * <h2>Hardware Event Receiver</h2>
+     * receive certain hardware events and act accordingly.
+     * events to receive are defined in:
+     * @see EternalMediaBar#onResume()
+     */
     public static class intentReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
 
-                //if the headset is plugged in, show a toast and move to the media list
                 case Intent.ACTION_HEADSET_PLUG: {
                     if (intent.getIntExtra("state", -1) == 1) {
                         Toast.makeText(EternalMediaBar.activity, "Headset plugged in", Toast.LENGTH_SHORT).show();
@@ -254,7 +263,6 @@ public class EternalUtil {
                 case "android.intent.action.HDMI_PLUGGED":{
                     if (intent.getExtras().toString().contains("true")) {
                         Toast.makeText(EternalMediaBar.activity, "HDMI plugged in", Toast.LENGTH_SHORT).show();
-                        //we have to iterate through the tags to find the list with the desired tag
                         for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                             if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Video")) {
                                 EternalMediaBar.categoryListMove(i);
@@ -271,7 +279,6 @@ public class EternalUtil {
                     );//TODO need to detect what exactly got plugged in.
                     if (intent.getExtras().getBoolean("connected")) {
                         Toast.makeText(EternalMediaBar.activity, "USB plugged in", Toast.LENGTH_SHORT).show();
-                        //we have to iterate through the tags to find the list with the desired tag
                         for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                             if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Games")) {
                                 EternalMediaBar.categoryListMove(i);

@@ -29,7 +29,7 @@ import com.ebf.eternalVariables.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//TODO finish javadoc rework and finish widget implementation
 
 public class EternalMediaBar extends Activity {
 
@@ -64,7 +64,7 @@ public class EternalMediaBar extends Activity {
     /**
      * <h2>App Initialization</h2>
      *
-     *
+     * define all the variables that dont get hanged here, and load the save file before setting up the listeners..
      */
     @Override
     protected void onResume() {
@@ -82,6 +82,8 @@ public class EternalMediaBar extends Activity {
         filter.addAction("android.intent.action.HDMI_PLUGGED");
         registerReceiver(mainReciever, filter);
         getPerms();
+        mAppWidgetManager = AppWidgetManager.getInstance(this);
+        mAppWidgetHost = new AppWidgetHost(this, R.id.APPWIDGET_HOST_ID);
     }
 
 
@@ -164,9 +166,6 @@ public class EternalMediaBar extends Activity {
     }
 
 
-    //////////////////////////////////////////////////
-    /////////////change selected item/////////////////
-    //////////////////////////////////////////////////
 
     /**
      * <h2> Select a new menu item</h2>
@@ -227,9 +226,11 @@ public class EternalMediaBar extends Activity {
 
 
 
-    //////////////////////////////////////////////////
-    ///////Function to draw all the information///////
-    //////////////////////////////////////////////////
+    /**
+     * <h2>Reload the menus</h2>
+     *
+     * manage the searchbar, then re-define all the layouts and managers.
+     */
     public void loadListView(){
 
         if (savedData.mirrorMode){setContentView(R.layout.activity_eternal_media_bar_mirror);}
@@ -258,14 +259,15 @@ public class EternalMediaBar extends Activity {
         appsLayout.removeAllViews();
         savedData.categories.get(hItem).Organize();
 
-        Runtime.getRuntime().gc();
-        //////////////////////
-        //Draw the Categories
-        //////////////////////
 
-        //dim the color to the dimCol
+        /**
+         * draw the categories, then the apps, if there are any.
+         *
+         * we use the same int for both loops to save CPU use by not having to initialize the int twice.
+         *
+         * finally setup the widgets before running java GC again.
+         */
         int count =0;
-        //loop to add all entries of hli to the list
         for (CategoryClass category :savedData.categories) {
             if(!category.categoryTags.contains("Unorganized")) {
                 categoriesLayout.addView(ListItemLayout.categoryListItemView(category, count));
@@ -275,17 +277,12 @@ public class EternalMediaBar extends Activity {
             count++;
         }
         count =0;
-        //now define the apps list
 
         for (AppDetail app : savedData.categories.get(hItem).appList) {
             appsLayout.addView(ListItemLayout.appListItemView(app, count, false));
             count++;
         }
-        //make sure the vList item is selected
         listMove(0);
-
-        mAppWidgetManager = AppWidgetManager.getInstance(this);
-        mAppWidgetHost = new AppWidgetHost(this, R.id.APPWIDGET_HOST_ID);
 
         if (savedData.widgets.size()>0){
             for (Widget widget : savedData.widgets) {
@@ -299,16 +296,14 @@ public class EternalMediaBar extends Activity {
 
 
     /**
-     * If the user has selected an widget, the result will be in the 'data' when
-     * this function is called.
+     * <h2>Widget management</h2>
+     *
+     * Check if the widget needs any configuration. and if it does, launch the configuration activity.
+     * If the user has selected an widget, the result will be in the 'data' when this function is called.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            /**
-             * Checks if the widget needs any configuration. If it needs, launches the
-             * configuration activity.
-             */
             if (requestCode == R.id.REQUEST_PICK_APPWIDGET) {
                 int appWidgetId = data.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
                 if (mAppWidgetManager.getAppWidgetInfo(appWidgetId).configure != null) {
@@ -320,7 +315,6 @@ public class EternalMediaBar extends Activity {
                     createWidget(appWidgetId);
                 }
 
-                //Creates the widget and adds to our view layout.
             } else if (requestCode == R.id.REQUEST_CREATE_APPWIDGET) {
                 createWidget(data.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1));
             }
@@ -330,8 +324,6 @@ public class EternalMediaBar extends Activity {
             }
         }
     }
-
-
     /**
      * Creates the widget and adds to our view layout.
      */
@@ -339,7 +331,6 @@ public class EternalMediaBar extends Activity {
         AppWidgetProviderInfo appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
         savedData.widgets.add(new Widget(appWidgetId, appWidgetInfo.minWidth, appWidgetInfo.minHeight));
     }
-
     /**
      * Launches the menu to select the widget. The selected widget will be on
      * the result of the activity.
