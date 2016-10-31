@@ -15,25 +15,42 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
 
     private AsyncImageView v;
 
+    /**
+     * <h2>after loading completes</h2>
+     * this makes sure the ImageView is visible after it has been loaded.
+     * @param result the bitmap to set.
+     */
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
-            // If this item hasn't been recycled already, hide the
-            // progress and set and show the image
             v.icon.setVisibility(View.VISIBLE);
             v.icon.setImageBitmap(result);
     }
 
+    /**
+     * <h2> background process bitmap</h2>
+     * this creates a new thread for execution that will parse the URI from the AsyncImageView to figure out what bitmap to create or generate.
+     * if the URI can't be parsed this will assume it's a normal app and attempt to render the bitmap from android's application manager.
+     *
+     * most all options in the switch also contain another switch to define what icon to return based on the theme.
+     * Default is always the internal theme of the app provided by Lunar Tales.
+     *
+     * @param params the AsyncImageView to process, even though multiple are allowed, only the first one is processed.
+     * @return the Bitmap result.
+     *
+     * TODO:
+     * if the static scaling values actually work well, they should carry over into this as well.
+     * @see ListItemLayout
+     *
+     * the lunar tales theme is missing:
+     *  - radio buttons.
+     *  - this app's icon.
+     *  - error icon.
+     */
     @Override
     protected Bitmap doInBackground(AsyncImageView... params) {
         v=params[0];
-        return ProcessInput(v.internalCommand, v.URI);
-    }
-
-
-    public static Bitmap ProcessInput(String internalCommand, String uri){
-        //run a switch to load an icon dependant on it's value.
-        switch (uri) {
+        switch (v.URI) {
             case ".colHeaderFont": {
                 return Bitmap.createBitmap(new int[]{EternalMediaBar.savedData.fontCol},1,1, Bitmap.Config.ARGB_8888);
             }
@@ -139,10 +156,9 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                 }
             }
             case ".audio":{
-                MediaMetadataRetriever mData=new MediaMetadataRetriever();
                 try{
                     android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                    mmr.setDataSource(internalCommand);
+                    mmr.setDataSource(v.internalCommand);
 
                     byte [] data = mmr.getEmbeddedPicture();
                     return BitmapFactory.decodeByteArray(data, 0, data.length);
@@ -156,7 +172,7 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
                 //try to load app icon, if it fails, get the error icon
                 try {
                     int scale = Math.round(EternalMediaBar.dpi.scaledDensity * 48);
-                    return Bitmap.createScaledBitmap(((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(uri)).getBitmap(), scale,scale, true);
+                    return Bitmap.createScaledBitmap(((BitmapDrawable)EternalMediaBar.manager.getApplicationIcon(v.URI)).getBitmap(), scale,scale, true);
                 } catch (Exception e) {
                     switch (EternalMediaBar.savedData.theme){
                         case "Material":{return getBitmap(true, "", R.drawable.material_ic_error_white_48dp);}
@@ -169,42 +185,41 @@ public class ImgLoader extends AsyncTask<AsyncImageView, Void, Bitmap>{
         }
     }
 
+    /**
+     * <h2> get bitmap </h2>
+     *
+     * if the icon is internal this will attempt to draw the icon with modified colors and scale it, then return it after running java GC.
+     *
+     * The canvas is a middleman to contain the modified bitmap and apply the effects to it.
+     *
+     * @param internal if the icon is internal or an app.
+     * @param launchIntent the app URI for the icon to be displayed, if this us invalid an error image will be displayed in it's place.
+     * @param internalImage the internal URI for the icon, may be used as the fallback if the launchIntent is invalid.
+     * @return the processed bitmap
+     */
     public static Bitmap getBitmap(boolean internal, String launchIntent, int internalImage){
         if(!internal) {
             try {
                 return ((BitmapDrawable) EternalMediaBar.manager.getApplicationIcon(launchIntent)).getBitmap();
             } catch (Exception e) {
-                //get the icon as a bitmap drawable
                 BitmapDrawable ico = (BitmapDrawable)EternalMediaBar.activity.getResources().getDrawable(internalImage);
-                //set the color filter
                 ico.setColorFilter(EternalMediaBar.savedData.iconCol, PorterDuff.Mode.MULTIPLY);
-                //create the bitmap to modify
                 Bitmap bit = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
-                //set the bounds of the icon, for some unknown reason this is necessary
                 ico.setBounds(0, 0, 96, 96);
-                //draw the icon to the bitmap via canvas
                 Canvas canvas = new Canvas(bit);
                 ico.draw(canvas);
-                //invalidate the now useless drawable and canvas before returning the image
-                ico=null;
+                ico.invalidateSelf();
                 canvas = null;
                 return bit;
             }
-        }
-        else{
-            //get the icon as a bitmap drawable
+        } else{
             BitmapDrawable ico = (BitmapDrawable)EternalMediaBar.activity.getResources().getDrawable(internalImage);
-            //set the color filter
             ico.setColorFilter(EternalMediaBar.savedData.iconCol, PorterDuff.Mode.MULTIPLY);
-            //create the bitmap to modify
             Bitmap bit = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
-            //set the bounds of the icon, for some unknown reason this is necessary
             ico.setBounds(0, 0, 96, 96);
-            //draw the icon to the bitmap via canvas
             Canvas canvas = new Canvas(bit);
             ico.draw(canvas);
-            //invalidate the now useless drawable and canvas before returning the image, so that the data can be cleaned by GC
-            ico=null;
+            ico.invalidateSelf();
             canvas = null;
             return bit;
         }

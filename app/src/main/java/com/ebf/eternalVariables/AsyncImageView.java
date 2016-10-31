@@ -1,6 +1,5 @@
 package com.ebf.eternalVariables;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -35,21 +34,4 @@ public class AsyncImageView {
         new ImgLoader().execute(this);
     }
 
-    public AsyncImageView(Bitmap ico, ViewGroup.LayoutParams params, float y, float x, int id, boolean viewBounds){
-        icon.setLayoutParams(params);
-        icon.setX(x);
-        icon.setY(y);
-        icon.setId(id);
-        icon.setAdjustViewBounds(viewBounds);
-        icon.setImageBitmap(ico);
-
-        selectedIcon.setLayoutParams(params);
-        selectedIcon.setX(x);
-        selectedIcon.setY(y);
-        selectedIcon.setId(R.id.list_item_checkbox);
-        selectedIcon.setAdjustViewBounds(viewBounds);
-        selectedIcon.setImageResource(android.R.drawable.checkbox_on_background);
-        selectedIcon.setVisibility(View.INVISIBLE);
-
-    }
 }

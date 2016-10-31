@@ -27,6 +27,10 @@ import java.io.File;
 
 public class ListItemLayout {
 
+    /**
+     * define the layout sizes here so we don't have to process each more than once for the life of the app.
+     * NOTE: it may be a decent idea to define the offsets statically like this as well, that way the values don't have to be calculated for every item. I am unsure if it will effect the RAM use however, needs further testing.
+     */
     private static final ViewGroup.LayoutParams layout24 = new LinearLayout.LayoutParams(Math.round(24 * EternalMediaBar.dpi.scaledDensity), Math.round(24 * EternalMediaBar.dpi.scaledDensity));
     private static final ViewGroup.LayoutParams layout48 = new LinearLayout.LayoutParams(Math.round(48 * EternalMediaBar.dpi.scaledDensity), Math.round(48 * EternalMediaBar.dpi.scaledDensity));
     private static final ViewGroup.LayoutParams layout34 = new LinearLayout.LayoutParams(Math.round(34 * EternalMediaBar.dpi.scaledDensity), Math.round(34 * EternalMediaBar.dpi.scaledDensity));
@@ -34,20 +38,26 @@ public class ListItemLayout {
     private static final ViewGroup.LayoutParams layout28 = new LinearLayout.LayoutParams(Math.round(28 * EternalMediaBar.dpi.scaledDensity), Math.round(28 * EternalMediaBar.dpi.scaledDensity));
 
 
-    ////////////////////////////////////////////////////////////
-    ////////////////////// App List Item ///////////////////////
-    ////////////////////////////////////////////////////////////
-
-    //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
+    /**
+     * <h2>Normal List Item View</h2>
+     *
+     * this function generates a view that contains the layout, image view, text, and the onClick functionality.
+     * usually used for apps on the main list and in the search bar.
+     *
+     * The image is defined through an AsyncImageView via:
+     * @see ImgLoader#ProcessInput(String, String)
+     *
+     * @param menuItem the AppDetail being displayed
+     * @param index the index of the menu, used with:
+     *              @see EternalMediaBar#listMove(int)
+     * @param isSearch if this item is in the searchbar's list.
+     * @return the View to draw.
+     */
     public static View appListItemView (final AppDetail menuItem, final int index, boolean isSearch){
 
-        //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
-        //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(54 * EternalMediaBar.dpi.scaledDensity));
-        //create the icon base using the async image loader
         final AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI , layout34, 10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-        //now add the progress view to the display, then process the image view and add it to the display.
 
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
@@ -60,13 +70,16 @@ public class ListItemLayout {
             layout.addView(text);
         }
 
-        //setup the onclick listener and button
+        /**
+         * define the on click manager,
+         * if you are copying or moving an app then add or remove this from the list dependant on whether or not this is selected.
+         * if the options menu is open but you are not copying or moving, just close options menu.
+         * otherwise, if double tap is on, move to this item, and if you are already on this item or double tap is off, parse the URI to figure out how to run it.
+         */
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if the options menu is closed, then close the menu
                 if (EternalMediaBar.copyingOrMoving) {
-                    //now add the progress view to the display, then process the image view and add it to the display.
                     if (EternalMediaBar.selectedApps.contains(menuItem.URI)){
                         EternalMediaBar.selectedApps.remove(menuItem.URI);
                         image.selectedIcon.setVisibility(View.INVISIBLE);
@@ -75,21 +88,17 @@ public class ListItemLayout {
                         image.selectedIcon.setVisibility(View.VISIBLE);
                     }
                 } else if (!EternalMediaBar.optionsMenu) {
-                    //otherwise act normally.
-                    //if double tap is enabled, be sure the item is selected before it can be opened by clicking it.
                     if (EternalMediaBar.savedData.doubleTap && EternalMediaBar.vItem != index) {
                         EternalMediaBar.listMove(index);
                     } else {
-                        //if double tap is off, or this is the position for the app, or both, open it.
-                        //if its the options button, open the options menu
                         switch (menuItem.URI){
                             case ".options":{
                                 EternalMediaBar.listMove(index);
-                                //use a blank value for the AppDetail to be absolutely sure we don't break anything.
                                 OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options"), R.id.SETTINGS);
                                 break;
                             }
                             case ".finance":{
+                                EternalMediaBar.listMove(index);
                                 EternalMediaBar.activity.startActivity(new Intent(EternalMediaBar.activity, EternalFinance.class));
                                 break;
                             }
@@ -101,17 +110,22 @@ public class ListItemLayout {
                                 break;
                             }
                             default:{
-                                //if it's not the options menu then try to open the app
                                 EternalMediaBar.activity.startActivity(EternalMediaBar.manager.getLaunchIntentForPackage(menuItem.URI));
                                 break;
                             }
                         }
                     }
+                } else {
+                    OptionsMenuChange.menuClose(false);
+                    EternalMediaBar.optionsMenu = false;
                 }
             }
         });
 
-        //define the function for long click, this closes the options menu if it's open, or opens the settings menu for an app.
+        /**
+         * define the long click functionality.
+         * this just closes options menu if it's open, or opens the options menu for this entry.
+         */
         layout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -131,34 +145,33 @@ public class ListItemLayout {
     }
 
 
-
-    ////////////////////////////////////////////////////////////
-    ////////////////////// App List Item ///////////////////////
-    ////////////////////////////////////////////////////////////
-
-    //this function is generally the same for each version on this script, so the meanings will only be commented on when it's actually different.
+    /**
+     * <h2>Search Provider Item View</h2>
+     *
+     * this is used to draw the search providers in the search bar.
+     * this is very similar to:
+     * @see ListItemLayout#appListItemView(AppDetail, int, boolean)
+     * @param menuItem the AppDetail being displayed
+     * @return the View to draw.
+     */
     public static View searchView (final AppDetail menuItem){
 
-        //create EternalMediaBar.dpi.scaledDensity as a variable ahead of time so we don't have to calculate this over and over. This is because we scale things by EternalMediaBar.dpi.scaledDensity rather than pixels.
-        //make the core layout
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(58 * EternalMediaBar.dpi.scaledDensity));
-        //create the icon base using the async image loader
         AsyncImageView image = new AsyncImageView(menuItem.internalCommand, menuItem.URI, layout34, 8 * EternalMediaBar.dpi.scaledDensity, 20 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-        //now add the progress view to the display, then process the image view and add it to the display.
         layout.addView(image.icon);
         layout.addView(image.selectedIcon);
 
-        //now add the text similar to the image
         layout.addView(GenLabel(menuItem.label, 1, Gravity.CENTER, 0, 34, 70));
 
-        //setup the onclick listener and button
+        /**
+         * unlike the normal menu item we don't compensate for the double tap function, because these items have no index.
+         * besides that it's the same.
+         */
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if the options menu is closed, then close the menu
                 if (!EternalMediaBar.copyingOrMoving && !EternalMediaBar.optionsMenu) {
-                    //otherwise act normally.
                     switch (menuItem.URI) {
                         case ".webSearch": {
                             Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
@@ -200,14 +213,18 @@ public class ListItemLayout {
                 }
             }
         });
-        //finally return the root view, and all it's children as a single view.
+
         return layout.getRootView();
     }
 
 
-    ////////////////////////////////////////////////////////////
-    /////////////////////// Widget Item ////////////////////////
-    ////////////////////////////////////////////////////////////
+    /**
+     * <h2>Widget View</h2>
+     * similar to the other views, however because widgets define their own onClickListener normally, we only have to define the onLongClick listener for editing it.
+     * @param widget the widget to display/edit
+     *               @see Widget
+     * @return the view to draw.
+     */
     public static View loadWidget(final Widget widget){
         AppWidgetProviderInfo appWidgetInfo = EternalMediaBar.mAppWidgetManager.getAppWidgetInfo(widget.ID);
         AppWidgetHostView hostView = EternalMediaBar.mAppWidgetHost.createView(EternalMediaBar.activity, widget.ID, appWidgetInfo);
@@ -223,8 +240,8 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
                     EternalMediaBar.editingWidget = widget;
+                    OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
                 }
                 return false;
             }
@@ -233,23 +250,27 @@ public class ListItemLayout {
     }
 
 
-    ////////////////////////////////////////////////////////////
-    //////////////////// Category List Item ////////////////////
-    ////////////////////////////////////////////////////////////
+    /**
+     * <h2> Category Item View</h2>
+     *
+     * basically the same as the normal Item View
+     * @see ListItemLayout#appListItemView(AppDetail, int, boolean)
+     *
+     * @param category the category to display
+     * @param index the position in the list that this item displays
+     * @return the view to draw.
+     */
 
     public static View categoryListItemView (final CategoryClass category, final int index){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
         layout.setMinimumHeight(Math.round(80 * EternalMediaBar.dpi.scaledDensity));
-        //create the icon base using the async image loader
-        AsyncImageView image = new AsyncImageView(ImgLoader.ProcessInput("",category.categoryIcon),layout50 ,
+        AsyncImageView image = new AsyncImageView("",category.categoryIcon,layout50 ,
                 4 * EternalMediaBar.dpi.scaledDensity, 19 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-        //now process the image view and add it to the display.
         layout.addView(image.icon);
 
         layout.addView(GenLabel(category.categoryName, 1, Gravity.CENTER,0, 45, 84));
 
-        //on click this just changes the category, unless the options menu is open, then it coses options.
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,7 +290,6 @@ public class ListItemLayout {
                     OptionsMenuChange.menuClose(false);
                     EternalMediaBar.optionsMenu = false;
                 } else {
-                    //instead of making an entirely different version of menuOpen for category, we'll just convert the unique data to an AppDetail for us to parse later
                     OptionsMenuChange.menuOpen(new AppDetail(category.categoryName, index + ""), R.id.CATEGORY);
                 }
                 return true;
@@ -280,72 +300,72 @@ public class ListItemLayout {
     }
 
 
-
-
-    ////////////////////////////////////////////////////////////
-    ///////////////////// Search List Item /////////////////////
-    ////////////////////////////////////////////////////////////
-
-
+    /**
+     * <h2> search category display</h2>
+     *
+     * basically the same as the normal Item View except we don't use any listeners because we dont want user interaction with this, its only cosmetic.
+     * @see ListItemLayout#appListItemView(AppDetail, int, boolean)
+     *
+     * @param category the category to display
+     * @return the view to draw
+     */
     public static View searchCategoryItemView (CategoryClass category){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        //in the search category the background is tinted a different color, and the icon size is smaller, there's also no action when it's clicked. Beyond that, it's more of the same
         layout.setBackgroundColor(0xff333333);
         layout.setMinimumHeight(Math.round(20 * EternalMediaBar.dpi.scaledDensity));
-        //create the icon base using the async image loader
         AsyncImageView image = new AsyncImageView("",category.categoryIcon, layout28,
                 4 * EternalMediaBar.dpi.scaledDensity, 4 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-        //now process the image view and add it to the display.
         layout.addView(image.icon);
-        //add the text
         layout.addView(GenLabel(category.categoryName, 1, Gravity.START,34, 6, 115));
 
         return layout.getRootView();
     }
 
-    ////////////////////////////////////////////////////////////
-    //////////////////// Options List Item /////////////////////
-    ////////////////////////////////////////////////////////////
 
+    /**
+     * <h2> Options List Item View</h2>
+     *
+     * this view is a lot more dynamic than others, the same methods as normal are used but they change a lot depending on circumstance.
+     * @see ListItemLayout#appListItemView(AppDetail, int, boolean)
+     *
+     * @param text the text to display
+     * @param index defines the command to run onClick.
+     * @param secondaryIndex defines an int that may be used for the onClick
+     * @param menuItem the AppDetail to interact with, in some cases it may be null, or used to interact with the onClick.
+     * @return the View to display.
+     */
     public static View optionsListItemView (CharSequence text, final int index, final int secondaryIndex, final AppDetail menuItem){
 
         RelativeLayout layout = new RelativeLayout(EternalMediaBar.activity);
-        //in the options menu, besides the header, only radio buttons have icons, so check if it's a radio button before worrying about adding an icon
+        /**
+         * Define the image view and text. We use different views and sizes dependant on the internal command from the AppDetail provided.
+         */
         final AsyncImageView image;
         switch (menuItem.internalCommand){
             case ".radioUnCheck":case ".radioCheck": {
                 layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
-                //create the icon base using the async image loader
                 image = new AsyncImageView("",menuItem.internalCommand, layout24,
                         10 * EternalMediaBar.dpi.scaledDensity, 16 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-                //now process the image view and add it to the display.
                 layout.addView(image.icon);
-
                 layout.addView(GenLabel(text, 2, Gravity.CENTER, 26, 2, 90));
                 break;
             }
             case ".optionsHeader": {
                 layout.setMinimumHeight(Math.round(95 * EternalMediaBar.dpi.scaledDensity));
-
-                //create the icon base using the async image loader
                 image = new AsyncImageView("",menuItem.URI, layout48,
                         6 * EternalMediaBar.dpi.scaledDensity, 36 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-                //now process the image view and add it to the display.
                 layout.addView(image.icon);
                 layout.addView(GenLabel(text, 2, Gravity.CENTER, 2, 48, 115));
                 break;
             }
             default:{
                 if (index == R.id.ACTION_UNHIDE){
-                    //create the icon base using the async image loader
                     image = new AsyncImageView(menuItem.internalCommand, menuItem.URI ,layout34,
                             10 * EternalMediaBar.dpi.scaledDensity, 10 * EternalMediaBar.dpi.scaledDensity, R.id.list_item_icon, true);
-                    //now add the progress view to the display, then process the image view and add it to the display.
                     layout.addView(image.icon);
                     layout.addView(image.selectedIcon);
                 } else {
-                    //if it's not either of the above, we won't need to deal with the image, just the text.
                     layout.setMinimumHeight(Math.round(70 * EternalMediaBar.dpi.scaledDensity));
                     layout.addView(GenLabel(text, 2, Gravity.START, 12, 24, 115));
                 }
@@ -354,26 +374,26 @@ public class ListItemLayout {
 
         }
 
-        //this part is generic to all three menus, so we write it after the non-generic parts are set.
-
-
-        //if it's not the header then setup the click cunctionality redirects
+        /**
+         * this is a very complex onClick listener that will decide what to do based on the ID in the index.
+         * The name of the ID will hint towards the use to make it easier to skim.
+         * but for the most part it's best to check the class of the function being run in the case.
+         * usually it is from either:
+         * @see EternalUtil
+         * @see OptionsMenuChange
+         */
         if(index!=R.id.NULL) {
-            //this is where it gets tricky, options menu items, have a LOT of redirects to other functions, based on what they do. This is defined on creation of the menu item with the index variable.
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     switch (index) {
-                        //menu close
                         case R.id.CLOSE: {
                             OptionsMenuChange.menuClose(false);break;}
                         case R.id.CLOSE_AND_SAVE: {
                             OptionsMenuChange.menuClose(true);break;}
-                        //menu open for if it's an app's settings, and if it's just the options menu
                         case R.id.APP: case R.id.SETTINGS: {
                             OptionsMenuChange.menuOpen(menuItem, index);break;}
 
-                        //case for making the list of categories for moving or copying.
                         case R.id.COPY_LIST: case R.id.MOVE_LIST:{
                             OptionsMenuChange.createCopyList(menuItem, index);
                             Toast.makeText(EternalMediaBar.activity, "Select the apps you want to move\nThen select where to move them.", Toast.LENGTH_LONG).show();
@@ -382,7 +402,6 @@ public class ListItemLayout {
                         case R.id.HIDE_LIST:{
                             OptionsMenuChange.unhideList(menuItem);break;
                         }
-                        //cases for copying, moving, and hiding apps.
                         case R.id.ACTION_COPY: case R.id.ACTION_MOVE: case R.id.ACTION_HIDE: case R.id.ACTION_UNHIDE: {
                             EternalUtil.relocateItem(secondaryIndex, index);break;
                         }
@@ -390,24 +409,22 @@ public class ListItemLayout {
                             EternalMediaBar.savedData.categories.get(EternalMediaBar.hItem).appList.remove(EternalMediaBar.vItem);
                             OptionsMenuChange.menuClose(true); break;
                         }
-                        //case for opening app's system settings
+
                         case R.id.ACTION_APP_SYSTEM_SETTINGS:{
                             EternalUtil.openAppSettings(menuItem);break;
                         }
-                        //case for opening a URL
                         case R.id.ACTION_URL:{
                             EternalMediaBar.activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(menuItem.URI)));break;
                         }
-                        //cases for theme changing
+
                         case R.id.THEME_SELECT: {
                             OptionsMenuChange.themeChange(menuItem);break;
                         }
-                        case R.id.ACTION_THEME_CHANGE:{//reload the list, we have to change the menu item back to the default options menu item
+                        case R.id.ACTION_THEME_CHANGE:{
                             EternalMediaBar.savedData.theme = menuItem.URI;
                             OptionsMenuChange.themeChange(new AppDetail("Eternal Media Bar - Settings", ".options"));
                             break;
                         }
-                        //cases for changing colors
                         case R.id.COLOR_APP_BG: case R.id.COLOR_OPTIONS: case R.id.COLOR_FONT: case R.id.COLOR_ICON:{
                             OptionsMenuChange.colorSelect(index);break;
                         }
@@ -417,7 +434,6 @@ public class ListItemLayout {
                         case R.id.COLOR_MENU: {
                             OptionsMenuChange.themeColorChange(menuItem);break;
                         }
-                        //list organize
                         case R.id.ORGANIZE_MENU: {
                             OptionsMenuChange.listOrganizeSelect(menuItem);break;
                         }
@@ -428,7 +444,6 @@ public class ListItemLayout {
                             break;
                         }
 
-                        //cases for toggles
                         case R.id.ACTION_MIRROR: {
                             EternalMediaBar.savedData.mirrorMode = ! EternalMediaBar.savedData.mirrorMode;
                             OptionsMenuChange.menuClose(true);break;
@@ -450,6 +465,18 @@ public class ListItemLayout {
     }
 
 
+    /**
+     * <h2>Make a label</h2>
+     * this will create a TextView label to draw to screen.
+     * @param text the text to display
+     * @param lines the max number of lines
+     * @param gravity the alignment.
+     *                @see Gravity
+     * @param x the horizontal position
+     * @param y the vertical position
+     * @param width the width of the view.
+     * @return the view to draw.
+     */
     private static TextView GenLabel(CharSequence text, int lines, int gravity, int x, int y, int width){
         TextView appLabel = new TextView(EternalMediaBar.activity);
         appLabel.setText(text);

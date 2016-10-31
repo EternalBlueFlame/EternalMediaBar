@@ -9,67 +9,62 @@ import android.content.pm.ResolveInfo;
 import com.ebf.eternalVariables.AppDetail;
 import com.ebf.eternalVariables.CategoryClass;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
 public class Initialization {
 
-    public static void loadData(EternalMediaBar eternalMediaBar) {
+    /**
+     * <h2> App Initialization</h2>
+     * this is used to call the function for loading the settings class if necessary, and to double check if any installed apps are missing from the list or if any apps in the list are no longer installed.
+     *
+     */
+    public static void loadData() {
         if (EternalMediaBar.savedData.categories.size() < 1) {
-
-            EternalMediaBar.savedData = SettingsClass.returnSettings(eternalMediaBar);
+            EternalMediaBar.savedData = SettingsClass.returnSettings();
         }
 
-
-        //////////////////////////////////////////////////
-        ///////Figure out what is installed, or not///////
-        //////////////////////////////////////////////////
-        PackageManager manager = eternalMediaBar.getPackageManager();
+        /**
+         * get the list of installed apps,and do a loop for all the apps in the launcher.
+         * check that the apps in the launcher are still valid, if they are not, then remove them.
+         * if the app is invalid, check if it's a part of the launcher, if it's not, remove it.
+         */
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> availableActivities = manager.queryIntentActivities(intent, 0);
-        //create a list of bools for checking what system apps are present.
+        List<ResolveInfo> availableActivities = EternalMediaBar.manager.queryIntentActivities(intent, 0);
         Boolean[] sysApps = new Boolean[]{false,false};
 
-        //try to remove any apps that have invalid launch intents, unless it's marked as persistent.
-        for (int i = 0; i < EternalMediaBar.savedData.categories.size();) {
-            for (int ii=0; ii < EternalMediaBar.savedData.categories.get(i).appList.size();) {
-                //try to check if the launch intent is valid, if it's not, or the check fails, remove the app's entry.
-                try {
-                    //this will fail if the app is not valid, and then be handled by the catch.
-                    if (manager.queryIntentActivities(manager.getLaunchIntentForPackage(EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI), PackageManager.MATCH_DEFAULT_ONLY).size() < 1) {
-                        EternalMediaBar.savedData.categories.get(i).appList.remove(ii);
-                        ii--;
-                    }
-                    //if the app was valid, iterate through the available activities to find the app's entry position, and remove it..
-                    else {
-                        for (ResolveInfo activity : availableActivities ) {
-                            if (activity.activityInfo.packageName.equals(EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI)) {
-                                availableActivities.remove(activity);
-                                //now set the index of iii to break the loop, since we already found what we were looking for.
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".options")) {
+        for (CategoryClass category : EternalMediaBar.savedData.categories) {
+            for (int i=0; i< category.appList.size();) {
+                switch (category.appList.get(i).URI){
+                    case ".options":{
                         sysApps[0] = true;
-                    } else if (EternalMediaBar.savedData.categories.get(i).appList.get(ii).URI.equals(".finance")) {
-                        sysApps[1] = true;
-                    } else {
-                        EternalMediaBar.savedData.categories.get(i).appList.remove(ii);
-                        ii--;
+                        break;
+                    }
+                    case ".finance":{
+                        sysApps[0] = true;
+                        break;
+                    }
+                    default:{
+                        if (EternalMediaBar.manager.queryIntentActivities(EternalMediaBar.manager.getLaunchIntentForPackage(category.appList.get(i).URI), PackageManager.MATCH_DEFAULT_ONLY).size() >0){
+                            for (ResolveInfo activity : availableActivities ) {
+                                if (activity.activityInfo.packageName.equals(category.appList.get(i).URI)) {
+                                    availableActivities.remove(activity);
+                                    break;
+                                }
+                            }
+                        } else {
+                            category.appList.remove(category.appList.get(i));
+                            i--;
+                        }
+                        break;
                     }
                 }
-                ii++;
+                i++;
             }
-            i++;
         }
 
-        //now check the list of bools and add any missing system apps.
+        //for every app that is part of this launcher that is missing, do a loop check to find the proper category to place the item and add it back.
         if (!sysApps[0]) {
             for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                 if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Tools")) {
@@ -88,12 +83,15 @@ public class Initialization {
                 i++;
             }
         }
-        //now add any remaining apps to the newly installed list
+        /**
+         * lastly, for every app in the available activities that is left, add it to the unorganized category.
+         * similar to how it was done for adding back apps from this launcher.
+         */
         if (availableActivities.size() > 0) {
             for (ResolveInfo ri : availableActivities) {
                 for (int i = 0; i < EternalMediaBar.savedData.categories.size(); ) {
                     if (EternalMediaBar.savedData.categories.get(i).categoryTags.contains("Unorganized")) {
-                        EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail(ri.loadLabel(manager), ri.activityInfo.packageName));
+                        EternalMediaBar.savedData.categories.get(i).appList.add(new AppDetail(ri.loadLabel(EternalMediaBar.manager), ri.activityInfo.packageName));
                         break;
                     }
                     i++;

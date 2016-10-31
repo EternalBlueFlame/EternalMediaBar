@@ -1,6 +1,5 @@
 package com.ebf.eternalmediabar;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.KeyEvent;

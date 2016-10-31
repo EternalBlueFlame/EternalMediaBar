@@ -72,7 +72,7 @@ public class EternalMediaBar extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dpi);
         manager = getPackageManager();
         activity = this;
-        Initialization.loadData(this);
+        Initialization.loadData();
         if (vItem > savedData.categories.get(hItem).appList.size()){
             vItem = 0;
         }

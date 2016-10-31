@@ -191,7 +191,7 @@ public class SettingsClass implements Serializable {
     /////////////////Load a save file/////////////////
     //////////////////////////////////////////////////
     // this function is so huge I have to separate it as if it's multiple functions or we'll all be lost.
-    public static SettingsClass returnSettings(EternalMediaBar eternalMediaBar) {
+    public static SettingsClass returnSettings() {
         SettingsClass savedData= new SettingsClass();
         //catch with below by initializing vLists properly
         //we should initialize the other variables as well.
@@ -202,7 +202,7 @@ public class SettingsClass implements Serializable {
         try {
 
             //try load preferences
-            FileInputStream fs = eternalMediaBar.openFileInput("data.xml");
+            FileInputStream fs = EternalMediaBar.activity.openFileInput("data.xml");
             //build a document file
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             Document doc = dbFactory.newDocumentBuilder().parse(fs);
