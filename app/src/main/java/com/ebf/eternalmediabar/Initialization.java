@@ -42,7 +42,7 @@ public class Initialization {
                         break;
                     }
                     case ".finance":{
-                        sysApps[0] = true;
+                        sysApps[1] = true;
                         break;
                     }
                     default:{
