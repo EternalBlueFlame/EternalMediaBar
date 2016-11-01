@@ -80,7 +80,7 @@ public class ListItemLayout {
             @Override
             public void onClick(View v) {
                 if (EternalMediaBar.copyingOrMoving) {
-                    if (EternalMediaBar.selectedApps.contains(menuItem.URI)){
+                    if (EternalMediaBar.selectedApps.contains(menuItem.URI)) {
                         EternalMediaBar.selectedApps.remove(menuItem.URI);
                         image.selectedIcon.setVisibility(View.INVISIBLE);
                     } else {
@@ -91,25 +91,25 @@ public class ListItemLayout {
                     if (EternalMediaBar.savedData.doubleTap && EternalMediaBar.vItem != index) {
                         EternalMediaBar.listMove(index);
                     } else {
-                        switch (menuItem.URI){
-                            case ".options":{
+                        switch (menuItem.URI) {
+                            case ".options": {
                                 EternalMediaBar.listMove(index);
                                 OptionsMenuChange.menuOpen(new AppDetail("Eternal Media Bar - Settings", ".options"), R.id.SETTINGS);
                                 break;
                             }
-                            case ".finance":{
+                            case ".finance": {
                                 EternalMediaBar.listMove(index);
                                 EternalMediaBar.activity.startActivity(new Intent(EternalMediaBar.activity, EternalFinance.class));
                                 break;
                             }
-                            case ".audio":{
+                            case ".audio": {
                                 Intent musicIntent = new Intent();
                                 musicIntent.setAction(android.content.Intent.ACTION_VIEW);
                                 musicIntent.setDataAndType(Uri.fromFile(new File(menuItem.internalCommand)), "audio/*");
                                 EternalMediaBar.activity.startActivity(musicIntent);
                                 break;
                             }
-                            default:{
+                            default: {
                                 EternalMediaBar.activity.startActivity(EternalMediaBar.manager.getLaunchIntentForPackage(menuItem.URI));
                                 break;
                             }
@@ -233,19 +233,21 @@ public class ListItemLayout {
         hostView.setY(widget.Y);
         hostView.setMinimumWidth(widget.width);
         hostView.setMinimumHeight(widget.height);
-        hostView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (EternalMediaBar.optionsMenu) {
-                    OptionsMenuChange.menuClose(false);
-                    EternalMediaBar.optionsMenu = false;
-                } else {
-                    EternalMediaBar.editingWidget = widget;
-                    OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
+        for (View childView : hostView.getTouchables()) {
+            childView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (EternalMediaBar.optionsMenu) {
+                        OptionsMenuChange.menuClose(false);
+                        EternalMediaBar.optionsMenu = false;
+                    } else {
+                        EternalMediaBar.editingWidget = widget;
+                        OptionsMenuChange.menuOpen(new AppDetail(), R.id.WIDGET);
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
         return hostView;
     }
 

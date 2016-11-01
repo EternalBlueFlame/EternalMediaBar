@@ -46,8 +46,8 @@ public class Initialization {
                         break;
                     }
                     default:{
-                        if (EternalMediaBar.manager.queryIntentActivities(EternalMediaBar.manager.getLaunchIntentForPackage(category.appList.get(i).URI), PackageManager.MATCH_DEFAULT_ONLY).size() >0){
-                            for (ResolveInfo activity : availableActivities ) {
+                        if (EternalMediaBar.manager.getLaunchIntentForPackage(category.appList.get(i).URI) != null){
+                            for (ResolveInfo activity : availableActivities) {
                                 if (activity.activityInfo.packageName.equals(category.appList.get(i).URI)) {
                                     availableActivities.remove(activity);
                                     break;

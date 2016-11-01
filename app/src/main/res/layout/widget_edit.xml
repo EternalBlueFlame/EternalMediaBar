@@ -13,7 +13,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="-"
-            android:id="@+id/left_plus"
+            android:id="@+id/left_minus"
             android:layout_weight="2"/>
 
         <EditText
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="+"
-            android:id="@+id/left_minus"
+            android:id="@+id/left_plus"
             android:layout_weight="2"/>
 
     </LinearLayout>
@@ -45,7 +45,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="-"
-            android:id="@+id/top_plus"
+            android:id="@+id/top_minus"
             android:layout_weight="2"/>
 
         <EditText
@@ -61,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="+"
-            android:id="@+id/top_minus"
+            android:id="@+id/top_plus"
             android:layout_weight="2"/>
 
     </LinearLayout>
@@ -75,7 +75,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="-"
-            android:id="@+id/width_plus"
+            android:id="@+id/width_minus"
             android:layout_weight="2"/>
 
         <EditText
@@ -91,7 +91,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="+"
-            android:id="@+id/width_minus"
+            android:id="@+id/width_plus"
             android:layout_weight="2"/>
 
     </LinearLayout>
@@ -105,7 +105,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="-"
-            android:id="@+id/height_plus"
+            android:id="@+id/height_minus"
             android:layout_weight="2"/>
 
         <EditText
@@ -121,7 +121,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="+"
-            android:id="@+id/height_minus"
+            android:id="@+id/height_plus"
             android:layout_weight="2"/>
 
     </LinearLayout>

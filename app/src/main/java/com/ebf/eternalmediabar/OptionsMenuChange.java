@@ -96,7 +96,7 @@ public class OptionsMenuChange {
                 break;
             }
             case R.id.WIDGET:{
-                modifyWidget();
+                modifyWidget(item);
                 break;
             }
             case R.id.SETTINGS:{
@@ -322,64 +322,72 @@ public class OptionsMenuChange {
     //////////////////////////////////////////////////
     ///////////////Modify Widget Menu/////////////////
     //////////////////////////////////////////////////
-    public static void modifyWidget(){
+    public static void modifyWidget(final AppDetail menuItem){
         EternalMediaBar.optionVitem = 0;
 
         EternalMediaBar.optionsLayout.removeAllViews();
 
         final View child = EternalMediaBar.activity.getLayoutInflater().inflate(R.layout.widget_edit, null);
-        ((EditText)child.findViewById(R.id.number_left)).setText(EternalMediaBar.editingWidget.X);
-        ((EditText)child.findViewById(R.id.number_top)).setText(EternalMediaBar.editingWidget.Y);
-        ((EditText)child.findViewById(R.id.number_height)).setText(EternalMediaBar.editingWidget.height);
-        ((EditText)child.findViewById(R.id.number_width)).setText(EternalMediaBar.editingWidget.width);
+        ((EditText)child.findViewById(R.id.number_left)).setText(String.valueOf(EternalMediaBar.editingWidget.X));
+        ((EditText)child.findViewById(R.id.number_top)).setText(String.valueOf(EternalMediaBar.editingWidget.Y));
+        ((EditText)child.findViewById(R.id.number_height)).setText(String.valueOf(EternalMediaBar.editingWidget.height));
+        ((EditText)child.findViewById(R.id.number_width)).setText(String.valueOf(EternalMediaBar.editingWidget.width));
 
 
         child.findViewById(R.id.left_plus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) child.findViewById(R.id.number_left)).setText(EternalMediaBar.editingWidget.X++);
+                EternalMediaBar.editingWidget.X++;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.left_minus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) child.findViewById(R.id.number_left)).setText(EternalMediaBar.editingWidget.X--);
+                EternalMediaBar.editingWidget.X--;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.top_plus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) child.findViewById(R.id.number_top)).setText(EternalMediaBar.editingWidget.Y++);
+                EternalMediaBar.editingWidget.Y++;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.top_minus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText)child.findViewById(R.id.number_top)).setText(EternalMediaBar.editingWidget.Y--);
+                EternalMediaBar.editingWidget.Y--;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.width_plus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) child.findViewById(R.id.number_width)).setText(EternalMediaBar.editingWidget.width++);
+                EternalMediaBar.editingWidget.width++;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.width_minus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText)child.findViewById(R.id.number_width)).setText(EternalMediaBar.editingWidget.width--);
+                EternalMediaBar.editingWidget.width--;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.height_plus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) child.findViewById(R.id.number_height)).setText(EternalMediaBar.editingWidget.height++);
+                EternalMediaBar.editingWidget.height++;
+                modifyWidget(menuItem);
             }
         });
         child.findViewById(R.id.height_minus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText)child.findViewById(R.id.number_height)).setText(EternalMediaBar.editingWidget.height--);
+                EternalMediaBar.editingWidget.height--;
+                modifyWidget(menuItem);
             }
         });
 
@@ -397,6 +405,7 @@ public class OptionsMenuChange {
         //TODO repeat this for the rest of the occurrences
 
         EternalMediaBar.optionsLayout.addView(child);
+        goBackItems(menuItem, R.id.WIDGET, true);
     }
 
 
